@@ -1,0 +1,70 @@
+version: "2"  
+services:
+  node_1:
+  # A
+    image: savop_bird_base
+    container_name: node_1
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/1.conf:/usr/local/etc/bird.conf
+      - ./configs/1.json:/root/savop/SavAgent_config.json
+      - ./logs/1/:/root/savop/logs/
+    network_mode: none
+    command: 
+        bash container_run.sh
+        
+  node_2:
+  # B
+    image: savop_bird_base
+    container_name: node_2
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/2.conf:/usr/local/etc/bird.conf
+      - ./configs/2.json:/root/savop/SavAgent_config.json
+      - ./logs/2/:/root/savop/logs/
+    network_mode: none
+    command:
+        bash container_run.sh
+
+  node_3:
+  # C
+    image: savop_bird_base
+    container_name: node_3
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/3.conf:/usr/local/etc/bird.conf
+      - ./configs/3.json:/root/savop/SavAgent_config.json
+      - ./logs/3/:/root/savop/logs/
+    network_mode: none
+    command:
+        bash container_run.sh
+  node_4:
+  # D
+    image: savop_bird_base
+    container_name: node_4
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/4.conf:/usr/local/etc/bird.conf
+      - ./configs/4.json:/root/savop/SavAgent_config.json
+      - ./logs/4/:/root/savop/logs/
+    network_mode: none
+    command:
+        bash container_run.sh
+  node_5:
+  # E
+    image: savop_bird_base
+    container_name: node_5
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/5.conf:/usr/local/etc/bird.conf
+      - ./configs/5.json:/root/savop/SavAgent_config.json
+      - ./logs/5/:/root/savop/logs/
+    network_mode: none
+    command:
+        bash container_run.sh
+        
