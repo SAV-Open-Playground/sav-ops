@@ -6,7 +6,8 @@ if [ -z "$var" ];then
 else
 	model_name=$1
 fi
-echo "start to ${model_name} net mode"
+echo ${FOLDER}
+echo "start to ${model_name} net mode" 
 
 cd ${FOLDER}
 if [ ! -d "./build" ];then
@@ -29,17 +30,20 @@ else
   echo "please check if bird birdc birdcl eixts"
   exit -1
 fi
-cp ./bird ../sav-start/build/
-cp ./birdc ../sav-start/build/
-cp ./birdcl ../sav-start/build/ 
+cp ./bird ${FOLDER}/build/
+cp ./birdc ${FOLDER}/build/
+cp ./birdcl ${FOLDER}/build/ 
 cd ../sav-agent
-cp -r extend_server ../sav-start/build/
-cp -r ../sav-start/configs/conf_${model_name} ../sav-start/build/configs 
-cp ../sav-start/docker_compose/host_run.sh ../sav-start/build/host_run.sh
-cp ../sav-start/docker_compose/docker_compose_${model_name}.yml ../sav-start/build/compose.yml
-cp ../sav-start/docker/Dockerfile ../sav-start/build/Dockerfile
-cp ../sav-start/topology/topo_${model_name}.sh ../sav-start/build/topo.sh
-cp ../sav-start/reference_and_agent/container_run.sh  ../sav-start/build/container_run.sh 
+if [ ! -d "${FOLDER}/extend_server" ];then
+  mkdir ${FOLDER}/build/extend_server
+fi
+cp -r *.py ${FOLDER}/build/extend_server
+cp -r ${FOLDER}/configs/conf_${model_name} ${FOLDER}/build/configs 
+cp ${FOLDER}/docker_compose/host_run.sh ${FOLDER}/build/host_run.sh
+cp ${FOLDER}/docker_compose/docker_compose_${model_name}.yml ${FOLDER}/build/compose.yml
+cp ${FOLDER}/docker/Dockerfile ${FOLDER}/build/Dockerfile
+cp ${FOLDER}/topology/topo_${model_name}.sh ${FOLDER}/build/topo.sh
+cp ${FOLDER}/reference_and_agent/container_run.sh  ${FOLDER}/build/container_run.sh 
 echo "complile bird over"
 cd  ../sav-start/build
 ./host_run.sh
