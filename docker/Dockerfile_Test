@@ -1,0 +1,6 @@
+FROM ubuntu:22.04
+RUN sed -i "s@http://.*archive.ubuntu.com@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
+RUN sed -i "s@http://.*security.ubuntu.com@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
+
+RUN apt-get -y update
+RUN apt-get -y install iputils-ping net-tools vim traceroute sqlite3 iptables iproute2 curl iperf iperf3 
