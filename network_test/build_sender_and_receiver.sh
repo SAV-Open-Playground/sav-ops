@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 set -ex
-SENDER_NET="192.168.1"
+SENDER_NET="192.168.2"
 REIVER_NET="192.168.4"
-docker build -f ../docker/Dockerfile_Test . -t savop_test
+docker build -f ../Dockerfile_Test . -t savop_test
 docker run -itd --net none --name=test_receiver savop_test /bin/bash
 docker run -itd --net none --name=test_sender savop_test /bin/bash
 
