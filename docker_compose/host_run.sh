@@ -3,6 +3,7 @@
 FOLDER=$(cd "$(dirname "$0")";pwd)
 model_name=$1
 docker-compose down
+rm -rf ./logs/*
 docker rmi -f savop_bird_base
 docker build . -t savop_bird_base
 docker container rm $(docker container ls -aq)
