@@ -30,8 +30,10 @@ funCreateV(){
     ip link add ${NET_L} type veth peer name ${NET_P}
     ip link set ${NET_L}  netns ${PID_L}
     ip link set ${NET_P}  netns ${PID_P}
+    ip netns exec ${PID_L} ip addr flush ${NET_L}
     ip netns exec ${PID_L} ip addr add ${5} dev ${NET_L}
     ip netns exec ${PID_L} ip link set ${NET_L} up
+    ip netns exec ${PID_P} ip addr flush ${NET_P}
     ip netns exec ${PID_P} ip addr add ${6} dev ${NET_P}
     ip netns exec ${PID_P} ip link set ${NET_P} up
 }
