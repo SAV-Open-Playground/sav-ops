@@ -1,0 +1,6 @@
+FROM nlnetlabs_base
+RUN apt update
+RUN apt install -y krill rsync
+COPY ./configs/krill/rsync /etc/default/rsync
+COPY ./configs/krill/rsyncd.conf /etc/rsyncd.conf
+RUN service rsync restart
