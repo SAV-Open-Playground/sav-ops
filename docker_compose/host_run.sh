@@ -5,7 +5,7 @@ model_name=$1
 docker-compose down
 rm -rf ./logs/*
 docker rmi -f savop_bird_base
-docker build . -t savop_bird_base
+docker build -f ./reference_router . -t savop_bird_base
 docker container rm $(docker container ls -aq)
 # remove all stopped containers
 docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
