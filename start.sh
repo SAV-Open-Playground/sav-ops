@@ -41,10 +41,10 @@ cp -r *.py ${FOLDER}/build/extend_server
 cp -r ${FOLDER}/configs/conf_${model_name} ${FOLDER}/build/configs 
 cp ${FOLDER}/docker_compose/host_run.sh ${FOLDER}/build/host_run.sh
 cp ${FOLDER}/docker_compose/docker_compose_${model_name}.yml ${FOLDER}/build/compose.yml
-cp ${FOLDER}/docker/Dockerfile ${FOLDER}/build/Dockerfile
+cp ${FOLDER}/dockerfiles/reference_router ${FOLDER}/build/reference_router
 cp ${FOLDER}/topology/topo_${model_name}.sh ${FOLDER}/build/topo.sh
 cp ${FOLDER}/reference_and_agent/container_run.sh  ${FOLDER}/build/container_run.sh
-cp ${FOLDER}/docker/Dockerfile_Test ${FOLDER}/build/Dockerfile_Test
+cp ${FOLDER}/dockerfiles/traffic_generator ${FOLDER}/build/traffic_generator
 cp -r ${FOLDER}/network_test ${FOLDER}/build/
 echo "complile bird over"
 cd  ../sav-start/build
