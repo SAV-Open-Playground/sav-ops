@@ -1,6 +1,10 @@
 FROM nlnetlabs_base
 RUN apt update
-RUN apt install -y krill rsync
+RUN apt install -y rsync libssl-dev cargo
+RUN pip install requests
 COPY ./configs/krill/rsync /etc/default/rsync
 COPY ./configs/krill/rsyncd.conf /etc/rsyncd.conf
 RUN service rsync restart
+RUN apt-get update
+RUN apt-get install -y pkg-config
+RUN cargo install krill --git https://github.com/NLnetLabs/krill --tag v0.12.3 --features aspa --locked
