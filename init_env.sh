@@ -10,6 +10,6 @@ apt-get -y install build-essential flex bison autoconf ncurses-dev libreadline-d
         sqlite3 iptables expect
 
 pip install Flask gunicorn blinker flask-sqlalchemy netaddr -i https://pypi.mirrors.ustc.edu.cn/simple/
-docker build -f ./Dockerfile_SAVOP_Base . -t savop_base
+docker build -f ./dockerfiles/savop_base . -t savop_base
 curl -SL https://github.com/docker/compose/releases/download/v2.16.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
