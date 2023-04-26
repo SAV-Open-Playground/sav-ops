@@ -3,6 +3,7 @@
 echo '10.0.9.1        savopkrill.com' >> /etc/hosts
 let "TAL_GOOD=-1"
 let "MAX=60"
+update-ca-certificates
 mkdir /var/routinator/tals
 while [ $TAL_GOOD -ne 0 ]
 do
@@ -18,8 +19,5 @@ do
         exit -1
    fi
 done
-#update-ca-certificates
-mkdir /var/routinator/
-mkdir /var/routinator/tals/
-routinator -c /etc/routinator/routinator.conf --rrdp-root-cert=/var/routinator/data/ca.pem --rrdp-root-cert=/var/routinator/data/web.pem -v -v server 
 
+routinator -c /etc/routinator/routinator.conf --rrdp-root-cert=/var/routinator/data/ca.pem --rrdp-root-cert=/var/routinator/data/web.pem -v -v server 
