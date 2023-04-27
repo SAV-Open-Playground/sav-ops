@@ -1,6 +1,0 @@
-pki/krill/krill filter=lfs diff=lfs merge=lfs -text
-pki/krill/krillc filter=lfs diff=lfs merge=lfs -text
-pki/krill/krillup filter=lfs diff=lfs merge=lfs -text
-rpki/krill/krillup filter=lfs diff=lfs merge=lfs -text
-rpki/krill/krillc filter=lfs diff=lfs merge=lfs -text
-rpki/krill/krill filter=lfs diff=lfs merge=lfs -text

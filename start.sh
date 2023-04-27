@@ -54,7 +54,7 @@ cp ${FOLDER}/reference_and_agent/container_run.sh  ${FOLDER}/build/container_run
 cp -r ${FOLDER}/network_test ${FOLDER}/build/
 echo "complile bird over"
 pwd
-cd  ../sav-start/build
+cd  ./build
 ./host_run.sh
 exit 0
 

@@ -97,8 +97,9 @@ services:
       - ./configs/krill/rsyncd.conf:/etc/rsyncd.conf
       - ./configs/krill/keys/web/cert.pem:/var/krill/data/ssl/cert.pem
       - ./configs/krill/keys/web/key.pem:/var/krill/data/ssl/key.pem
-      - ./configs/krill/add_roas.py:/var/krill/add_roas.py
+      - ./configs/krill/add_roas.py:/var/krill/add_info.py
       - ./configs/krill/roas.json:/var/krill/roas.json
+      - ./configs/krill/roas.json:/var/krill/aspas.json
       - ./krill_data:/var/krill/data
       - ./krill.sh:/var/krill/start.sh
       - ./logs/krill.log:/var/krill/logs/krill.log
