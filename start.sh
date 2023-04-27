@@ -42,6 +42,7 @@ cp -r ${FOLDER}/configs/conf_${model_name} ${FOLDER}/build/configs
 if [ `expr index ${model_name} *.roa` -gt 0 ];then 
   cp -r ${FOLDER}/configs/conf_roa/* ${FOLDER}/build/configs/
   cd ${FOLDER}/build/configs/krill/keys && ./key.sh && cd ${FOLDER}
+  cp -r ${FOLDER}/rpki/krill  ${FOLDER}/build/
   cp ${FOLDER}/rpki/krill.sh  ${FOLDER}/build/krill.sh
   cp ${FOLDER}/rpki/routinator.sh  ${FOLDER}/build/routinator.sh
 fi

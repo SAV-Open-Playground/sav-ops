@@ -1,2 +1,13 @@
 build
 *.pem
+.cargo
+.idea/
+.vscode/
+.DS_Store
+data
+krill.log
+target/
+tmp
+work
+examples/openid_connect_mock.rs
+*.swp

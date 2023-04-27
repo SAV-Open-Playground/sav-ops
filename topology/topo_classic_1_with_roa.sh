@@ -53,6 +53,7 @@ funCreateV 'ref_2' 'ref_3' '10.0.6.1/24' '10.0.6.2/24'
 funCreateV 'ref_4' 'ref_5' '10.0.7.1/24' '10.0.7.2/24'
 
 let "TAL_GOOD=-1"
+let "MAX=60"
 while [ $TAL_GOOD -ne 0 ]
 do
    docker exec -it ca curl -k https://localhost:3000/ta/ta.cer -o /var/krill/data/repo/rsync/current/ta.cer
@@ -71,7 +72,7 @@ done
 sleep 15
 # wait for the containers to perform, you can change the value based 
 # on your hardware and configurations
-node_array=`docker ps|grep "savop_bird_base" | awk '{ print $11 }' | awk -F"_" '{ print $NF }' | sort | xargs`
+node_array=`docker ps|grep "savop_bird_base" | awk '{ print $NF }' | awk -F"_" '{ print $NF }' | sort | xargs`
 FOLDER=$(cd "$(dirname "$0")";pwd)
 for node_num in ${node_array[*]}
 do
