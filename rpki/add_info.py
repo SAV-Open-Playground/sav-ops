@@ -6,6 +6,7 @@ import requests
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
 def read_json(path_to_json):
     with open(path_to_json, "r", encoding="utf-8") as json_file:
         return json.loads(json_file.read())
@@ -16,10 +17,10 @@ def send(url, data, headers):
         try:
             response = requests.post(url=url, json=data,
                                      verify=False, headers=headers, timeout=1)
-            if response.status_code==200:
+            if response.status_code == 200:
                 print("finished")
                 return
-            if response.status_code==400:
+            if response.status_code == 400:
                 # 400 usually is roa rejected due to already existing
                 print(response.json())
                 print("finished")
@@ -47,8 +48,8 @@ def add_info(input_file):
         data["added"] = file_json.get("add")
         send(url, data, headers)
     elif "aspas" in input_file:
-        url += f"aspas"
-        data = {"add_or_replace":file_json.get("data") ,"remove":[]}
+        url += "aspas"
+        data = {"add_or_replace": file_json.get("add"), "remove": []}
         send(url, data, headers)
     else:
         print(f"unkown file: {input_file}")
