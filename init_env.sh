@@ -13,3 +13,12 @@ pip install Flask gunicorn blinker flask-sqlalchemy netaddr -i https://pypi.mirr
 docker build -f ./dockerfiles/savop_base . -t savop_base
 curl -SL https://github.com/docker/compose/releases/download/v2.16.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
+
+apt -y install curl build-essential libssl-dev openssl pkg-config git
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
+cd /root
+git clone https://github.com/NLnetLabs/krill.git
+cd /root/krill
+git checkout -b v0.12.3 v0.12.3
+cargo build --features aspa --locked
