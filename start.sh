@@ -20,10 +20,10 @@ fi
 
 echo "compile bird"
 cd ../sav-reference-router
-# rm -f  "./bird" "./birdc" "./birdcl"
-# autoconf
-# ./configure
-# make
+rm -f  "./bird" "./birdc" "./birdcl"
+autoconf
+./configure
+make
 if [ -f "./bird" ] && [ -f "./birdc" ] && [ -f "./birdcl" ];then
   echo "bird birdc birdcl are ready"
 else
