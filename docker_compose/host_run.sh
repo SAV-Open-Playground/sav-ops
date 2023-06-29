@@ -6,7 +6,7 @@ docker-compose down
 rm -rf ./logs/*; mkdir ./logs
 docker rmi -f savop_bird_base
 docker build -f ./dockerfiles/reference_router . -t savop_bird_base
-image_name="`grep "image: krill" compose.yml |awk '{ print $2 }'`"
+image_name="`grep "image: krill" docker-compose.yml |awk '{ print $2 }'`"
 if [ "${image_name}" = "krill" ]
 then
     docker build -f ./dockerfiles/nlnetlabs_base . -t nlnetlabs_base
@@ -17,7 +17,7 @@ then
     rm -rf ${FOLDER}/logs/rsync.log
     echo "" > ${FOLDER}/logs/rsync.log
 fi
-image_name=`grep "image: routinator" compose.yml |awk '{ print $2 }'`
+image_name=`grep "image: routinator" docker-compose.yml |awk '{ print $2 }'`
 if [ "${image_name}" = "routinator" ];then
     docker build -f ./dockerfiles/routinator . -t routinator
     rm -rf ./routinator_data
