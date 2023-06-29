@@ -25,7 +25,7 @@ funCreateV(){
     PID_P=${pid_array[$4-1]}
     NET_L="eth_$1_$2"
     NET_P="eth_$2_$1"
-    echo "adding edge $1_$2"
+    echo "adding edge eth_$1_$2"
     # echo $PID_L $PID_P $NET_L $NET_P ${5} ${6}
     ip link add ${NET_L} type veth peer name ${NET_P}
     ip link set ${NET_L}  netns ${PID_L}
