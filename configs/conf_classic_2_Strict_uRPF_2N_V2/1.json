@@ -7,7 +7,6 @@
 		"EFP-uRPF-B",
 		"FP-uRPF"
 	],
-	"enabled_sav_app": "rpdp_app",
 	"fib_stable_threshold": 5,
 	"ca_host": "10.10.0.2",
 	"ca_port": 3000,
