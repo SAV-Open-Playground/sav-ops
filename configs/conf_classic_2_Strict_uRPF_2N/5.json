@@ -13,7 +13,7 @@
 	"ca_port": 3000,
 	"grpc_server_addr": "0.0.0.0:5000",
 	"grpc_id": "10.0.1.1",
-	"local_as":65501,
+	"local_as":65505,
 	"grpc_links": [
 	]
 }
