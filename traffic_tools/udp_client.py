@@ -15,7 +15,7 @@ if len(sys.argv)!=5:
     print('please input src_addr,dst_addr,interface,packet_num( e.g. python3 udp_client.py 192.168.1.1:54321 192.168.1.2:12345 eth_1_2 5)')
     sys.exit(-1)
 src_addr = sys.argv[1]
-dst_addr = sys .argv[2]
+dst_addr = sys.argv[2]
 src_inf = sys.argv[3]
 packet_num = int(sys.argv[4])
 src_ip,src_port = src_addr.split(":")
