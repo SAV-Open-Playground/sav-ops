@@ -11,14 +11,14 @@ import socket
 import time
 import sys
 if len(sys.argv)!=2:
-    print('please input listening addr( e.g. python3 udp_server.py 192.168.1.1:12345)')
+    print(f'please input listening addr( e.g. python3 {sys.argv[0]} 192.168.1.1:12345)')
     sys.exit(-1)
 addr = sys.argv[1].split(":")
 ip = addr[0]
 port = int(addr[1])
 udpsever = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udpsever.bind((ip, port))
-print(f'listening ong {ip}:{port}')
+print(f'listening on {ip}:{port}')
 while True:
     data, addr = udpsever.recvfrom(1024)
     data=data.decode("utf-8")
