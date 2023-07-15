@@ -60,6 +60,13 @@ sleep 15
 # wait for the containers to perform, you can change the value based 
 # on your hardware and configurations
 
+docker exec -it node_1 ip addr add 192.168.1.1/24 dev eth_1_2
+docker exec -it node_1 ip addr add 192.168.6.1/24 dev eth_1_4
+docker exec -it node_2 ip addr add 192.168.2.1/24 dev eth_2_4
+docker exec -it node_3 ip addr add 192.168.3.1/24 dev eth_3_4
+docker exec -it node_4 ip addr add 192.168.4.1/24 dev eth_4_1
+docker exec -it node_5 ip addr add 192.168.5.1/24 dev eth_5_4
+
 FOLDER=$(cd "$(dirname "$0")";pwd)
 for node_num in ${node_array[*]}
 do
