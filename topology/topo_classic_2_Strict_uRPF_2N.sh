@@ -67,6 +67,9 @@ docker exec -it node_3 ip addr add 192.168.3.1/24 dev eth_3_4
 docker exec -it node_4 ip addr add 192.168.4.1/24 dev eth_4_1
 docker exec -it node_5 ip addr add 192.168.5.1/24 dev eth_5_4
 
+# tmp fix
+docker exec -it node_2 route add -net 192.168.4.0/24 dev eth_2_4 metric 10
+
 FOLDER=$(cd "$(dirname "$0")";pwd)
 for node_num in ${node_array[*]}
 do
