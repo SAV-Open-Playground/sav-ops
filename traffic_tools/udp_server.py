@@ -22,4 +22,4 @@ print(f'listening on {ip}:{port}')
 while True:
     data, addr = udpsever.recvfrom(1024)
     data=data.decode("utf-8")
-    print("from", addr, "data", data)
+    print("from", addr, "data", data,"at",time.time())
