@@ -44,7 +44,6 @@ def add_info(input_file):
     url = f"https://{file_json.get('ip')}:{file_json.get('port')}/api/v1/cas/testbed/"
     if "roas" in input_file:
         url += "routes"
-        print(url)
         data["added"] = file_json.get("add")
         send(url, data, headers)
     elif "aspas" in input_file:
