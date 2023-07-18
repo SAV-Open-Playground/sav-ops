@@ -24,5 +24,5 @@ src_port = int(src_port)
 dst_port = int(dst_port)
 print(f'{src_addr} to {dst_addr} via {src_inf}')
 for i in range(packet_num):
-    p = IP(src=src_ip, dst=dst_ip) / UDP(sport=src_port, dport=dst_port) / Raw(str(i).encode("utf-8"))
-    send(p,iface=src_inf,inter=0.1)
+    p  = Ether() /IP(src=src_ip, dst=dst_ip) / UDP(sport=src_port, dport=dst_port) / Raw(str(i).encode("utf-8"))
+    sendp(p,iface=src_inf,verbose=True)

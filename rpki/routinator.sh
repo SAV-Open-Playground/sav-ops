@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 #set -ex
-echo '10.0.9.1        savopkrill.com' >> /etc/hosts
+sleep 7
+echo '10.10.0.2        savopkrill.com' >> /etc/hosts
 let "TAL_GOOD=-1"
 let "MAX=60"
 update-ca-certificates
