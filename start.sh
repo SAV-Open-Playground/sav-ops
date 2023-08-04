@@ -38,7 +38,7 @@ if [ ! -d "${FOLDER}/extend_server" ];then
   mkdir ${FOLDER}/build/extend_server
 fi
 cp -r *.py ${FOLDER}/build/extend_server
-cp -r trafficTools ${FOLDER}/build/extend_server/
+cp -r ${FOLDER}/traffic_tools ${FOLDER}/build/extend_server/trafficTools
 cp -r ${FOLDER}/configs/conf_${model_name} ${FOLDER}/build/configs
 if [ `expr match ${model_name} *.roa` -gt 0 ];then 
   cp -r ${FOLDER}/configs/conf_roa/* ${FOLDER}/build/configs/
