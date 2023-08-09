@@ -3,7 +3,7 @@
 -------------------------------------------------
    File Name     UDP_server
    Description : For traffic testing
-   Author :      yuqian.shi@outlook.com
+   Author :      Yuqian Shi
    date:         2023/7/14
 -------------------------------------------------
 """
