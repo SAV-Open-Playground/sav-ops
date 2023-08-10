@@ -10,7 +10,7 @@ services:
       - ./configs/1.conf:/usr/local/etc/bird.conf
       - ./configs/1.json:/root/savop/SavAgent_config.json
       - ./logs/1/logs:/root/savop/logs/
-      - ./logs/1/data:/root/savop/extend_server/data/
+      - ./logs/1/data:/root/savop/sav-agent/data/
     network_mode: none
     command: 
         bash container_run.sh
@@ -25,7 +25,7 @@ services:
       - ./configs/2.conf:/usr/local/etc/bird.conf
       - ./configs/2.json:/root/savop/SavAgent_config.json
       - ./logs/2/logs:/root/savop/logs/
-      - ./logs/2/data:/root/savop/extend_server/data/
+      - ./logs/2/data:/root/savop/sav-agent/data/
     network_mode: none
     command:
         bash container_run.sh
@@ -40,7 +40,7 @@ services:
       - ./configs/3.conf:/usr/local/etc/bird.conf
       - ./configs/3.json:/root/savop/SavAgent_config.json
       - ./logs/3/logs:/root/savop/logs/
-      - ./logs/3/data:/root/savop/extend_server/data/
+      - ./logs/3/data:/root/savop/sav-agent/data/
     network_mode: none
     command:
         bash container_run.sh
@@ -54,7 +54,7 @@ services:
       - ./configs/4.conf:/usr/local/etc/bird.conf
       - ./configs/4.json:/root/savop/SavAgent_config.json
       - ./logs/4/logs:/root/savop/logs/
-      - ./logs/4/data:/root/savop/extend_server/data/
+      - ./logs/4/data:/root/savop/sav-agent/data/
     network_mode: none
     command:
         bash container_run.sh
@@ -68,7 +68,7 @@ services:
       - ./configs/5.conf:/usr/local/etc/bird.conf
       - ./configs/5.json:/root/savop/SavAgent_config.json
       - ./logs/5/logs:/root/savop/logs/
-      - ./logs/5/data:/root/savop/extend_server/data/
+      - ./logs/5/data:/root/savop/sav-agent/data/
     network_mode: none
     command:
         bash container_run.sh
