@@ -39,6 +39,7 @@ if [ ! -d "${FOLDER}/sav-agent" ];then
 fi
 cp -r *.py ${FOLDER}/build/sav-agent
 cp -r trafficTools ${FOLDER}/build/sav-agent/
+cp -r ${FOLDER}/traffic_tools ${FOLDER}/build/sav-agent/trafficTools
 cp -r ${FOLDER}/configs/conf_${model_name} ${FOLDER}/build/configs
 if [ `expr match ${model_name} *.roa` -gt 0 ];then 
   cp -r ${FOLDER}/configs/conf_roa/* ${FOLDER}/build/configs/
