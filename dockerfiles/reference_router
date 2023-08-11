@@ -10,7 +10,7 @@ COPY ./bird /usr/local/sbin/
 COPY ./birdc /usr/local/sbin/
 COPY ./birdcl /usr/local/sbin/
 
-COPY ./extend_server/ /root/savop/extend_server/
+COPY ./sav-agent/ /root/savop/sav-agent/
 COPY ./container_run.sh /root/savop/container_run.sh
 
 WORKDIR /root/savop/

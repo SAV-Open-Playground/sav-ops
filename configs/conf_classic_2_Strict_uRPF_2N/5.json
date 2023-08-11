@@ -14,6 +14,27 @@
 	"grpc_server_addr": "0.0.0.0:5000",
 	"grpc_id": "10.0.1.1",
 	"local_as":65505,
-	"grpc_links": [
-	]
+	"grpc_config": {
+        "server_addr": "0.0.0.0:5000",
+        "id": "10.0.5.1",
+        "local_as": 65505,
+        "enabled": false,
+        "links": [
+            {
+                "remote_addr": "10.0.5.2:5000",
+                "remote_as": 65503,
+                "remote_id": "10.0.4.2",
+                "local_role": "customer",
+                "interface_name": "eth_5_3"
+            },
+            {
+                "remote_addr": "10.0.6.1:5000",
+                "remote_as": 65504,
+                "remote_id": "10.0.2.2",
+                "local_role": "customer",
+                "interface_name": "eth_5_4"
+            }
+        ]
+    },
+    "location": "edge"
 }
