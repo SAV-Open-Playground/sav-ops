@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 #set -ex
+sysctl -w net.ipv4.conf.default.rp_filter=0 ;
 FOLDER=$(cd "$(dirname "$0")";pwd)
 if [ -z "$1" ];then
 	model_name="classic_1"
@@ -20,10 +21,13 @@ fi
 
 echo "compile bird"
 cd ../sav-reference-router
-rm -f  "./bird" "./birdc" "./birdcl"
-autoconf
-./configure
-make
+if [ -n "$2" ];then
+	echo "compile bird"
+  rm -f  "./bird" "./birdc" "./birdcl"
+  autoconf
+  ./configure
+  make
+fi
 if [ -f "./bird" ] && [ -f "./birdc" ] && [ -f "./birdcl" ];then
   echo "bird birdc birdcl are ready"
 else
@@ -38,8 +42,8 @@ if [ ! -d "${FOLDER}/sav-agent" ];then
   mkdir ${FOLDER}/build/sav-agent
 fi
 cp -r *.py ${FOLDER}/build/sav-agent
-cp -r trafficTools ${FOLDER}/build/sav-agent/
-cp -r ${FOLDER}/traffic_tools ${FOLDER}/build/sav-agent/trafficTools
+# cp -r trafficTools ${FOLDER}/build/sav-agent/
+# cp -r ${FOLDER}/traffic_tools ${FOLDER}/build/sav-agent/trafficTools
 cp -r ${FOLDER}/configs/conf_${model_name} ${FOLDER}/build/configs
 if [ `expr match ${model_name} *.roa` -gt 0 ];then 
   cp -r ${FOLDER}/configs/conf_roa/* ${FOLDER}/build/configs/
@@ -62,6 +66,6 @@ cp -r ${FOLDER}/network_test ${FOLDER}/build/
 echo "complile bird over"
 pwd
 cd  ${FOLDER}/build
-./host_run.sh
+bash ./host_run.sh
 exit 0
 
