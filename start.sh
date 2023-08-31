@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-#set -ex
+set -ex
 sysctl -w net.ipv4.conf.default.rp_filter=0 ;
 FOLDER=$(cd "$(dirname "$0")";pwd)
 if [ -z "$1" ];then
@@ -19,14 +19,15 @@ else
   rm -rf ./build && mkdir ./build
 fi
 
-echo "compile bird"
 cd ../sav-reference-router
 if [ -n "$2" ];then
-	echo "compile bird"
+	echo "compiling bird"
   rm -f  "./bird" "./birdc" "./birdcl"
   autoconf
   ./configure
   make
+else
+  echo "skip bird compiling"
 fi
 if [ -f "./bird" ] && [ -f "./birdc" ] && [ -f "./birdcl" ];then
   echo "bird birdc birdcl are ready"
