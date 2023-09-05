@@ -46,6 +46,8 @@ cp -r *.py ${FOLDER}/build/sav-agent
 # cp -r trafficTools ${FOLDER}/build/sav-agent/
 # cp -r ${FOLDER}/traffic_tools ${FOLDER}/build/sav-agent/trafficTools
 cp -r ${FOLDER}/configs/conf_${model_name} ${FOLDER}/build/configs
+cp -r ${FOLDER}/certification_authority/node_${model_name} ${FOLDER}/build/nodes
+cp -r ${FOLDER}/certification_authority/ca ${FOLDER}/build/ca
 if [ `expr match ${model_name} *.roa` -gt 0 ];then 
   cp -r ${FOLDER}/configs/conf_roa/* ${FOLDER}/build/configs/
   cd ${FOLDER}/build/configs/krill/keys && ./key.sh && cd ${FOLDER}

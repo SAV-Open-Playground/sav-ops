@@ -24,10 +24,11 @@ if [ "${image_name}" = "routinator" ];then
     rm -rf ./logs/routinator.log
     echo "" > ./logs/routinator.log
 fi
-docker container rm $(docker container ls -aq)
+docker container rm -f $(docker container ls -aq)
 # remove all stopped containers
 docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
 # remove all images taged as <none>
 docker compose up -d --force-recreate  --remove-orphans
+sleep 3
 bash ./topo.sh
 #docker compose down
