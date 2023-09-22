@@ -8,3 +8,5 @@ tmp
 work
 examples/openid_connect_mock.rs
 *.swp
+certification_authority/*
+configs/conf_50*/*
