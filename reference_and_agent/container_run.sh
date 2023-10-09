@@ -5,7 +5,7 @@ ACCESS_LOGFILE=${FOLDER}/logs/access.log
 ERROR_LOGFILE=${FOLDER}/logs/error.log
 CDDIR=${FOLDER}/sav-agent/
 GUNICORN_COUNT=`ps aux|grep gunicorn|grep -v grep|wc -l`
-START_GUNICORN_COMMAND="gunicorn -D --chdir ${CDDIR} -b 0.0.0.0:8888 server:app --timeout 0  --workers 1 --access-logfile ${ACCESS_LOGFILE} --error-logfile ${ERROR_LOGFILE} --log-level debug"
+START_GUNICORN_COMMAND="gunicorn -D --chdir ${CDDIR} -b 0.0.0.0:8888 server:app --timeout 0 --workers 1 --access-logfile ${ACCESS_LOGFILE} --error-logfile ${ERROR_LOGFILE} --log-level debug"
 
 python3 ${CDDIR}quic_server.py &
 if [ ${GUNICORN_COUNT} -gt 0 ];then

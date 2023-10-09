@@ -13,7 +13,7 @@ if [ ${GUNICORN_COUNT} -gt 0 ];then
 fi
 
 if [ ${BIRD_COUNT} -gt 0 ];then
-    birdc down
+    ps aux|grep bird|grep -v grep|awk '{ print $2 }'| xargs kill -9
 fi
 
 if [ ${QUIC_COUNT} -gt 0 ];then
@@ -24,12 +24,13 @@ if [ "$1" == "stop" ]; then
     exit 0
 fi
 
-# clear before start
-# log files
 rm -rf ${ACCESS_LOGFILE}
 rm -rf ${ERROR_LOGFILE}
-echo "">${FOLDER}/logs/bird.log
-echo "">${FOLDER}/logs/server.log
+rm -rf ${FOLDER}/logs/bird.log
+rm -rf ${FOLDER}/logs/server.log
+
+#nohup python3 ${CDDIR}quic_server.py &
+#nohup python3 /root/savop/sav-agent/quic_server.py > /dev/null 2>&1 &
 if [ ${GUNICORN_COUNT} -eq 0 ];then
     eval ${START_GUNICORN_COMMAND}
 fi

@@ -1,0 +1,23 @@
+{
+	"apps": [
+		"strict-uRPF",
+		"rpdp_app",
+		"loose-uRPF",
+		"EFP-uRPF-A",
+		"EFP-uRPF-B",
+		"FP-uRPF"
+	],
+	"enabled_sav_app": "rpdp_app",
+	"fib_stable_threshold": 5,
+	"ca_host": "10.10.0.2",
+	"ca_port": 3000,
+	"grpc_config": {
+		"server_addr": "0.0.0.0:5000",
+		"server_enabled": true
+	},
+	"link_map": {"savbgp_131098_4766": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.244.1:5000", "remote_id": "10.0.138.2"}}},
+	"quic_config": {"server_enabled": true},
+	"local_as":131098,
+	"rpdp_id": "10.2.244.2",
+	"location": "edge_full"
+}

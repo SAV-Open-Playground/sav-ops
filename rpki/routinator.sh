@@ -21,4 +21,5 @@ do
    fi
 done
 
-routinator -c /etc/routinator/routinator.conf --rrdp-root-cert=/var/routinator/data/ca.pem --rrdp-root-cert=/var/routinator/data/web.pem -v -v server 
+routinator -c /etc/routinator/routinator.conf --rrdp-root-cert=/var/routinator/data/ca.pem --rrdp-root-cert=/var/routinator/data/web.pem -v -v server
+

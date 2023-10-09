@@ -1,0 +1,23 @@
+{
+	"apps": [
+		"strict-uRPF",
+		"rpdp_app",
+		"loose-uRPF",
+		"EFP-uRPF-A",
+		"EFP-uRPF-B",
+		"FP-uRPF"
+	],
+	"enabled_sav_app": "rpdp_app",
+	"fib_stable_threshold": 5,
+	"ca_host": "10.10.0.2",
+	"ca_port": 3000,
+	"grpc_config": {
+		"server_addr": "0.0.0.0:5000",
+		"server_enabled": true
+	},
+	"link_map": {"savbgp_3216_8492": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.229.1:5000", "remote_id": "10.0.227.1"}}, "savbgp_3216_9304": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.165.1:5000", "remote_id": "10.0.61.2"}}, "savbgp_3216_1273": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.196.2:5000", "remote_id": "10.0.141.2"}}, "savbgp_3216_64050": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.197.2:5000", "remote_id": "10.0.192.2"}}, "savbgp_3216_6762": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.172.1:5000", "remote_id": "10.0.12.2"}}, "savbgp_3216_3462": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.198.2:5000", "remote_id": "10.0.172.2"}}, "savbgp_3216_9605": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.199.2:5000", "remote_id": "10.0.201.2"}}, "savbgp_3216_2497": {"link_type": "grpc", "link_data": {"remote_addr": "10.1.166.1:5000", "remote_id": "10.0.104.2"}}, "savbgp_3216_9318": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.200.2:5000", "remote_id": "10.0.170.2"}}},
+	"quic_config": {"server_enabled": true},
+	"local_as":3216,
+	"rpdp_id": "10.0.229.2",
+	"location": "edge_full"
+}

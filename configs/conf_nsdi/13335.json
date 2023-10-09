@@ -1,0 +1,23 @@
+{
+	"apps": [
+		"strict-uRPF",
+		"rpdp_app",
+		"loose-uRPF",
+		"EFP-uRPF-A",
+		"EFP-uRPF-B",
+		"FP-uRPF"
+	],
+	"enabled_sav_app": "rpdp_app",
+	"fib_stable_threshold": 5,
+	"ca_host": "10.10.0.2",
+	"ca_port": 3000,
+	"grpc_config": {
+		"server_addr": "0.0.0.0:5000",
+		"server_enabled": true
+	},
+	"link_map": {"savbgp_13335_7018": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.82.2:5000", "remote_id": "10.0.7.2"}}, "savbgp_13335_3257": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.84.2:5000", "remote_id": "10.0.9.2"}}, "savbgp_13335_3356": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.2.1:5000", "remote_id": "10.0.0.1"}}, "savbgp_13335_3741": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.86.2:5000", "remote_id": "10.0.10.2"}}, "savbgp_13335_34224": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.59.1:5000", "remote_id": "10.0.0.2"}}, "savbgp_13335_57866": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.90.2:5000", "remote_id": "10.0.36.2"}}, "savbgp_13335_1299": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.92.2:5000", "remote_id": "10.0.5.2"}}, "savbgp_13335_2152": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.93.2:5000", "remote_id": "10.0.15.2"}}, "savbgp_13335_6939": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.94.2:5000", "remote_id": "10.0.26.2"}}, "savbgp_13335_2497": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.95.2:5000", "remote_id": "10.0.41.2"}}, "savbgp_13335_293": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.96.2:5000", "remote_id": "10.0.17.2"}}, "savbgp_13335_5413": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.97.2:5000", "remote_id": "10.0.30.2"}}, "savbgp_13335_2914": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.98.2:5000", "remote_id": "10.0.11.2"}}, "savbgp_13335_1239": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.101.2:5000", "remote_id": "10.0.20.2"}}},
+	"quic_config": {"server_enabled": true},
+	"local_as":13335,
+	"rpdp_id": "10.0.2.2",
+	"location": "edge_full"
+}

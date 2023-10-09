@@ -2,6 +2,10 @@ version: "2"
 services:
   node_3356:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_3356                     
     cap_add:                     
@@ -18,9 +22,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_34224:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_34224                     
     cap_add:                     
@@ -37,9 +46,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_3549:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_3549                     
     cap_add:                     
@@ -56,9 +70,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_13335:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_13335                     
     cap_add:                     
@@ -75,9 +94,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_3303:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_3303                     
     cap_add:                     
@@ -94,9 +118,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_209:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_209                     
     cap_add:                     
@@ -113,9 +142,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_1299:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_1299                     
     cap_add:                     
@@ -132,9 +166,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_174:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_174                     
     cap_add:                     
@@ -151,9 +190,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_7018:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_7018                     
     cap_add:                     
@@ -170,9 +214,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_2519:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_2519                     
     cap_add:                     
@@ -189,9 +238,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_3257:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_3257                     
     cap_add:                     
@@ -208,9 +262,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_3741:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_3741                     
     cap_add:                     
@@ -227,9 +286,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_2914:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_2914                     
     cap_add:                     
@@ -246,9 +310,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_6762:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_6762                     
     cap_add:                     
@@ -265,9 +334,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_2516:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_2516                     
     cap_add:                     
@@ -284,9 +358,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_38040:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_38040                     
     cap_add:                     
@@ -303,9 +382,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_2152:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_2152                     
     cap_add:                     
@@ -322,9 +406,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_5511:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_5511                     
     cap_add:                     
@@ -341,9 +430,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_293:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_293                     
     cap_add:                     
@@ -360,9 +454,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_4837:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_4837                     
     cap_add:                     
@@ -379,9 +478,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_1273:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_1273                     
     cap_add:                     
@@ -398,9 +502,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_1239:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_1239                     
     cap_add:                     
@@ -417,9 +526,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_6453:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_6453                     
     cap_add:                     
@@ -436,9 +550,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_31133:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_31133                     
     cap_add:                     
@@ -455,9 +574,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_64049:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_64049                     
     cap_add:                     
@@ -474,9 +598,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_6461:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_6461                     
     cap_add:                     
@@ -493,9 +622,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_3491:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_3491                     
     cap_add:                     
@@ -512,9 +646,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_6939:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_6939                     
     cap_add:                     
@@ -531,9 +670,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_9002:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_9002                     
     cap_add:                     
@@ -550,9 +694,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_37100:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_37100                     
     cap_add:                     
@@ -569,9 +718,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_3786:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_3786                     
     cap_add:                     
@@ -588,9 +742,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_5413:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_5413                     
     cap_add:                     
@@ -607,9 +766,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_701:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_701                     
     cap_add:                     
@@ -626,9 +790,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_4134:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_4134                     
     cap_add:                     
@@ -645,9 +814,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_132203:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_132203                     
     cap_add:                     
@@ -664,9 +838,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_4766:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_4766                     
     cap_add:                     
@@ -683,9 +862,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_12552:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_12552                     
     cap_add:                     
@@ -702,9 +886,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_57866:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_57866                     
     cap_add:                     
@@ -721,9 +910,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_16735:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_16735                     
     cap_add:                     
@@ -740,9 +934,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_33891:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_33891                     
     cap_add:                     
@@ -759,9 +958,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_9607:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_9607                     
     cap_add:                     
@@ -778,9 +982,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_55410:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_55410                     
     cap_add:                     
@@ -797,9 +1006,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_2497:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_2497                     
     cap_add:                     
@@ -816,9 +1030,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_9680:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_9680                     
     cap_add:                     
@@ -835,9 +1054,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_4775:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_4775                     
     cap_add:                     
@@ -854,9 +1078,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_55644:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_55644                     
     cap_add:                     
@@ -873,9 +1102,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_16509:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_16509                     
     cap_add:                     
@@ -892,9 +1126,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_18403:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_18403                     
     cap_add:                     
@@ -911,9 +1150,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_4809:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_4809                     
     cap_add:                     
@@ -930,9 +1174,14 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
   node_4637:                     
     image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          memory: 4G                    
     init: true                     
     container_name: node_4637                     
     cap_add:                     
@@ -949,4 +1198,5 @@ services:
       - ./ca/cert.pem:/root/savop/ca_cert.pem                     
     network_mode: none                     
     command:                     
-        bash container_run.sh
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true

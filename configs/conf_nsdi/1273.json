@@ -1,0 +1,23 @@
+{
+	"apps": [
+		"strict-uRPF",
+		"rpdp_app",
+		"loose-uRPF",
+		"EFP-uRPF-A",
+		"EFP-uRPF-B",
+		"FP-uRPF"
+	],
+	"enabled_sav_app": "rpdp_app",
+	"fib_stable_threshold": 5,
+	"ca_host": "10.10.0.2",
+	"ca_port": 3000,
+	"grpc_config": {
+		"server_addr": "0.0.0.0:5000",
+		"server_enabled": true
+	},
+	"link_map": {"savbgp_1273_3356": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.19.1:5000", "remote_id": "10.0.0.1"}}, "savbgp_1273_1299": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.253.1:5000", "remote_id": "10.0.5.2"}}, "savbgp_1273_6453": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.96.1:5000", "remote_id": "10.0.21.2"}}, "savbgp_1273_293": {"link_type": "grpc", "link_data": {"remote_addr": "10.1.175.1:5000", "remote_id": "10.0.17.2"}}, "savbgp_1273_55410": {"link_type": "grpc", "link_data": {"remote_addr": "10.3.84.2:5000", "remote_id": "10.0.40.2"}}, "savbgp_1273_3257": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.141.1:5000", "remote_id": "10.0.9.2"}}, "savbgp_1273_3303": {"link_type": "grpc", "link_data": {"remote_addr": "10.1.50.1:5000", "remote_id": "10.0.3.2"}}, "savbgp_1273_2497": {"link_type": "grpc", "link_data": {"remote_addr": "10.1.158.1:5000", "remote_id": "10.0.41.2"}}, "savbgp_1273_1239": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.24.1:5000", "remote_id": "10.0.20.2"}}, "savbgp_1273_6939": {"link_type": "grpc", "link_data": {"remote_addr": "10.1.106.1:5000", "remote_id": "10.0.26.2"}}, "savbgp_1273_174": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.73.1:5000", "remote_id": "10.0.6.2"}}, "savbgp_1273_2914": {"link_type": "grpc", "link_data": {"remote_addr": "10.1.224.1:5000", "remote_id": "10.0.11.2"}}, "savbgp_1273_6461": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.191.1:5000", "remote_id": "10.0.24.2"}}, "savbgp_1273_6762": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.173.1:5000", "remote_id": "10.0.12.2"}}, "savbgp_1273_55644": {"link_type": "grpc", "link_data": {"remote_addr": "10.3.87.2:5000", "remote_id": "10.0.44.2"}}},
+	"quic_config": {"server_enabled": true},
+	"local_as":1273,
+	"rpdp_id": "10.0.19.2",
+	"location": "edge_full"
+}

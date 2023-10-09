@@ -1,0 +1,114 @@
+version: "2"  
+services:
+  ref_1:
+    image: savop_bird_base
+    container_name: ref_1
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/1.conf:/usr/local/etc/bird.conf
+      - ./configs/1.json:/root/savop/SavAgent_config.json
+      - ./logs/1/logs:/root/savop/logs/
+      - ./logs/1/data:/root/savop/sav-agent/data/
+    network_mode: none
+    command: 
+        bash container_run.sh
+  ref_2:
+    image: savop_bird_base
+    container_name: ref_2
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/2.conf:/usr/local/etc/bird.conf
+      - ./configs/2.json:/root/savop/SavAgent_config.json
+      - ./logs/2/logs:/root/savop/logs/
+      - ./logs/2/data:/root/savop/sav-agent/data/
+    network_mode: none
+    command:
+        bash container_run.sh
+  ref_3:
+    image: savop_bird_base
+    container_name: ref_3
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/3.conf:/usr/local/etc/bird.conf
+      - ./configs/3.json:/root/savop/SavAgent_config.json
+      - ./logs/3/logs:/root/savop/logs/
+      - ./logs/3/data:/root/savop/sav-agent/data/
+    network_mode: none
+    command:
+        bash container_run.sh
+  ref_4:
+    image: savop_bird_base
+    container_name: ref_4
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/4.conf:/usr/local/etc/bird.conf
+      - ./configs/4.json:/root/savop/SavAgent_config.json
+      - ./logs/4/logs:/root/savop/logs/
+      - ./logs/4/data:/root/savop/sav-agent/data/
+    network_mode: none
+    command:
+        bash container_run.sh
+  ref_5:
+    image: savop_bird_base
+    container_name: ref_5
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./configs/5.conf:/usr/local/etc/bird.conf
+      - ./configs/5.json:/root/savop/SavAgent_config.json
+      - ./logs/5/logs:/root/savop/logs/
+      - ./logs/5/data:/root/savop/sav-agent/data/
+    network_mode: none
+    command:
+        bash container_run.sh
+  roa:
+    image: routinator
+    container_name: roa
+    cap_add:
+      - NET_ADMIN
+    network_mode: none
+    depends_on:
+      - ca
+    volumes:
+      - ./configs/routinator.conf:/etc/routinator/routinator.conf
+      - ./configs/krill/keys/ca/cert.pem:/usr/local/share/ca-certificates/extra/ca.crt
+      - ./configs/krill/keys/web/cert.pem:/var/routinator/data/web.pem
+      - ./configs/krill/keys/ca/cert.pem:/var/routinator/data/ca.pem
+      - ./routinator_data:/var/routinator/data
+      - ./routinator.sh:/var/routinator/start_routinator.sh
+      - ./logs/routinator.log:/var/routinator/logs/routinator.log
+    ports:
+        - "8323:8323"
+        - "9556:9556"
+    command: >
+        bash /var/routinator/start_routinator.sh
+    #tty: True
+    #command: >
+    #  bash
+  ca:
+    image: krill
+    container_name: ca
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      #- ./krill/krill:/root/.cargo/bin/krill
+      #- ./krill/krillc:/root/.cargo/bin/krillc
+      #- ./krill/krillup:/root/.cargo/bin/krillup
+      - ./configs/krill/krill.conf:/var/krill/data/krill.conf
+      - ./configs/krill/rsyncd.conf:/etc/rsyncd.conf
+      - ./configs/krill/keys/web/cert.pem:/var/krill/data/ssl/cert.pem
+      - ./configs/krill/keys/web/key.pem:/var/krill/data/ssl/key.pem
+      - ./configs/krill/add_roas.py:/var/krill/add_info.py
+      - ./configs/krill/roas.json:/var/krill/roas.json
+      - ./configs/krill/roas.json:/var/krill/aspas.json
+      - ./krill_data:/var/krill/data
+      - ./krill.sh:/var/krill/start.sh
+      - ./logs/krill.log:/var/krill/logs/krill.log
+      - ./logs/rsync.log:/var/krill/logs/rsync.log
+    network_mode: none
+    command: >
+      bash /var/krill/start.sh    

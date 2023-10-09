@@ -1,0 +1,18 @@
+{
+	"apps": [
+		"strict-uRPF",
+		"rpdp_app",
+		"loose-uRPF",
+		"EFP-uRPF-A",
+		"EFP-uRPF-B",
+		"FP-uRPF"
+	],
+	"fib_stable_threshold": 5,
+	"ca_host": "10.10.0.2",
+	"ca_port": 3000,
+	"grpc_server_addr": "0.0.0.0:5000",
+	"grpc_id": "10.0.1.1",
+	"local_as":65501,
+	"grpc_links": [
+	]
+}

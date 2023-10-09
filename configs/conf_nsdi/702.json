@@ -1,0 +1,23 @@
+{
+	"apps": [
+		"strict-uRPF",
+		"rpdp_app",
+		"loose-uRPF",
+		"EFP-uRPF-A",
+		"EFP-uRPF-B",
+		"FP-uRPF"
+	],
+	"enabled_sav_app": "rpdp_app",
+	"fib_stable_threshold": 5,
+	"ca_host": "10.10.0.2",
+	"ca_port": 3000,
+	"grpc_config": {
+		"server_addr": "0.0.0.0:5000",
+		"server_enabled": true
+	},
+	"link_map": {"savbgp_702_5413": {"link_type": "grpc", "link_data": {"remote_addr": "10.1.186.1:5000", "remote_id": "10.0.30.2"}}, "savbgp_702_4837": {"link_type": "grpc", "link_data": {"remote_addr": "10.3.11.1:5000", "remote_id": "10.0.18.2"}}, "savbgp_702_12552": {"link_type": "grpc", "link_data": {"remote_addr": "10.2.116.1:5000", "remote_id": "10.0.35.2"}}, "savbgp_702_34224": {"link_type": "grpc", "link_data": {"remote_addr": "10.0.65.1:5000", "remote_id": "10.0.0.2"}}},
+	"quic_config": {"server_enabled": true},
+	"local_as":702,
+	"rpdp_id": "10.0.65.2",
+	"location": "edge_full"
+}

@@ -1,0 +1,54 @@
+{
+	"apps": [
+		"strict-uRPF",
+		"rpdp_app",
+		"loose-uRPF",
+		"EFP-uRPF-A",
+		"EFP-uRPF-B",
+		"FP-uRPF"
+	],
+	"enabled_sav_app": "rpdp_app",
+	"fib_stable_threshold": 5,
+	"ca_host": "10.10.0.2",
+	"ca_port": 3000,
+	"grpc_server_addr": "0.0.0.0:5000",
+	"grpc_id": "10.0.1.1",
+	"local_as":65504,
+	"grpc_config": {
+                "server_addr": "0.0.0.0:5000",
+                "id": "10.0.2.2",
+                "local_as": 65504,
+                "enabled": false,
+                "links": [
+                        {
+                                "remote_addr": "10.0.2.1:5000",
+                                "remote_as": 65501,
+                                "remote_id": "10.0.1.1",
+                                "local_role": "provider",
+                                "interface_name": "eth_4_1"
+                        },
+                        {
+                                "remote_addr": "10.0.3.1:5000",
+                                "remote_as": 65502,
+                                "remote_id": "10.0.1.2",
+                                "local_role": "provider",
+                                "interface_name": "eth_4_2"
+                        },
+                        {
+                                "remote_addr": "10.0.4.2:5000",
+                                "remote_as": 65503,
+                                "remote_id": "10.0.4.2",
+                                "local_role": "customer",
+                                "interface_name": "eth_4_3"
+                        },
+                        {
+                                "remote_addr": "10.0.6.2:5000",
+                                "remote_as": 65505,
+                                "remote_id": "10.0.5.1",
+                                "local_role": "provider",
+                                "interface_name": "eth_4_5"
+                        }
+                ]
+        },
+        "location": "edge"
+}

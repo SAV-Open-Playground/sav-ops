@@ -1,0 +1,1359 @@
+version: "2"
+networks:
+  build_ca_net:
+    external: true
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.0.0/16"
+services:
+  node_3356:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_3356                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/3356.conf:/usr/local/etc/bird.conf                     
+      - ./configs/3356.json:/root/savop/SavAgent_config.json                     
+      - ./logs/3356/:/root/savop/logs/                     
+      - ./logs/3356/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_3356/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_3356/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.4                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_34224:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_34224                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/34224.conf:/usr/local/etc/bird.conf                     
+      - ./configs/34224.json:/root/savop/SavAgent_config.json                     
+      - ./logs/34224/:/root/savop/logs/                     
+      - ./logs/34224/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_34224/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_34224/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.5                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_3549:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_3549                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/3549.conf:/usr/local/etc/bird.conf                     
+      - ./configs/3549.json:/root/savop/SavAgent_config.json                     
+      - ./logs/3549/:/root/savop/logs/                     
+      - ./logs/3549/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_3549/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_3549/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.6                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_13335:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_13335                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/13335.conf:/usr/local/etc/bird.conf                     
+      - ./configs/13335.json:/root/savop/SavAgent_config.json                     
+      - ./logs/13335/:/root/savop/logs/                     
+      - ./logs/13335/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_13335/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_13335/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.7                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_3303:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_3303                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/3303.conf:/usr/local/etc/bird.conf                     
+      - ./configs/3303.json:/root/savop/SavAgent_config.json                     
+      - ./logs/3303/:/root/savop/logs/                     
+      - ./logs/3303/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_3303/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_3303/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.8                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_209:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_209                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/209.conf:/usr/local/etc/bird.conf                     
+      - ./configs/209.json:/root/savop/SavAgent_config.json                     
+      - ./logs/209/:/root/savop/logs/                     
+      - ./logs/209/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_209/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_209/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.9                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_1299:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_1299                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/1299.conf:/usr/local/etc/bird.conf                     
+      - ./configs/1299.json:/root/savop/SavAgent_config.json                     
+      - ./logs/1299/:/root/savop/logs/                     
+      - ./logs/1299/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_1299/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_1299/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.10                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_174:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_174                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/174.conf:/usr/local/etc/bird.conf                     
+      - ./configs/174.json:/root/savop/SavAgent_config.json                     
+      - ./logs/174/:/root/savop/logs/                     
+      - ./logs/174/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_174/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_174/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.11                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_7018:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_7018                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/7018.conf:/usr/local/etc/bird.conf                     
+      - ./configs/7018.json:/root/savop/SavAgent_config.json                     
+      - ./logs/7018/:/root/savop/logs/                     
+      - ./logs/7018/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_7018/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_7018/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.12                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_2519:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_2519                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/2519.conf:/usr/local/etc/bird.conf                     
+      - ./configs/2519.json:/root/savop/SavAgent_config.json                     
+      - ./logs/2519/:/root/savop/logs/                     
+      - ./logs/2519/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_2519/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_2519/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.13                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_3257:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_3257                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/3257.conf:/usr/local/etc/bird.conf                     
+      - ./configs/3257.json:/root/savop/SavAgent_config.json                     
+      - ./logs/3257/:/root/savop/logs/                     
+      - ./logs/3257/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_3257/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_3257/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.14                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_3741:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_3741                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/3741.conf:/usr/local/etc/bird.conf                     
+      - ./configs/3741.json:/root/savop/SavAgent_config.json                     
+      - ./logs/3741/:/root/savop/logs/                     
+      - ./logs/3741/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_3741/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_3741/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.15                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_2914:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_2914                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/2914.conf:/usr/local/etc/bird.conf                     
+      - ./configs/2914.json:/root/savop/SavAgent_config.json                     
+      - ./logs/2914/:/root/savop/logs/                     
+      - ./logs/2914/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_2914/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_2914/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.16                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_6762:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_6762                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/6762.conf:/usr/local/etc/bird.conf                     
+      - ./configs/6762.json:/root/savop/SavAgent_config.json                     
+      - ./logs/6762/:/root/savop/logs/                     
+      - ./logs/6762/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_6762/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_6762/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.17                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_2516:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_2516                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/2516.conf:/usr/local/etc/bird.conf                     
+      - ./configs/2516.json:/root/savop/SavAgent_config.json                     
+      - ./logs/2516/:/root/savop/logs/                     
+      - ./logs/2516/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_2516/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_2516/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.18                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_38040:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_38040                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/38040.conf:/usr/local/etc/bird.conf                     
+      - ./configs/38040.json:/root/savop/SavAgent_config.json                     
+      - ./logs/38040/:/root/savop/logs/                     
+      - ./logs/38040/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_38040/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_38040/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.19                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_2152:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_2152                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/2152.conf:/usr/local/etc/bird.conf                     
+      - ./configs/2152.json:/root/savop/SavAgent_config.json                     
+      - ./logs/2152/:/root/savop/logs/                     
+      - ./logs/2152/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_2152/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_2152/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.20                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_5511:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_5511                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/5511.conf:/usr/local/etc/bird.conf                     
+      - ./configs/5511.json:/root/savop/SavAgent_config.json                     
+      - ./logs/5511/:/root/savop/logs/                     
+      - ./logs/5511/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_5511/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_5511/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.21                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_293:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_293                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/293.conf:/usr/local/etc/bird.conf                     
+      - ./configs/293.json:/root/savop/SavAgent_config.json                     
+      - ./logs/293/:/root/savop/logs/                     
+      - ./logs/293/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_293/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_293/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.22                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_4837:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_4837                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/4837.conf:/usr/local/etc/bird.conf                     
+      - ./configs/4837.json:/root/savop/SavAgent_config.json                     
+      - ./logs/4837/:/root/savop/logs/                     
+      - ./logs/4837/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_4837/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_4837/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.23                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_1273:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_1273                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/1273.conf:/usr/local/etc/bird.conf                     
+      - ./configs/1273.json:/root/savop/SavAgent_config.json                     
+      - ./logs/1273/:/root/savop/logs/                     
+      - ./logs/1273/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_1273/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_1273/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.24                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_1239:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_1239                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/1239.conf:/usr/local/etc/bird.conf                     
+      - ./configs/1239.json:/root/savop/SavAgent_config.json                     
+      - ./logs/1239/:/root/savop/logs/                     
+      - ./logs/1239/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_1239/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_1239/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.25                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_6453:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_6453                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/6453.conf:/usr/local/etc/bird.conf                     
+      - ./configs/6453.json:/root/savop/SavAgent_config.json                     
+      - ./logs/6453/:/root/savop/logs/                     
+      - ./logs/6453/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_6453/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_6453/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.26                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_31133:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_31133                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/31133.conf:/usr/local/etc/bird.conf                     
+      - ./configs/31133.json:/root/savop/SavAgent_config.json                     
+      - ./logs/31133/:/root/savop/logs/                     
+      - ./logs/31133/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_31133/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_31133/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.27                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_64049:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_64049                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/64049.conf:/usr/local/etc/bird.conf                     
+      - ./configs/64049.json:/root/savop/SavAgent_config.json                     
+      - ./logs/64049/:/root/savop/logs/                     
+      - ./logs/64049/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_64049/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_64049/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.28                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_6461:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_6461                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/6461.conf:/usr/local/etc/bird.conf                     
+      - ./configs/6461.json:/root/savop/SavAgent_config.json                     
+      - ./logs/6461/:/root/savop/logs/                     
+      - ./logs/6461/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_6461/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_6461/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.29                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_3491:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_3491                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/3491.conf:/usr/local/etc/bird.conf                     
+      - ./configs/3491.json:/root/savop/SavAgent_config.json                     
+      - ./logs/3491/:/root/savop/logs/                     
+      - ./logs/3491/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_3491/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_3491/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.30                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_6939:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_6939                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/6939.conf:/usr/local/etc/bird.conf                     
+      - ./configs/6939.json:/root/savop/SavAgent_config.json                     
+      - ./logs/6939/:/root/savop/logs/                     
+      - ./logs/6939/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_6939/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_6939/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.31                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_9002:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_9002                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/9002.conf:/usr/local/etc/bird.conf                     
+      - ./configs/9002.json:/root/savop/SavAgent_config.json                     
+      - ./logs/9002/:/root/savop/logs/                     
+      - ./logs/9002/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_9002/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_9002/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.32                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_37100:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_37100                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/37100.conf:/usr/local/etc/bird.conf                     
+      - ./configs/37100.json:/root/savop/SavAgent_config.json                     
+      - ./logs/37100/:/root/savop/logs/                     
+      - ./logs/37100/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_37100/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_37100/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.33                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_3786:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_3786                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/3786.conf:/usr/local/etc/bird.conf                     
+      - ./configs/3786.json:/root/savop/SavAgent_config.json                     
+      - ./logs/3786/:/root/savop/logs/                     
+      - ./logs/3786/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_3786/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_3786/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.34                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_5413:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_5413                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/5413.conf:/usr/local/etc/bird.conf                     
+      - ./configs/5413.json:/root/savop/SavAgent_config.json                     
+      - ./logs/5413/:/root/savop/logs/                     
+      - ./logs/5413/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_5413/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_5413/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.35                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_701:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_701                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/701.conf:/usr/local/etc/bird.conf                     
+      - ./configs/701.json:/root/savop/SavAgent_config.json                     
+      - ./logs/701/:/root/savop/logs/                     
+      - ./logs/701/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_701/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_701/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.36                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_4134:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_4134                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/4134.conf:/usr/local/etc/bird.conf                     
+      - ./configs/4134.json:/root/savop/SavAgent_config.json                     
+      - ./logs/4134/:/root/savop/logs/                     
+      - ./logs/4134/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_4134/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_4134/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.37                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_132203:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_132203                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/132203.conf:/usr/local/etc/bird.conf                     
+      - ./configs/132203.json:/root/savop/SavAgent_config.json                     
+      - ./logs/132203/:/root/savop/logs/                     
+      - ./logs/132203/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_132203/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_132203/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.38                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_4766:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_4766                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/4766.conf:/usr/local/etc/bird.conf                     
+      - ./configs/4766.json:/root/savop/SavAgent_config.json                     
+      - ./logs/4766/:/root/savop/logs/                     
+      - ./logs/4766/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_4766/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_4766/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.39                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_12552:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_12552                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/12552.conf:/usr/local/etc/bird.conf                     
+      - ./configs/12552.json:/root/savop/SavAgent_config.json                     
+      - ./logs/12552/:/root/savop/logs/                     
+      - ./logs/12552/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_12552/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_12552/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.40                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_57866:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_57866                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/57866.conf:/usr/local/etc/bird.conf                     
+      - ./configs/57866.json:/root/savop/SavAgent_config.json                     
+      - ./logs/57866/:/root/savop/logs/                     
+      - ./logs/57866/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_57866/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_57866/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.41                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_16735:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_16735                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/16735.conf:/usr/local/etc/bird.conf                     
+      - ./configs/16735.json:/root/savop/SavAgent_config.json                     
+      - ./logs/16735/:/root/savop/logs/                     
+      - ./logs/16735/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_16735/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_16735/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.42                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_33891:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_33891                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/33891.conf:/usr/local/etc/bird.conf                     
+      - ./configs/33891.json:/root/savop/SavAgent_config.json                     
+      - ./logs/33891/:/root/savop/logs/                     
+      - ./logs/33891/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_33891/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_33891/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.43                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_9607:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_9607                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/9607.conf:/usr/local/etc/bird.conf                     
+      - ./configs/9607.json:/root/savop/SavAgent_config.json                     
+      - ./logs/9607/:/root/savop/logs/                     
+      - ./logs/9607/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_9607/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_9607/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.44                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_55410:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_55410                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/55410.conf:/usr/local/etc/bird.conf                     
+      - ./configs/55410.json:/root/savop/SavAgent_config.json                     
+      - ./logs/55410/:/root/savop/logs/                     
+      - ./logs/55410/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_55410/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_55410/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.45                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_2497:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_2497                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/2497.conf:/usr/local/etc/bird.conf                     
+      - ./configs/2497.json:/root/savop/SavAgent_config.json                     
+      - ./logs/2497/:/root/savop/logs/                     
+      - ./logs/2497/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_2497/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_2497/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.46                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_9680:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_9680                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/9680.conf:/usr/local/etc/bird.conf                     
+      - ./configs/9680.json:/root/savop/SavAgent_config.json                     
+      - ./logs/9680/:/root/savop/logs/                     
+      - ./logs/9680/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_9680/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_9680/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.47                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_4775:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_4775                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/4775.conf:/usr/local/etc/bird.conf                     
+      - ./configs/4775.json:/root/savop/SavAgent_config.json                     
+      - ./logs/4775/:/root/savop/logs/                     
+      - ./logs/4775/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_4775/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_4775/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.48                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_55644:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_55644                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/55644.conf:/usr/local/etc/bird.conf                     
+      - ./configs/55644.json:/root/savop/SavAgent_config.json                     
+      - ./logs/55644/:/root/savop/logs/                     
+      - ./logs/55644/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_55644/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_55644/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.49                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_16509:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_16509                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/16509.conf:/usr/local/etc/bird.conf                     
+      - ./configs/16509.json:/root/savop/SavAgent_config.json                     
+      - ./logs/16509/:/root/savop/logs/                     
+      - ./logs/16509/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_16509/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_16509/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.50                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_18403:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_18403                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/18403.conf:/usr/local/etc/bird.conf                     
+      - ./configs/18403.json:/root/savop/SavAgent_config.json                     
+      - ./logs/18403/:/root/savop/logs/                     
+      - ./logs/18403/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_18403/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_18403/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.51                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_4809:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_4809                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/4809.conf:/usr/local/etc/bird.conf                     
+      - ./configs/4809.json:/root/savop/SavAgent_config.json                     
+      - ./logs/4809/:/root/savop/logs/                     
+      - ./logs/4809/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_4809/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_4809/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.52                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true
+  node_4637:                     
+    image: savop_bird_base                     
+    deploy:                     
+      resources:                    
+        limits:                    
+          cpus: '0.2'                    
+          memory: 4G                    
+    init: true                     
+    container_name: node_4637                     
+    cap_add:                     
+      - NET_ADMIN                     
+    volumes:                     
+      - ./configs/4637.conf:/usr/local/etc/bird.conf                     
+      - ./configs/4637.json:/root/savop/SavAgent_config.json                     
+      - ./logs/4637/:/root/savop/logs/                     
+      - ./logs/4637/data:/root/savop/sav-agent/data/                     
+      - ./signal:/root/savop/signal                     
+      - /etc/localtime:/etc/localtime                     
+      - ./nodes/node_4637/cert.pem:/root/savop/cert.pem                     
+      - ./nodes/node_4637/key.pem:/root/savop/key.pem                     
+      - ./ca/cert.pem:/root/savop/ca_cert.pem                     
+    networks:                     
+      build_ca_net:                     
+        ipv4_address: 10.10.0.53                     
+    command:                     
+        python3 /root/savop/sav-agent/monitor.py                     
+    privileged: true

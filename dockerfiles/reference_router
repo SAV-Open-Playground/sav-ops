@@ -12,5 +12,6 @@ COPY ./birdcl /usr/local/sbin/
 
 COPY ./sav-agent/ /root/savop/sav-agent/
 COPY ./container_run.sh /root/savop/container_run.sh
+COPY ./router_kill_and_start.sh /root/savop/router_kill_and_start.sh
 
 WORKDIR /root/savop/

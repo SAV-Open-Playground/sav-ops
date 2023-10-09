@@ -1,0 +1,6 @@
+{
+	"required_apps": [
+		"bird","loose-uRPF","strict-uRPF","EFP-uRPF-A","EFP-uRPF-B","FP-uRPF"
+	],
+	"fib_stable_threshold":5
+}

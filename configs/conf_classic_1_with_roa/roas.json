@@ -1,0 +1,14 @@
+{
+  "ip": "localhost",
+  "port":3000,
+  "token":"krill",
+  "add":[
+    {"asn":65501,"prefix":"192.168.1.0/24","max_length":24},
+    {"asn":65502,"prefix":"192.168.2.0/24","max_length":24},
+    {"asn":65502,"prefix":"192.168.3.0/24","max_length":24},
+    {"asn":65503,"prefix":"192.168.4.0/24","max_length":24},
+    {"asn":65504,"prefix":"192.168.5.0/24","max_length":24},
+    {"asn":65505,"prefix":"192.168.6.0/24","max_length":24},
+    {"asn":65505,"prefix":"192.168.7.0/24","max_length":24}
+ ]
+}
