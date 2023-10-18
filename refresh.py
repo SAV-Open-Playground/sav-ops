@@ -11,7 +11,20 @@ import os,sys
 import subprocess
 import json
 import netaddr
-
+import copy
+class IPGenerator():
+    def __init__(self,ip="fec::1:1"):
+        self.set_ip(ip)
+    def get_new_ip_pair(self):
+        src = copy.deepcopy(self.ip)
+        dst =src +1
+        if self.ip.version == 4:
+            self.ip += 256
+        elif self.ip.version == 6:
+            self.ip += 65536
+        return src,dst
+    def set_ip(self,ip):
+        self.ip = netaddr.IPAddress(ip)
 def subprocess_cmd(command):
     process =  subprocess.run(command, shell=True, capture_output=True, encoding='utf-8')
     return process
@@ -34,25 +47,33 @@ def rebuild_img(path=r'/root/savop-dev',file="docker_file_update_bird_bin",tag =
     run_cmd(cmd)
     cmd = "docker images| grep 'none' | awk '{print $3}' | xargs docker rmi"
     run_cmd(cmd)
-def gen_bird_conf(node,all_nodes,enable_rpki,possible_ip,delay,mode="blackhole"):
+def gen_bird_conf(node,delay,mode,base):
+    """
+    add everything but actual bgp links
+    """
+    ip_version = base["ip_version"]
+    all_nodes = base["devices"]
+    enable_rpki = base["enable_rpki"]
     bird_conf_str = f"router id {node['router_id']};"
     if enable_rpki:
+        bird_conf_str += f"roa{ip_version} table r{ip_version}" +"{"
         bird_conf_str += \
 """
-roa4 table r4{
 	sorted 1;
 };
 protocol rpki rpki1
 {
-	debug all;
-	roa4 { table r4; };
-	remote 10.10.0.3 port 3323;
-	retry 1;
+    debug all;"""
+        bird_conf_str += f"    roa{ip_version}" + "{ table r" + f"{ip_version};"+ "};"
+        bird_conf_str += \
+"""
+    remote 10.10.0.3 port 3323;
+    retry 1;
 }
 """
+    bird_conf_str += f"ipv{ip_version} table master{ip_version}" + "{"
     bird_conf_str += \
 """
-ipv4 table master4{
 	sorted 1;
 };
 
@@ -62,90 +83,99 @@ protocol device {
 };
 protocol kernel {
 	scan time 60;
-	ipv4 {
+"""
+    bird_conf_str += f"    ipv{ip_version} " +"{"
+    bird_conf_str += \
+"""
 		export all;
 		import all;
 	};
 	learn;
 };
 protocol direct {
-	ipv4;
+"""
+    bird_conf_str += f"    ipv{ip_version}; "
+    bird_conf_str += \
+"""
 	interface "eth_*";
 };
 
 protocol static {
-	ipv4 {
+"""
+    bird_conf_str += f"    ipv{ip_version} " +"{"
+    bird_conf_str += \
+"""
 		export all;
 		import all;
 	};
 """
     for prefix in node["prefixes"]:
-        bird_conf_str += f"\troute {prefix} {mode};\n"
+        bird_conf_str += f"\troute {prefix} {mode};\r"
     bird_conf_str += \
 """};
 template bgp basic{
 """
-    bird_conf_str += f"\tlocal as {node['as']};\n"
+    bird_conf_str += f"\tlocal as {node['as']};"
+    bird_conf_str += \
+"""
 	long lived graceful restart on;
 	debug all;
 	enable extended messages;
-	ipv4{
-		export all;
-		import all;
-		import table on;
-	};
+"""
+    bird_conf_str += f"    ipv{ip_version} " +"{"
+    bird_conf_str += \
+"""
+        export all;
+        import all;
+        import table on;
+    };
 };
 template bgp sav_inter from basic{
-	rpdp4{
+"""
+    bird_conf_str += f"    rpdp{ip_version} " +"{"
+    bird_conf_str += \
+"""
 		import none;
 		export none;
 	};
 };
 """
     link_map = {}
-    for link in node["links"]:
-        if len(link) == 2:
-            peer_id,link_type = link
-            my_ip = possible_ip
-            possible_ip += 1
-        elif len(link) == 3:
-            peer_id,link_type,my_ip = link
-            input(link)
+    for src_id,dst_id,link_type,src_ip,dst_ip in base["links"]:
         my_id = node["router_id"]
+        if not my_id in [src_id,dst_id]:
+            continue
+        if my_id == src_id:
+            peer_id = dst_id
+            my_ip = src_ip
+            peer_ip = dst_ip
+        else:
+            peer_id = src_id
+            my_ip = dst_ip
+            peer_ip = src_ip
         my_as = node["as"]
         peer_node = all_nodes[peer_id]
         peer_as = peer_node["as"]
+        link_map_value = {"link_type":link_type}
         if link_type == "dsav":
-            bird_conf_str += f"protocol bgp savbgp_{my_id}_{peer_id} from sav_inter\n"
+            bird_conf_str += f"protocol bgp savbgp_{my_id}_{peer_id} from sav_inter\r"
         else:
-            bird_conf_str += f"protocol bgp savbgp_{my_id}_{peer_id} from basic\n"
-            link_map_value = {"link_type":link_type}
+            bird_conf_str += f"protocol bgp savbgp_{my_id}_{peer_id} from basic\r"
+            
         
-        bird_conf_str += "{\n"
-        bird_conf_str += f"\tdescription \"modified BGP between {my_id} and {peer_id}\";\n"
+        bird_conf_str += "{\r"
+        bird_conf_str += f"\tdescription \"modified BGP between {my_id} and {peer_id}\";\r"
         if my_as != peer_as:
             input("external, need to code role")
             # local role peer;
         # get ip
-        bird_conf_str += f"\tsource address {my_ip};\n"
-        for temp_link in peer_node["links"]:
-            if len(temp_link) == 2:
-                temp_peer_id = temp_link[0]
-                if temp_peer_id == my_id:
-                    peer_ip = possible_ip
-                    possible_ip += 1
-                    break
-            elif len(temp_link) == 3:
-                temp_peer_id = temp_link[0]
-                if temp_peer_id == my_id:
-                    peer_ip = temp_link[2]
-                    break
+        bird_conf_str += f"\tsource address {my_ip};\r"
                 
-        bird_conf_str += f"\tneighbor {peer_ip} as {peer_as};\n"
+        bird_conf_str += f"\tneighbor {peer_ip} as {peer_as};\r"
         # interface "eth_3356";
-        bird_conf_str += f"\tconnect delay time {delay};\n"
+        bird_conf_str += f"\tconnect delay time {int(delay)};\r"
         delay += 0.1
-        bird_conf_str += "\tdirect;\n};\n"
+        bird_conf_str += "\tdirect;\r};\r"
         link_map_value["link_data"]= {
         "peer_ip": {peer_ip},
         "peer_id": peer_id
@@ -163,7 +193,7 @@ template bgp sav_inter from basic{
                 raise NotImplementedError
         
         
-    return possible_ip,delay,bird_conf_str,link_map
+    return delay,bird_conf_str,link_map
 def gen_sa_config(node,link_map,apps =["rpdp_app"],active_app="rpdp_app",fib_threshold=5):
     sa_config = {
                 "apps": apps,
@@ -180,14 +210,17 @@ def gen_sa_config(node,link_map,apps =["rpdp_app"],active_app="rpdp_app",fib_thr
                 "server_enabled": True
                 },
                 "local_as": node["as"],
-  "rpdp_id": "10.0.6.2",
+  "router_id": node["router_id"],
   "location": "edge_full"
 }
-    print(node)
-def regenerate_config(input_json,out_folder = r'/root/savop-dev/savop/this_config/',selected_nodes= None):
+    return sa_config
+def refresh_folder(src,dst):
+    if os.path.exists(dst):
+        run_cmd(f"rm -r {dst}")
+    run_cmd(f"cp -r {src} {dst}")
+def ready_input_json(input_json,selected_nodes):
     with open(input_json, 'r') as f:
         base = json.load(f)
-    # print(base)
     if selected_nodes:
         temp_node = {}
         temp_links = []
@@ -198,41 +231,154 @@ def regenerate_config(input_json,out_folder = r'/root/savop-dev/savop/this_confi
                 temp_links.append(link)
         base["links"] = temp_links 
         base["devices"] = temp_node
-    for src,dst,link_type in base["links"]:
-        if not "links" in base["devices"][src]:
-            base["devices"][src]["links"] = []
-        if not "links" in base["devices"][dst]:
-            base["devices"][dst]["links"] = []
-        base["devices"][src]["links"].append([dst,link_type])
-        base["devices"][dst]["links"].append([src,link_type])
-    possible_ip = netaddr.IPAddress("::ffff:10.0.1.1")
+    return base
+def assign_ip(base,version=6):
+    a = IPGenerator()
+    if version == 4:
+        raise NotImplementedError
+    elif version == 6:
+        temp = []
+        for link in base["links"]:
+            src,dst = a.get_new_ip_pair()
+            link.append(src)
+            link.append(dst)
+            temp.append(link)
+        base["links"] = temp
+    else:
+        raise NotImplementedError
+def regenerate_config(input_json,out_folder = r'/root/savop-dev/savop/this_config/',selected_nodes= None):
+    if os.path.exists(out_folder):
+        run_cmd(f"rm -r {out_folder}")
+    os.makedirs(out_folder)
+    base = ready_input_json(input_json,selected_nodes)
+    assign_ip(base)
+    print(base["links"])
     delay = 0
+    # compose
+    run_cmd("cp /root/savop-dev/savop/base_configs/docker-compose.yml /root/savop-dev/savop/this_config/docker-compose.yml")
+    run_cmd(f"cp /root/savop-dev/savop/base_configs/sign_key.sh {os.path.join(out_folder,'sign_keys.sh')}")
+    run_cmd("cp /root/savop-dev/savop/base_configs/topo.sh /root/savop-dev/savop/this_config/topo.sh")
+    refresh_folder("/root/savop-dev/savop/base_configs/ca",os.path.join(out_folder,"ca"))
+    # refresh_folder("/root/savop-dev/sav-agent",os.path.join(out_folder,"sav-agent"))
+    compose_f = open(os.path.join(out_folder,"docker-compose.yml"),'a',newline='\r')
+    key_f = open(os.path.join(out_folder,'sign_keys.sh'),'a',newline='\r')
+    if base["enable_rpki"]:
+        compose_f.write(
+    """
+networks:
+  build_ca_net:
+    external: true
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.0.0/16\""""
+            )
+    compose_f.write("\rservices:")
+    ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
     for node in base["devices"]:
         temp = base["devices"][node]
         temp["router_id"] = node
-        possible_ip,delay,bird_config_str,link_map = gen_bird_conf(temp,base["devices"],base["enable_rpki"],possible_ip,delay)
+        delay,bird_config_str,link_map = gen_bird_conf(temp,delay,"blackhole",base)
         node_folder = os.path.join(out_folder,node)
         if not os.path.exists(node_folder):
             os.makedirs(node_folder)
-        with open(os.path.join(node_folder,"bird.conf"),'w') as f:
+        with open(os.path.join(node_folder,"bird.conf"),'w',newline='\r') as f:
             f.write(bird_config_str)
         sa_config = gen_sa_config(temp,link_map)
-        input("press any key to continue")
+        with open(os.path.join(node_folder,"sa.json"),'w',newline='\r') as f:
+            json.dump(sa_config,f,indent=4)
+        # resign keys
+        # if base["enable_rpki"]:
+        resign_keys(out_folder,node,key_f)
+        tag = f"r{node}"
+        compose_f.write(
+f"""
+  "{tag}": 
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    image: savop_bird_base 
+    init: true 
+    container_name: "{tag}"
+    cap_add: 
+      - NET_ADMIN 
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 512M
+    volumes:
+      - /root/savop-dev/savop/reference_and_agent/router_kill_and_start.sh:/root/savop/router_kill_and_start.sh
+      - type: bind
+        source: /root/savop-dev/sav-agent/
+        target: /root/savop/sav-agent/
+      - type: bind
+        source:  /root/savop-dev/savop/this_config/{node}/bird.conf
+        target: /usr/local/etc/bird.conf 
+      - type: bind
+        source: /root/savop-dev/savop/this_config/{node}/sa.json
+        target: /root/savop/SavAgent_config.json 
+      - /root/savop-dev/savop/this_config/{node}/log/:/root/savop/logs/ 
+      - ./logs/{node}/data:/root/savop/sav-agent/data/ 
+      - type: bind
+        source: /root/savop-dev/savop/this_config/active_signal.json
+        target: /root/savop/signal.json
+      - /etc/localtime:/etc/localtime 
+      - /root/savop-dev/savop/this_config/{node}/cert.pem:/root/savop/cert.pem 
+      - /root/savop-dev/savop/this_config/{node}/key.pem:/root/savop/key.pem 
+      - /root/savop-dev/savop/this_config/ca/cert.pem:/root/savop/ca_cert.pem 
+    command: 
+        python3 /root/savop/sav-agent/unisav_bot.py  
+    privileged: true""")
+        if base["enable_rpki"]:
+            compose_f.write(
+f"""
+    networks: 
+      savop-dev_ca_net: 
+        ipv4_address: {str(ca_ip)} 
+
+""")
+        else:
+            compose_f.write("\r    network_mode: none")
     
-    # os.chdir(path)
-    # items = os.listdir()
-    # print(items)
-    # cmd = f"rm -r {out_folder}"
-    # run_cmd(cmd)
-    # cmd = f"cp -r {path} {out_folder}"
-    # run_cmd(cmd)
-    # # cmd = "python3 sav_config_generator.py"
-    # # run_cmd(cmd)
-def resign_keys():
-    raise NotImplementedError
-def refresh_intra():
+    compose_f.close()
+    key_f.close()
+    active_signal = {
+        "command":"stop",
+        "source":"rpdp_app",
+        "command_scope":list(base["devices"].keys()),
+        "stable_threshold": 5
+        }
+    with open(os.path.join(out_folder,"active_signal.json"),'w') as f:
+        json.dump(active_signal,f,indent=4)
+    
+    topo_f = open(os.path.join(out_folder,"topo.sh"),'a',newline='\r')
+    for src,dst,link_type,src_ip,dst_ip in base["links"]:
+        topo_f.write(f'\recho "adding edge r{src}-r{dst}"')
+        if not src_ip.version == dst_ip.version:
+            raise NotImplementedError
+        topo_f.write(f"\rfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
+    topo_f.close()
+    os.chdir("/root/savop-dev/")
+    run_cmd("python3 change_eol.py")
+    os.chdir(out_folder)
+    run_cmd("bash sign_keys.sh")
+    
+        
+def resign_keys(out_folder,node,key_f):
+    run_cmd(f"cp /root/savop-dev/savop/base_configs/req.conf {os.path.join(out_folder,node)}")
+    with open(os.path.join(out_folder,node,"sign.ext"),'w') as f:
+        f.write(
+f"""authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = DNS:{node}, DNS:localhost""")
+    key_f.write(f"\rfunCGenPrivateKeyAndSign ./{node} ./ca")
+    
+def refresh_intra(input_json=r'/root/savop-dev/savop/base_configs/classic_3.json',out_folder = r'/root/savop-dev/savop/this_config/'):
     # recompile_bird()
     # rebuild_img()
-    regenerate_config(input_json=r'/root/savop-dev/savop/base_configs/classic_3.json',out_folder = r'/root/savop-dev/savop/this_config/')
+    regenerate_config(input_json,out_folder)
+    
+
 if __name__ == "__main__":
     refresh_intra()
