@@ -1,0 +1,56 @@
+{
+  "command": "start",
+  "command_scope": [
+    3303,
+    3356,
+    3549,
+    13335,
+    34224
+  ],
+  "command_date": "2023-09-06 14:36:25",
+  "source": "passport",
+  "bgp_link_number": 10,
+  "bgp_link": {
+    "node_3356": [
+      {
+        "node_34224": "customer"
+      },
+      {
+        "node_3549": "customer"
+      },
+      {
+        "node_13335": "customer"
+      },
+      {
+        "node_3303": "customer"
+      }
+    ],
+    "node_34224": [
+      {
+        "node_3356": "provider"
+      },
+      {
+        "node_13335": "peer"
+      }
+    ],
+    "node_3549": [
+      {
+        "node_3356": "provider"
+      }
+    ],
+    "node_13335": [
+      {
+        "node_3356": "provider"
+      },
+      {
+        "node_34224": "peer"
+      }
+    ],
+    "node_3303": [
+      {
+        "node_3356": "provider"
+      }
+    ]
+  },
+  "stable_threshold": 5
+}

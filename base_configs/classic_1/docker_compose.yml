@@ -1,0 +1,117 @@
+version: "2"  
+networks:
+  ca_net:
+    external: false
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.0.0/16"
+
+services:
+  node_1:
+    image: savop_bird_base
+    container_name: node_1
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./sav-agent/:/root/savop/sav-agent/
+      - ./1/bird.conf:/usr/local/etc/bird.conf
+      - ./1/sa.json:/root/savop/SavAgent_config.json
+      - ./savop/rpki/keys/node_1/cert.pem:/root/savop/cert.pem
+      - ./savop/rpki/keys/node_1/key.pem:/root/savop/key.pem
+      - ./savop/rpki/keys/ca/cert.pem:/root/savop/ca_cert.pem
+      - ./logs/65501/logs:/root/savop/logs/
+      - ./logs/65501/data:/root/savop/sav-agent/data/
+      - ./savop/traffic_tools/:/root/savop/traffic_tools/
+    # network_mode: none
+    networks:
+      ca_net:
+        ipv4_address: 10.10.0.4
+    command: 
+        bash /root/savop/container_run.sh
+        
+  node_2:
+    image: savop_bird_base
+    container_name: node_2
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./sav-agent/:/root/savop/sav-agent/
+      - ./2/bird.conf:/usr/local/etc/bird.conf
+      - ./2/sa.json:/root/savop/SavAgent_config.json
+      - ./savop/rpki/keys/node_2/cert.pem:/root/savop/cert.pem
+      - ./savop/rpki/keys/node_2/key.pem:/root/savop/key.pem
+      - ./savop/rpki/keys/ca/cert.pem:/root/savop/ca_cert.pem
+      - ./logs/65502/logs:/root/savop/logs/
+      - ./logs/65502/data:/root/savop/sav-agent/data/
+      - ./savop/traffic_tools/:/root/savop/traffic_tools/
+    # network_mode: none
+    networks:
+      ca_net:
+        ipv4_address: 10.10.0.5
+    command:
+        bash container_run.sh
+
+  node_3:
+    image: savop_bird_base
+    container_name: node_3
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./sav-agent/:/root/savop/sav-agent/
+      - ./3/bird.conf:/usr/local/etc/bird.conf
+      - ./3/sa.json:/root/savop/SavAgent_config.json
+      - ./savop/rpki/keys/node_3/cert.pem:/root/savop/cert.pem
+      - ./savop/rpki/keys/node_3/key.pem:/root/savop/key.pem\
+      - ./savop/rpki/keys/ca/cert.pem:/root/savop/ca_cert.pem
+      - ./logs/65503/logs:/root/savop/logs/
+      - ./logs/65503/data:/root/savop/sav-agent/data/
+      - ./savop/traffic_tools/:/root/savop/traffic_tools/
+    # network_mode: none
+    networks:
+      ca_net:
+        ipv4_address: 10.10.0.6
+    command:
+        bash container_run.sh
+  node_4:
+    image: savop_bird_base
+    container_name: node_4
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./sav-agent/:/root/savop/sav-agent/
+      - ./4/bird.conf:/usr/local/etc/bird.conf
+      - ./4/sa.json:/root/savop/SavAgent_config.json
+      - ./logs/65504/logs:/root/savop/logs/
+      - ./logs/65504/data:/root/savop/sav-agent/data/
+      - ./savop/traffic_tools/:/root/savop/traffic_tools/
+      - ./savop/rpki/keys/node_4/cert.pem:/root/savop/cert.pem
+      - ./savop/rpki/keys/node_4/key.pem:/root/savop/key.pem
+      - ./savop/rpki/keys/ca/cert.pem:/root/savop/ca_cert.pem
+    # network_mode: none
+    networks:
+      ca_net:
+        ipv4_address: 10.10.0.7
+    command:
+        bash container_run.sh
+  node_5:
+    image: savop_bird_base
+    container_name: node_5
+    cap_add:
+      - NET_ADMIN
+    volumes: 
+      - ./sav-agent/:/root/savop/sav-agent/
+      - ./5/bird.conf:/usr/local/etc/bird.conf
+      - ./5/sa.json:/root/savop/SavAgent_config.json
+      - ./logs/65505/logs:/root/savop/logs/
+      - ./logs/65505/data:/root/savop/sav-agent/data/
+      - ./savop/traffic_tools/:/root/savop/traffic_tools/
+      - ./savop/rpki/keys/node_5/cert.pem:/root/savop/cert.pem
+      - ./savop/rpki/keys/node_5/key.pem:/root/savop/key.pem
+      - ./savop/rpki/keys/ca/cert.pem:/root/savop/ca_cert.pem
+    # network_mode: none
+    networks:
+      ca_net:
+        ipv4_address: 10.10.0.8
+    command:
+        bash container_run.sh
