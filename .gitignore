@@ -8,3 +8,5 @@ tmp
 work
 examples/openid_connect_mock.rs
 *.swp
+this_config/
+__pycache__/
