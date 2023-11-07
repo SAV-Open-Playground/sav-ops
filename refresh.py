@@ -194,7 +194,7 @@ template bgp sav_inter from basic{
         
         
     return delay,bird_conf_str,link_map
-def gen_sa_config(node,link_map,apps =["rpdp_app"],active_app="rpdp_app",fib_threshold=5):
+def gen_sa_config(ip_version,node,link_map,apps =["rpdp_app"],active_app="rpdp_app",fib_threshold=1):
     sa_config = {
                 "apps": apps,
                 "enabled_sav_app": active_app,
@@ -205,13 +205,15 @@ def gen_sa_config(node,link_map,apps =["rpdp_app"],active_app="rpdp_app",fib_thr
                     "server_addr": "0.0.0.0:5000",
                     "server_enabled": True
                 },
+                "ip_version":ip_version,
                 "link_map": link_map,
                 "quic_config": {
                 "server_enabled": True
                 },
                 "local_as": node["as"],
-  "router_id": node["router_id"],
-  "location": "edge_full"
+                "prefixes": node["prefixes"],
+                "router_id": node["router_id"],
+                "location": "edge_full"
 }
     return sa_config
 def refresh_folder(src,dst):
@@ -284,7 +286,7 @@ networks:
             os.makedirs(node_folder)
         with open(os.path.join(node_folder,"bird.conf"),'w',newline='\r') as f:
             f.write(bird_config_str)
-        sa_config = gen_sa_config(temp,link_map)
+        sa_config = gen_sa_config(base["ip_version"],temp,link_map)
         with open(os.path.join(node_folder,"sa.json"),'w',newline='\r') as f:
             json.dump(sa_config,f,indent=4)
         # resign keys
@@ -375,8 +377,8 @@ subjectAltName = DNS:{node}, DNS:localhost""")
     key_f.write(f"\rfunCGenPrivateKeyAndSign ./{node} ./ca")
     
 def refresh_intra(input_json=r'/root/savop-dev/savop/base_configs/classic_3.json',out_folder = r'/root/savop-dev/savop/this_config/'):
-    # recompile_bird()
-    # rebuild_img()
+    recompile_bird()
+    rebuild_img()
     regenerate_config(input_json,out_folder)
     
 
