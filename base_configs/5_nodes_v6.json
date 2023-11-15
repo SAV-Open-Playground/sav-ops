@@ -1,0 +1,87 @@
+{
+    "devices": {
+        "1": {
+            "as": 65501,
+            "prefixes": {
+                "FEC::1:0000/120": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "2": {
+            "as": 65501,
+            "prefixes": {
+                "FEC::5:0000/120": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "3": {
+            "as": 65501,
+            "prefixes": {
+                "FEC::6:0000/120": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "FEC::7:0000/120": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "4": {
+            "as": 65501,
+            "prefixes": {
+                "FEC::2:0000/120": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "FEC::3:0000/120": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "5": {
+            "as": 65501,
+            "prefixes": {
+                "FEC::4:0000/120": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        }
+    },
+    "links": [
+        [
+            "1",
+            "3",
+            "dsav"
+        ],
+        [
+            "1",
+            "2",
+            "dsav"
+        ],
+        [
+            "2",
+            "3",
+            "dsav"
+        ],
+        [
+            "2",
+            "4",
+            "dsav"
+        ],
+        [
+            "2",
+            "5",
+            "dsav"
+        ]
+    ],
+    "enable_rpki": false,
+    "prefix_method": "blackhole",
+    "ip_version": 6
+}
