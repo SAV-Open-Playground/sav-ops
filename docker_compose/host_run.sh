@@ -27,7 +27,7 @@ if [ "${image_name}" = "routinator" ];then
 fi
 docker container rm -f $(docker container ls -aq)
 # remove all stopped containers
-docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
+# docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
 # remove all images taged as <none>
 if [ `expr match ${model_name} .*with_roa` -gt 0 ];then
     docker-compose -f ./rpki_infrastracture.yml up -d --force-recreate

@@ -4,15 +4,15 @@
             "as": 65501,
             "prefixes": {
                 "FEC::1:0000/120": {
-                    "miig_tag": 0,
-                    "miig_type": 1
+                    "miig_tag": 123,
+                    "miig_type": 2
                 }
             }
         },
         "2": {
             "as": 65501,
             "prefixes": {
-                "FEC::5:0000/120": {
+                "FEC::3:0000/120": {
                     "miig_tag": 0,
                     "miig_type": 1
                 }
@@ -21,35 +21,13 @@
         "3": {
             "as": 65501,
             "prefixes": {
-                "192.168.1/16": {
+                "FEC::4:0000/120": {
                     "miig_tag": 0,
                     "miig_type": 1
                 },
                 "FEC::7:0000/120": {
-                    "miig_tag": 0,
-                    "miig_type": 1
-                }
-            }
-        },
-        "4": {
-            "as": 65501,
-            "prefixes": {
-                "192.1.2/16": {
-                    "miig_tag": 0,
-                    "miig_type": 1
-                },
-                "FEC::3:0000/120": {
-                    "miig_tag": 0,
-                    "miig_type": 1
-                }
-            }
-        },
-        "5": {
-            "as": 65501,
-            "prefixes": {
-                "FEC::4:0000/120": {
-                    "miig_tag": 0,
-                    "miig_type": 1
+                    "miig_tag": 123,
+                    "miig_type": 2
                 }
             }
         }
@@ -68,16 +46,6 @@
         [
             "2",
             "3",
-            "dsav"
-        ],
-        [
-            "2",
-            "4",
-            "dsav"
-        ],
-        [
-            "2",
-            "5",
             "dsav"
         ]
     ],
