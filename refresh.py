@@ -168,8 +168,8 @@ template bgp basic6 from basic {
 """
     bird_conf_str += f"template bgp sav_inter from basic{v} "
     bird_conf_str += "{\r"
-    bird_conf_str += f"rpdp{v} "
-    bird_conf_str += """{\r
+    bird_conf_str += f"    rpdp{v} "
+    bird_conf_str += """{
         import all;
         export all;
     };
@@ -228,7 +228,7 @@ template bgp basic6 from basic {
     return delay, bird_conf_str, link_map
 
 
-def gen_sa_config(auto_ip_version, node, link_map, as_scope, apps=["rpdp_app"], active_app="rpdp_app", fib_threshold=1):
+def gen_sa_config(auto_ip_version, node, link_map, as_scope, apps=["rpdp_app"], active_app="rpdp_app", fib_threshold=5):
     as_scope = as_scope[node["as"]]
     sa_config = {
         "apps": apps,
@@ -280,39 +280,41 @@ def assign_ip(base, ip_version):
     """
     assign ip to each link (device)
     """
-    a = IPGenerator()
     as_scope = {}
-    if ip_version == 4:
-        raise NotImplementedError
-    elif ip_version == 6:
-        temp = []
-        for link in base["links"]:
-            src_ip, dst_ip = a.get_new_ip_pair()
-            link.append(src_ip)
-            link.append(dst_ip)
-            temp.append(link)
-            as_scope = build_as_scope(as_scope, link, base["devices"])
-        base["links"] = temp
-        for asn, asn_data in as_scope.items():
-            new_asn_data = {}
-            for dev_id, ips in asn_data.items():
-                router_id = max(ips)
-                if router_id.version == 4:
-                    router_id = str(router_id)
+    a = None
+    if base["auto_ip_version"] == 4:
+        a = IPGenerator("192.168.1.1")
 
-                elif router_id.version == 6:
-                    router_id = router_id.packed[-4:]
-                    router_id = int.from_bytes(router_id, byteorder='big')
-                    router_id = str(netaddr.IPAddress(router_id))
-                new_asn_data[dev_id] = {
-                    "router_id": router_id,
-                    "ips": list(map(str, ips))
-                }
-            as_scope[asn] = new_asn_data
-        base["as_scope"] = as_scope
-        return base
+    elif base["auto_ip_version"] == 6:
+        a = IPGenerator("192.168.1.1")
     else:
         raise NotImplementedError
+    temp = []
+    for link in base["links"]:
+        src_ip, dst_ip = a.get_new_ip_pair()
+        link.append(src_ip)
+        link.append(dst_ip)
+        temp.append(link)
+        as_scope = build_as_scope(as_scope, link, base["devices"])
+    base["links"] = temp
+    for asn, asn_data in as_scope.items():
+        new_asn_data = {}
+        for dev_id, ips in asn_data.items():
+            router_id = max(ips)
+            if router_id.version == 4:
+                router_id = str(router_id)
+            elif router_id.version == 6:
+                router_id = router_id.packed[-4:]
+                router_id = int.from_bytes(router_id, byteorder='big')
+                router_id = str(netaddr.IPAddress(router_id))
+            new_asn_data[dev_id] = {
+                "router_id": router_id,
+                "ips": list(map(str, ips))
+            }
+        as_scope[asn] = new_asn_data
+    base["as_scope"] = as_scope
+    return base
+
 
 
 def build_as_scope(as_scope, link, base_device):
@@ -452,8 +454,13 @@ networks:
         topo_f.write(f'\recho "adding edge r{src}-r{dst}"')
         if not src_ip.version == dst_ip.version:
             raise NotImplementedError
-        topo_f.write(
-            f"\rfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
+        if src_ip.version == 6:
+            topo_f.write(
+                f"\rfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
+        elif src_ip.version == 4:
+            topo_f.write(
+                f"\rfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
+
     topo_f.close()
     os.chdir(f"{src_folder}/")
     run_cmd("python3 change_eol.py")
@@ -476,8 +483,8 @@ subjectAltName = DNS:{node}, DNS:localhost""")
 
 
 def refresh(src_folder, savop_dir, input_json, out_folder):
-    recompile_bird(os.path.join(src_folder, "sav-reference-router"))
-    rebuild_img(src_folder)
+    # recompile_bird(os.path.join(src_folder, "sav-reference-router"))
+    # rebuild_img(src_folder)
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
     input_json = os.path.join(base_cfg_folder, input_json)
     return regenerate_config(src_folder, input_json,
