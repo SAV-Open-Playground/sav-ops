@@ -25,8 +25,8 @@ def tell_prefix_version(prefix):
         return 6
     raise ValueError(f"invalid prefix :prefix")
 class IPGenerator():
-    def __init__(self, ip="fec::1:1"):
-        self.set_ip(ip)
+    def __init__(self, base_ip):
+        self.set_ip(base_ip)
 
     def get_new_ip_pair(self):
         src = copy.deepcopy(self.ip)
@@ -276,7 +276,7 @@ def ready_input_json(input_json, selected_nodes):
     return base
 
 
-def assign_ip(base, ip_version):
+def assign_ip(base):
     """
     assign ip to each link (device)
     """
@@ -286,7 +286,7 @@ def assign_ip(base, ip_version):
         a = IPGenerator("192.168.1.1")
 
     elif base["auto_ip_version"] == 6:
-        a = IPGenerator("192.168.1.1")
+        a = IPGenerator("FEC::1:1")
     else:
         raise NotImplementedError
     temp = []
@@ -344,7 +344,7 @@ def regenerate_config(src_folder, input_json, base_config_folder, out_folder=r'{
         run_cmd(f"rm -r {out_folder}")
     os.makedirs(out_folder)
     base = ready_input_json(input_json, selected_nodes)
-    base = assign_ip(base, ip_version=6)
+    base = assign_ip(base)
     delay = 0
     docker_src_dir = r'/root/savop'
     # compose
