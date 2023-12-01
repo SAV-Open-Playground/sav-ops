@@ -140,13 +140,12 @@ protocol static {
 	};
 """
     for prefix in node["prefixes"]:
-        bird_conf_str += f"\troute {prefix} {mode};\r"
-    bird_conf_str += "};\r"
+        bird_conf_str += f"\troute {prefix} {mode};\n"
+    bird_conf_str += "};\n"
 
-    bird_conf_str += "template bgp basic{\r"
+    bird_conf_str += "template bgp basic{\n"
     bird_conf_str += f"\tlocal as {node['as']};"
-    bird_conf_str += \
-        """
+    bird_conf_str += """
 	long lived graceful restart on;
 	debug all;
 	enable extended messages;
@@ -167,7 +166,7 @@ template bgp basic6 from basic {
 };
 """
     bird_conf_str += f"template bgp sav_inter from basic{v} "
-    bird_conf_str += "{\r"
+    bird_conf_str += "{\n"
     bird_conf_str += f"    rpdp{v} "
     bird_conf_str += """{
         import all;
@@ -191,24 +190,24 @@ template bgp basic6 from basic {
         peer_as = peer_node["as"]
         link_map_value = {"link_type": link_type}
         if link_type == "dsav":
-            bird_conf_str += f"protocol bgp savbgp_{dev_id}_{peer_id} from sav_inter\r"
+            bird_conf_str += f"protocol bgp savbgp_{dev_id}_{peer_id} from sav_inter\n"
         else:
-            bird_conf_str += f"protocol bgp savbgp_{dev_id}_{peer_id} from basic\r"
+            bird_conf_str += f"protocol bgp savbgp_{dev_id}_{peer_id} from basic\n"
 
-        bird_conf_str += "{\r"
-        bird_conf_str += f"\tdescription \"modified BGP between {dev_id} and {peer_id}\";\r"
+        bird_conf_str += "{\n"
+        bird_conf_str += f"\tdescription \"modified BGP between {dev_id} and {peer_id}\";\n"
         if dev_as != peer_as:
             input("external, need to code role")
             raise NotImplementedError
             # local role peer;
         # get ip
-        bird_conf_str += f"\tsource address {my_ip};\r"
+        bird_conf_str += f"\tsource address {my_ip};\n"
 
-        bird_conf_str += f"\tneighbor {peer_ip} as {peer_as};\r"
+        bird_conf_str += f"\tneighbor {peer_ip} as {peer_as};\n"
         # interface "eth_3356";
-        bird_conf_str += f"\tconnect delay time {int(delay)};\r"
+        bird_conf_str += f"\tconnect delay time {int(delay)};\n"
         delay += 0.1
-        bird_conf_str += "\tdirect;\r};\r"
+        bird_conf_str += "\tdirect;\n};\n"
         link_map_value["link_data"] = {
             "peer_ip": {peer_ip},
             "peer_id": peer_id
@@ -356,8 +355,8 @@ def regenerate_config(src_folder, input_json, base_config_folder, out_folder=r'{
     # refresh_folder("{src_folder}/sav-agent",os.path.join(out_folder,"sav-agent"))
     # build docker compose
     compose_f = open(os.path.join(
-        out_folder, "docker-compose.yml"), 'a', newline='\r')
-    key_f = open(os.path.join(out_folder, 'sign_key.sh'), 'a', newline='\r')
+        out_folder, "docker-compose.yml"), 'a', newline='\n')
+    key_f = open(os.path.join(out_folder, 'sign_key.sh'), 'a', newline='\n')
     if base["enable_rpki"]:
         compose_f.write(
             """
@@ -369,7 +368,7 @@ networks:
       config:
         - subnet: "10.10.0.0/16\""""
         )
-    compose_f.write("\rservices:")
+    compose_f.write("\nservices:")
     ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
     for node in base["devices"]:
         temp = base["devices"][node]
@@ -379,11 +378,11 @@ networks:
         node_folder = os.path.join(out_folder, node)
         if not os.path.exists(node_folder):
             os.makedirs(node_folder)
-        with open(os.path.join(node_folder, "bird.conf"), 'w', newline='\r') as f:
+        with open(os.path.join(node_folder, "bird.conf"), 'w', newline='\n') as f:
             f.write(bird_config_str)
         sa_config = gen_sa_config(
             base["auto_ip_version"], temp, link_map, base["as_scope"])
-        with open(os.path.join(node_folder, "sa.json"), 'w', newline='\r') as f:
+        with open(os.path.join(node_folder, "sa.json"), 'w', newline='\n') as f:
             json.dump(sa_config, f, indent=4)
         # resign keys
         # if base["enable_rpki"]:
@@ -436,7 +435,7 @@ networks:
 
 """)
         else:
-            compose_f.write("\r    network_mode: none")
+            compose_f.write("\n    network_mode: none")
 
     compose_f.close()
     key_f.close()
@@ -449,17 +448,17 @@ networks:
     with open(os.path.join(out_folder, "active_signal.json"), 'w') as f:
         json.dump(active_signal, f, indent=4)
 
-    topo_f = open(os.path.join(out_folder, "topo.sh"), 'a', newline='\r')
+    topo_f = open(os.path.join(out_folder, "topo.sh"), 'a', newline='\n')
     for src, dst, link_type, src_ip, dst_ip in base["links"]:
-        topo_f.write(f'\recho "adding edge r{src}-r{dst}"')
+        topo_f.write(f'\necho "adding edge r{src}-r{dst}"')
         if not src_ip.version == dst_ip.version:
             raise NotImplementedError
         if src_ip.version == 6:
             topo_f.write(
-                f"\rfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
+                f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
         elif src_ip.version == 4:
             topo_f.write(
-                f"\rfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
+                f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
 
     topo_f.close()
     os.chdir(f"{src_folder}/")
@@ -479,10 +478,10 @@ def resign_keys(out_folder, node, key_f, base_cfg_folder):
 basicConstraints=CA:FALSE
 keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 subjectAltName = DNS:{node}, DNS:localhost""")
-    key_f.write(f"\rfunCGenPrivateKeyAndSign ./{node} ./ca")
+    key_f.write(f"\nfunCGenPrivateKeyAndSign ./{node} ./ca")
 
 
-def refresh(src_folder, savop_dir, input_json, out_folder):
+def script_builder(src_folder, savop_dir, input_json, out_folder):
     # recompile_bird(os.path.join(src_folder, "sav-reference-router"))
     # rebuild_img(src_folder)
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
@@ -490,6 +489,3 @@ def refresh(src_folder, savop_dir, input_json, out_folder):
     return regenerate_config(src_folder, input_json,
                              base_cfg_folder, out_folder)
 
-
-# if __name__ == "__main__":
-    # refresh()
