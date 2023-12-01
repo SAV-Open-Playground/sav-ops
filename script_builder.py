@@ -24,6 +24,8 @@ def tell_prefix_version(prefix):
     if ":" in prefix:
         return 6
     raise ValueError(f"invalid prefix :prefix")
+
+
 class IPGenerator():
     def __init__(self, base_ip):
         self.set_ip(base_ip)
@@ -315,7 +317,6 @@ def assign_ip(base):
     return base
 
 
-
 def build_as_scope(as_scope, link, base_device):
     """
     return a dict of as_scope
@@ -488,4 +489,3 @@ def script_builder(src_folder, savop_dir, input_json, out_folder):
     input_json = os.path.join(base_cfg_folder, input_json)
     return regenerate_config(src_folder, input_json,
                              base_cfg_folder, out_folder)
-
