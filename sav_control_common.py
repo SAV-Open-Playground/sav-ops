@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 # -*-coding:utf-8 -*-
 """
-@File    :   sav_controll_common.py
+@File    :   sav_control_common.py
 @Time    :   2023/11/30
 @Version :   0.1
-@Desc    :   The sav_controll_common.py contains some common functions.
+@Desc    :   The sav_control_common.py contains some common functions.
 """
 import json
 import subprocess

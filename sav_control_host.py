@@ -1,16 +1,16 @@
 #!/usr/bin/python3
 # -*-coding:utf-8 -*-
 """
-@File    :   sav_controll_host.py
+@File    :   sav_control_host.py
 @Time    :   2023/11/30
 @Version :   0.1
-@Desc    :   The sav_controll_host.py is responsible for the management of current host(slave).
+@Desc    :   The sav_control_host.py is responsible for the management of current host(slave).
 """
 import time
 import os
 import sys
 import logging
-from sav_controll_common import *
+from sav_control_common import *
 
 
 class RunEmulation():
