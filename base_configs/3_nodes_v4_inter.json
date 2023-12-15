@@ -10,7 +10,7 @@
             }
         },
         "2": {
-            "as": 65501,
+            "as": 65502,
             "prefixes": {
                 "111.192.3.0/24": {
                     "miig_tag": 0,
@@ -19,7 +19,7 @@
             }
         },
         "3": {
-            "as": 65501,
+            "as": 65503,
             "prefixes": {
                 "111.192.4.0/24": {
                     "miig_tag": 0,
@@ -49,6 +49,15 @@
             "dsav"
         ]
     ],
+    "as_relations": {
+        "description": "only provider-customer relation is saved,if we didn't find when building config, we assume peer-peer relation",
+        "provider-customer": [
+            [
+                65501,
+                65503
+            ]
+        ]
+    },
     "enable_rpki": false,
     "prefix_method": "blackhole",
     "auto_ip_version": 4

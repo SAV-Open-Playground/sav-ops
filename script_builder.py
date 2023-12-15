@@ -74,11 +74,25 @@ def rebuild_img(path=r'{src_folder}', file="docker_file_update_bird_bin", tag="s
     run_cmd(cmd)
 
 
+def get_bird_cfg_relation_str(my_as, peer_as, as_relations):
+    for provider, customer in as_relations["provider-customer"]:
+        if not my_as in [provider, customer]:
+            continue
+        if not peer_as in [provider, customer]:
+            continue
+        if my_as == provider:
+            return f"\tlocal role provider;\n"
+        if my_as == customer:
+            return f"\tlocal role customer;\n"
+    return f"\tlocal role peer;\n"
+    return ""
+
 def gen_bird_conf(node, delay, mode, base):
     """
     add everything but actual bgp links
     """
     # raise ValueError(base)
+
     auto_ip_version = base["auto_ip_version"]
     all_nodes = base["devices"]
     dev_id = node["device_id"]
@@ -132,10 +146,8 @@ protocol direct {
  };
 """
     v = tell_prefix_version(list(node["prefixes"].keys())[0])
-    bird_conf_str += """
-protocol static {
-    """
-    bird_conf_str += f"ipv{v}"
+    bird_conf_str += "\nprotocol static {"
+    bird_conf_str += f"\nipv{v}"
     bird_conf_str += """ {
 		export all;
 		import all;
@@ -150,7 +162,7 @@ protocol static {
     bird_conf_str += """
 	long lived graceful restart on;
 	debug all;
-	enable extended messages;
+    enable extended messages;
  };
  template bgp basic4 from basic {
     ipv4 {
@@ -171,8 +183,8 @@ template bgp basic6 from basic {
     bird_conf_str += "{\n"
     bird_conf_str += f"    rpdp{v} "
     bird_conf_str += """{
-        import all;
-        export all;
+    import all;
+    export all;
     };
 };
 """
@@ -199,8 +211,8 @@ template bgp basic6 from basic {
         bird_conf_str += "{\n"
         bird_conf_str += f"\tdescription \"modified BGP between {dev_id} and {peer_id}\";\n"
         if dev_as != peer_as:
-            input("external, need to code role")
-            raise NotImplementedError
+            bird_conf_str += get_bird_cfg_relation_str(
+                dev_as, peer_as, base["as_relations"])
             # local role peer;
         # get ip
         bird_conf_str += f"\tsource address {my_ip};\n"
@@ -284,7 +296,7 @@ def assign_ip(base):
     as_scope = {}
     a = None
     if base["auto_ip_version"] == 4:
-        a = IPGenerator("192.168.1.1")
+        a = IPGenerator("1.1.1.1")
 
     elif base["auto_ip_version"] == 6:
         a = IPGenerator("FEC::1:1")
@@ -483,8 +495,8 @@ subjectAltName = DNS:{node}, DNS:localhost""")
 
 
 def script_builder(src_folder, savop_dir, input_json, out_folder):
-    # recompile_bird(os.path.join(src_folder, "sav-reference-router"))
-    # rebuild_img(src_folder)
+    recompile_bird(os.path.join(src_folder, "sav-reference-router"))
+    rebuild_img(src_folder)
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
     input_json = os.path.join(base_cfg_folder, input_json)
     return regenerate_config(src_folder, input_json,
