@@ -21,8 +21,7 @@ def json_w(path, data, encoding='utf-8', mode='w'):
 
 
 def subprocess_cmd(cmd):
-    out = subprocess.run(
-        cmd, shell=True, capture_output=True, encoding='utf-8')
+    out = subprocess.run(cmd, shell=True, capture_output=True, encoding='utf-8')
     return out
 
 
@@ -30,13 +29,13 @@ def whoami():
     """
     we use ip as the id of the node
     """
-    result = subprocess_cmd("ifconfig")
+    result = subprocess_cmd("ip -j -4 address")
     # print(result)
-    results = result.stdout.split("\n")
+    results = json.loads(result.stdout)
     for i in results:
-        if "10.10.254." in i:
-            i = i.strip().split(" ")
-            return i[1].split('.')[-1]
+        if i["ifname"] in ["lo", "docker0"]:
+            continue
+        return i["addr_info"][-1]["local"]
 
 
 def run_cmd(cmd):
@@ -44,7 +43,7 @@ def run_cmd(cmd):
     ret = subprocess_cmd(cmd)
     if ret.returncode != 0:
         print(ret)
-    return ret.stdout
+    return ret.returncode, ret.stdout, ret.stderr
 
 
 def remove_bird_links(bird_cfg, nodes):
@@ -61,3 +60,9 @@ def remove_bird_links(bird_cfg, nodes):
                 return temp, True
         temp.append(line)
     return temp, False
+
+
+def ensure_no_trailing_slash(path):
+    if path.endswith('/'):
+        path = path.rstrip('/')
+    return path

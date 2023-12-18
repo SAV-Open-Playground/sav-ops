@@ -10,3 +10,6 @@ examples/openid_connect_mock.rs
 *.swp
 this_config/
 __pycache__/
+*.tar.gz
+sav_control_master_config.json
+master_config.json

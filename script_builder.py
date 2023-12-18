@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 """
 1. recompile bird
 2. rebuild docker images
@@ -13,6 +15,9 @@ import subprocess
 import json
 import netaddr
 import copy
+import argparse
+
+CURRENT_DIR = os.getcwd()
 
 
 def tell_prefix_version(prefix):
@@ -59,6 +64,8 @@ def run_cmd(command):
 
 def recompile_bird(path=r'{src_folder}/sav-reference-router'):
     os.chdir(path)
+    run_cmd("autoreconf")
+    run_cmd("./configure")
     run_cmd("make")
 
 
@@ -99,95 +106,87 @@ def gen_bird_conf(node, delay, mode, base):
     dev_as = node["as"]
     router_id = base["as_scope"][dev_as][dev_id]["router_id"]
     enable_rpki = base["enable_rpki"]
-    bird_conf_str = f"router id {str(netaddr.IPAddress(router_id))};\n"
+    bird_conf_str = f"router id {str(netaddr.IPAddress(router_id))};"
     if enable_rpki:
-        bird_conf_str += """
-roa4 table r4 {	sorted 1; };
-roa6 table r6 { sorted 1; };
-protocol rpki rpki1
-{
-    debug all;
-    roa4 { 
-        table r4;
-        };
-    roa6 {
-        table r6;
-        };
-    remote 10.10.0.3 port 3323;
-    retry 1;
-}"""
-    bird_conf_str += """
-ipv4 table master4 {sorted 1;};
-ipv6 table master6 {sorted 1;};
-protocol device {
-	scan time 60;
-	interface "eth_*";
-};
-protocol kernel {
-	scan time 60;
-    ipv4 {
-		export all;
-		import all;
-	};
-	learn;
- };
-protocol kernel {
-	scan time 60;
-    ipv6 {
-		export all;
-		import all;
-	};
-	learn;
- };
-protocol direct {
-    ipv4;
-    ipv6;
-	interface "eth_*";
- };
-"""
+        bird_conf_str += "\nroa4 table r4 {	sorted 1; };\n"\
+                         "roa6 table r6 { sorted 1; };\n" \
+                         "protocol rpki rpki1\n"\
+                         "{\n" \
+                         "\tdebug all;\n" \
+                         "\troa4 {\n" \
+                         "\t\ttable r4;\n" \
+                         "\t\t};\n" \
+                         "\troa6 {\n" \
+                         "\t\ttable r6;\n" \
+                         "\t\t};\n" \
+                         "\tremote 10.10.0.3 port 3323;\n" \
+                         "\tretry 1;\n" \
+                         "}\n"
+    bird_conf_str += "\nipv4 table master4 {sorted 1;};\n" \
+                     "ipv6 table master6 {sorted 1;};\n" \
+                     "protocol device {\n" \
+                     "\tscan time 60;\n" \
+                     "\tinterface \"eth_*\";\n" \
+                     "};\n" \
+                     "protocol kernel {\n" \
+                     "\tscan time 60;\n" \
+                     "\tipv4 {\n" \
+                     "\t\texport all;\n" \
+                     "\t\timport all;\n" \
+                     "\t};\n" \
+                     "\tlearn;\n" \
+                     "};\n" \
+                     "protocol kernel {\n" \
+                     "\tscan time 60;\n" \
+                     "\tipv6 {\n" \
+                     "\t\texport all;\n" \
+                     "\t\timport all;\n" \
+                     "\t};\n" \
+                     "\tlearn;\n" \
+                     "};\n" \
+                     "protocol direct {\n" \
+                     "\tipv4;\n" \
+                     "\tipv6;\n" \
+                     "\tinterface \"eth_*\";\n" \
+                     "};\n"
     v = tell_prefix_version(list(node["prefixes"].keys())[0])
-    bird_conf_str += "\nprotocol static {"
-    bird_conf_str += f"\nipv{v}"
-    bird_conf_str += """ {
-		export all;
-		import all;
-	};
-"""
+    bird_conf_str += "protocol static {\n"
+    bird_conf_str += f"\tipv{v} {{\n" \
+                     "\t\texport all;\n" \
+                     "\t\timport all;\n" \
+                     "\t};\n"
     for prefix in node["prefixes"]:
         bird_conf_str += f"\troute {prefix} {mode};\n"
     bird_conf_str += "};\n"
 
-    bird_conf_str += "template bgp basic{\n"
-    bird_conf_str += f"\tlocal as {node['as']};"
-    bird_conf_str += """
-	long lived graceful restart on;
-	debug all;
-    enable extended messages;
- };
- template bgp basic4 from basic {
-    ipv4 {
-        export all;
-        import all;
-        import table on;
-    };
-};
-template bgp basic6 from basic {    
-    ipv6 {
-        export all;
-        import all;
-        import table on;
-    };
-};
-"""
+    bird_conf_str += "template bgp basic {\n"
+    bird_conf_str += f"\tlocal as {node['as']};\n"
+    bird_conf_str += "\tlong lived graceful restart on;\n" \
+                     "\tdebug all;\n" \
+                     "\tenable extended messages;\n" \
+                     "};\n" \
+                     "template bgp basic4 from basic {\n" \
+                     "\tipv4 {\n" \
+                     "\t\texport all;\n" \
+                     "\t\timport all;\n" \
+                     "\t\timport table on;\n" \
+                     "\t};\n" \
+                     "};\n" \
+                     "template bgp basic6 from basic {\n" \
+                     "\tipv6 {\n" \
+                     "\t\texport all;\n" \
+                     "\t\timport all;\n" \
+                     "\t\timport table on;\n" \
+                     "\t};\n" \
+                     "};\n"
     bird_conf_str += f"template bgp sav_inter from basic{v} "
     bird_conf_str += "{\n"
-    bird_conf_str += f"    rpdp{v} "
-    bird_conf_str += """{
-    import all;
-    export all;
-    };
-};
-"""
+    bird_conf_str += f"\trpdp{v} "
+    bird_conf_str += "{\n" \
+                     "\timport all;\n" \
+                     "\texport all;\n" \
+                     "\t};\n" \
+                     "};\n"
     link_map = {}
     for src_id, dst_id, link_type, src_ip, dst_ip in base["links"]:
         if not dev_id in [src_id, dst_id]:
@@ -351,7 +350,7 @@ def build_as_scope(as_scope, link, base_device):
     return as_scope
 
 
-def regenerate_config(src_folder, input_json, base_config_folder, out_folder=r'{src_folder}/savop/this_config/', selected_nodes=None):
+def regenerate_config(src_folder, input_json,  base_config_folder,  out_folder=r'{src_folder}/savop/this_config/',  selected_nodes=None):
     if os.path.exists(out_folder):
         run_cmd(f"rm -r {out_folder}")
     os.makedirs(out_folder)
@@ -361,143 +360,126 @@ def regenerate_config(src_folder, input_json, base_config_folder, out_folder=r'{
     docker_src_dir = r'/root/savop'
     # compose
     for f in ["docker-compose.yml", "sign_key.sh", "topo.sh"]:
-        cp_cmd = f"cp {os.path.join(base_config_folder,f)} {os.path.join(out_folder,f)}"
+        cp_cmd = f"cp {os.path.join(base_config_folder, f)} {os.path.join(out_folder, f)}"
         run_cmd(cp_cmd)
-    refresh_folder(os.path.join(base_config_folder, "ca"),
-                   os.path.join(out_folder, "ca"))
-    # refresh_folder("{src_folder}/sav-agent",os.path.join(out_folder,"sav-agent"))
+    refresh_folder(os.path.join(base_config_folder, "ca"), os.path.join(out_folder, "ca"))
     # build docker compose
-    compose_f = open(os.path.join(
-        out_folder, "docker-compose.yml"), 'a', newline='\n')
-    key_f = open(os.path.join(out_folder, 'sign_key.sh'), 'a', newline='\n')
+    compose_f = open(os.path.join(out_folder, "docker-compose.yml"), 'a')
+    key_f = open(os.path.join(out_folder, 'sign_key.sh'), 'a')
     if base["enable_rpki"]:
-        compose_f.write(
-            """
-networks:
-  build_ca_net:
-    external: true
-    ipam:
-      driver: default
-      config:
-        - subnet: "10.10.0.0/16\""""
-        )
-    compose_f.write("\nservices:")
+        docker_network_content = "networks:\n" \
+                                 "  build_ca_net:\n" \
+                                 "    external: true\n" \
+                                 "    ipam:\n" \
+                                 "      driver: default\n" \
+                                 "      config:\n" \
+                                 "        - subnet: \"10.10.0.0/16\"\n"
+        compose_f.write(docker_network_content)
+    compose_f.write("\nservices:\n")
     ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
     for node in base["devices"]:
         temp = base["devices"][node]
         temp["device_id"] = node
-        delay, bird_config_str, link_map = gen_bird_conf(
-            temp, delay, "blackhole", base)
+        delay, bird_config_str, link_map = gen_bird_conf(temp, delay, "blackhole", base)
         node_folder = os.path.join(out_folder, node)
         if not os.path.exists(node_folder):
             os.makedirs(node_folder)
-        with open(os.path.join(node_folder, "bird.conf"), 'w', newline='\n') as f:
+        with open(os.path.join(node_folder, "bird.conf"), 'w') as f:
             f.write(bird_config_str)
-        sa_config = gen_sa_config(
-            base["auto_ip_version"], temp, link_map, base["as_scope"])
-        with open(os.path.join(node_folder, "sa.json"), 'w', newline='\n') as f:
+        ret = run_cmd(command=f"chmod 666 {node_folder}/bird.conf")
+        sa_config = gen_sa_config(base["auto_ip_version"], temp, link_map, base["as_scope"])
+        with open(os.path.join(node_folder, "sa.json"), 'w') as f:
             json.dump(sa_config, f, indent=4)
         # resign keys
         # if base["enable_rpki"]:
         resign_keys(out_folder, node, key_f, base_config_folder)
-        tag = f"r{node}"
-        compose_f.write(
-            f"""
-  "{tag}": 
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
-    image: savop_bird_base 
-    init: true 
-    container_name: "{tag}"
-    cap_add: 
-      - NET_ADMIN 
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 512M
-    volumes:
-      - {src_folder}/savop/reference_and_agent/router_kill_and_start.sh:/root/savop/router_kill_and_start.sh
-      - type: bind
-        source: {src_folder}/sav-agent/
-        target: /root/savop/sav-agent/
-      - type: bind
-        source:  {src_folder}/savop/this_config/{node}/bird.conf
-        target: /usr/local/etc/bird.conf 
-      - type: bind
-        source: {src_folder}/savop/this_config/{node}/sa.json
-        target: /root/savop/SavAgent_config.json 
-      - {src_folder}/savop/this_config/{node}/log/:/root/savop/logs/ 
-      - {src_folder}/savop/this_config/{node}/log/data:/root/savop/sav-agent/data/ 
-      - type: bind
-        source: {src_folder}/savop/this_config/active_signal.json
-        target: /root/savop/signal.json
-      - /etc/localtime:/etc/localtime 
-      - {src_folder}/savop/this_config/{node}/cert.pem:/root/savop/cert.pem 
-      - {src_folder}/savop/this_config/{node}/key.pem:/root/savop/key.pem 
-      - {src_folder}/savop/this_config/ca/cert.pem:/root/savop/ca_cert.pem 
-    command: 
-        python3 /root/savop/sav-agent/unisav_bot.py  
-    privileged: true""")
+        tag = f"{node}"
+        docker_compose_content = f"  r{tag}:\n" \
+                         f"    sysctls:\n" \
+                         f"      - net.ipv6.conf.all.disable_ipv6=0\n" \
+                         f"    image: savop_bird_base\n" \
+                         f"    init: true\n" \
+                         f"    container_name: \"r{tag}\"\n" \
+                         f"    cap_add:\n" \
+                         f"      - NET_ADMIN\n" \
+                         f"    deploy:\n" \
+                         f"      resources:\n" \
+                         f"        limits:\n" \
+                         f"          cpus: '0.3'\n" \
+                         f"          memory: 512M\n" \
+                         f"    volumes:\n" \
+                         f"      - type: bind\n" \
+                         f"        source:  {src_folder}/savop_run/this_config/{node}/bird.conf\n" \
+                         f"        target: /usr/local/etc/bird.conf\n" \
+                         f"      - type: bind\n" \
+                         f"        source: {src_folder}/savop_run/this_config/{node}/sa.json\n" \
+                         f"        target: /root/savop/SavAgent_config.json\n" \
+                         f"      - {src_folder}/savop_run/{node}/log/:/root/savop/logs/\n" \
+                         f"      - {src_folder}/savop_run/{node}/log/data:/root/savop/sav-agent/data/\n" \
+                         f"      - type: bind\n" \
+                         f"        source: {src_folder}/savop_run/this_config/active_signal.json\n" \
+                         f"        target: /root/savop/signal.json\n" \
+                         f"      - /etc/localtime:/etc/localtime\n" \
+                         f"      - {src_folder}/savop_run/this_config/{node}/cert.pem:/root/savop/cert.pem\n" \
+                         f"      - {src_folder}/savop_run/this_config/{node}/key.pem:/root/savop/key.pem\n" \
+                         f"      - {src_folder}/savop_run/this_config/ca/cert.pem:/root/savop/ca_cert.pem\n" \
+                         f"    command:\n" \
+                         f"        python3 /root/savop/sav-agent/unisav_bot.py\n" \
+                         f"    privileged: true\n"
+        compose_f.write(docker_compose_content)
         if base["enable_rpki"]:
-            compose_f.write(
-                f"""
-    networks: 
-      savop-dev_ca_net: 
-        ipv4_address: {str(ca_ip)} 
-
-""")
+            docker_compose_content = "    networks:\n" \
+                                     "      savop-dev_ca_net:\n" \
+                                     "        ipv4_address: {str(ca_ip)}\n"
+            compose_f.write(docker_compose_content)
         else:
-            compose_f.write("\n    network_mode: none")
+            compose_f.write("    network_mode: none\n")
 
     compose_f.close()
     key_f.close()
     active_signal = {
-        "command": "stop",
+        "command": "start",
         "source": "rpdp_app",
         "command_scope": list(base["devices"].keys()),
         "stable_threshold": 5
     }
     with open(os.path.join(out_folder, "active_signal.json"), 'w') as f:
         json.dump(active_signal, f, indent=4)
+    ret = run_cmd(command=f"chmod 666 {out_folder}/active_signal.json")
 
-    topo_f = open(os.path.join(out_folder, "topo.sh"), 'a', newline='\n')
+    topo_f = open(os.path.join(out_folder, "topo.sh"), 'a')
     for src, dst, link_type, src_ip, dst_ip in base["links"]:
         topo_f.write(f'\necho "adding edge r{src}-r{dst}"')
         if not src_ip.version == dst_ip.version:
             raise NotImplementedError
         if src_ip.version == 6:
-            topo_f.write(
-                f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
+            topo_f.write(f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
         elif src_ip.version == 4:
-            topo_f.write(
-                f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
+            topo_f.write(f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
 
     topo_f.close()
-    os.chdir(f"{src_folder}/")
-    run_cmd("python3 change_eol.py")
-    os.chdir(out_folder)
-    run_cmd("bash sign_key.sh")
+    # os.chdir(f"{src_folder}/")
+    # run_cmd("python3 change_eol.py")
+    # os.chdir(out_folder)
+    # run_cmd("bash sign_key.sh")
     return len(base["devices"])
 
 
 def resign_keys(out_folder, node, key_f, base_cfg_folder):
-
-    run_cmd(
-        f"cp {os.path.join(base_cfg_folder,'req.conf')} {os.path.join(out_folder,node)}")
+    run_cmd(f"cp {os.path.join(base_cfg_folder, 'req.conf')} {os.path.join(out_folder, node)}")
     with open(os.path.join(out_folder, node, "sign.ext"), 'w') as f:
-        f.write(
-            f"""authorityKeyIdentifier=keyid,issuer
-basicConstraints=CA:FALSE
-keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-subjectAltName = DNS:{node}, DNS:localhost""")
-    key_f.write(f"\nfunCGenPrivateKeyAndSign ./{node} ./ca")
+        sign_content = "authorityKeyIdentifier=keyid,issuer\n" \
+                       "basicConstraints=CA:FALSE\n" \
+                       "keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment\n" \
+                       f"subjectAltName = DNS:{node}, DNS:localhost"
+        f.write(sign_content)
+    key_f.write(f"\rfunCGenPrivateKeyAndSign ./{node} ./ca")
 
 
 def script_builder(src_folder, savop_dir, input_json, out_folder):
-    recompile_bird(os.path.join(src_folder, "sav-reference-router"))
-    rebuild_img(src_folder)
+    # recompile_bird(os.path.join(src_folder, "sav-reference-router"))
+    # rebuild_img(src_folder)
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
     input_json = os.path.join(base_cfg_folder, input_json)
-    return regenerate_config(src_folder, input_json,
-                             base_cfg_folder, out_folder)
+    device_number = regenerate_config(src_folder, input_json, base_cfg_folder, out_folder)
+    return device_number
