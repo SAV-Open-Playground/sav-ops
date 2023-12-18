@@ -187,7 +187,7 @@ if __name__ == "__main__":
     experiment_group = parser.add_argument_group("experiment", "refresh the SAVOP coniguration files, "
                                                                "restart the simulation and record experimental process "
                                                                "data.")
-    monitor_group.add_argument("-e", "--experiment", choices=["3_nodes_v4"], help="initiate a new experiment cycle")
+    experiment_group.add_argument("-e", "--experiment", choices=["3_nodes_v4"], help="initiate a new experiment cycle")
     args = parser.parse_args()
     result = run(args=args)
     print(f"run over, show: \n{result}")
