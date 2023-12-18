@@ -132,6 +132,7 @@ def run(args):
     experiment = args.experiment
 
     master_controller = MasterController()
+    result = None
     # generate config files
     if config is not None:
         match config:
