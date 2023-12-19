@@ -2597,5 +2597,61 @@
             "11",
             "dsav"
         ]
-    ]
+    ],
+    "as_relations": {
+        "description": "only provider-customer relation is saved,if we didn't find when building config, we assume peer-peer relation",
+        "provider-customer": [
+            [
+                "3356",
+                "34224"
+            ],
+            [
+                "3356",
+                "3549"
+            ],
+            [
+                "3356",
+                "13335"
+            ],
+            [
+                "3356",
+                "3303"
+            ],
+            [
+                "3356",
+                "2519"
+            ],
+            [
+                "3356",
+                "3741"
+            ],
+            [
+                "3257",
+                "13335"
+            ],
+            [
+                "1299",
+                "13335"
+            ],
+            [
+                "174",
+                "3303"
+            ],
+            [
+                "1299",
+                "2519"
+            ],
+            [
+                "174",
+                "2519"
+            ],
+            [
+                "174",
+                "3741"
+            ]
+        ]
+    },
+    "enable_rpki": false,
+    "prefix_method": "blackhole",
+    "auto_ip_version": 4
 }
