@@ -1,0 +1,8056 @@
+{
+    "devices": {
+        "1": {
+            "as": 3356,
+            "prefixes": {
+                "4.0.0.0/9": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "4.55.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.0.0.0/9": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.0.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.4.162.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.6.180.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.7.75.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.10.144.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.10.166.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.10.167.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.11.231.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.16.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.18.103.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.18.237.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.23.133.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.26.84.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.29.54.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.31.131.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.32.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.33.209.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.35.7.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.35.98.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.35.104.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.35.107.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.37.25.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.37.85.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.39.145.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.40.5.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.40.20.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.40.99.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.40.100.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.41.61.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.42.171.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.44.210.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.48.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.51.0.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.64.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.192.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.224.0.0/11": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.224.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.240.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.241.98.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.241.141.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.241.142.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.241.144.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.241.174.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.241.175.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.241.176.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.241.177.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.241.178.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "2": {
+            "as": 34224,
+            "prefixes": {
+                "2.58.92.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.195.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.197.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.208.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.216.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.217.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.218.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.219.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.221.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.222.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.223.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.230.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.236.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.236.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.238.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.239.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.241.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.245.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.13.248.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.60.138.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.60.139.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.81.38.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "82.112.171.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "82.112.174.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "82.112.175.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.143.115.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.217.140.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.6.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.6.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.8.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.13.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.37.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.39.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.43.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.61.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.104.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.109.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.128.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.132.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.133.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.134.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.135.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.165.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.176.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.195.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.199.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.200.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.201.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.206.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "87.120.206.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "3": {
+            "as": 3549,
+            "prefixes": {
+                "8.242.80.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.88.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.120.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.128.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.144.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.144.192/26": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.149.128/25": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.151.192/26": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.160.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.161.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.168.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.176.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.180.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.184.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.188.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.192.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.192.128/26": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.195.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.196.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.200.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.201.128/26": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.208.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.208.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.216.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.224.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.230.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.232.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.242.240.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.246.192.0/25": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.246.192.128/25": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "35.248.0.0/13": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.176.234.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.185.16.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "50.58.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "50.58.56.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "50.58.62.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "50.58.63.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "50.58.119.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "50.58.183.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "50.58.226.192/26": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.27.32.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.76.0.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.76.9.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.76.11.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.76.13.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.76.16.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.76.23.0/25": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.76.23.128/26": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.76.23.192/26": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.76.24.128/26": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "4": {
+            "as": 13335,
+            "prefixes": {
+                "1.0.0.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.1.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.6.112.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.6.144.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.6.145.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.6.146.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.9.231.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.10.148.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.14.199.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.14.201.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.14.202.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.14.203.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.14.204.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.17.205.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.17.206.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.18.50.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.18.113.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.18.194.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.18.195.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.18.196.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.19.8.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.20.100.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.20.101.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.20.103.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.20.122.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.20.123.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.20.124.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.20.125.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.20.126.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.20.253.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.21.8.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.21.9.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.21.10.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.21.12.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.21.13.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.21.110.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.21.111.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.21.239.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.23.139.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.23.240.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.24.87.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.24.242.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.24.243.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.24.244.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.25.96.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.25.97.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.25.249.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.26.180.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.26.182.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.27.64.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "5": {
+            "as": 3303,
+            "prefixes": {
+                "46.14.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.14.0.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.14.128.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.245.144.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.202.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.202.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.202.0.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.202.128.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.203.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.203.0.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.203.128.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "78.110.128.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "80.75.192.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "80.94.144.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "81.62.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "81.62.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "81.63.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.76.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.76.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.76.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.77.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.78.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.78.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.79.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.173.192.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.173.192.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.173.224.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.253.0.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.253.0.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.253.32.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.0.0.0/13": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.0.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.0.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.2.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.4.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.4.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.6.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.198.58.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.198.72.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.206.11.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.209.158.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.212.91.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.212.117.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.216.229.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.223.121.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.223.154.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.226.202.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.230.249.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "92.104.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "92.104.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "6": {
+            "as": 209,
+            "prefixes": {
+                "8.3.97.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.15.5.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.149.32.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.178.160.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "24.223.60.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "24.223.74.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "44.2.6.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "52.119.16.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "52.119.26.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "52.119.28.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.67.172.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.144.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.145.63.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.145.247.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.146.38.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.147.62.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.149.87.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.150.52.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.152.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.153.0.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.155.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.155.0.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.162.198.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.162.200.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.162.201.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.162.202.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.162.204.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.162.205.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.162.206.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.162.207.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.173.118.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.173.122.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.0.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.10.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.16.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.25.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.26.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.32.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.40.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.44.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.46.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.48.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.51.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.54.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.56.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.62.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.64.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.68.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.224.70.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "7": {
+            "as": 1299,
+            "prefixes": {
+                "2.22.36.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.22.40.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.22.238.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.23.128.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.255.192.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.255.248.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.74.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.97.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.120.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.40.124.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.53.48.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.228.184.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.15.18.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.87.30.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.134.220.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.148.4.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.148.97.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.148.98.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.149.105.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.149.106.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.230.176.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.230.192.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.230.208.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.230.208.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.230.216.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.115.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.115.128.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "80.91.240.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "80.91.248.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "80.239.128.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "80.239.160.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "80.239.192.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "80.239.224.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.32.104.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.32.253.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.245.48.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.245.56.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.245.58.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.245.60.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "84.254.68.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "89.31.219.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "89.116.115.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "89.116.233.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.149.32.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.193.254.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.193.255.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "95.101.133.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "103.47.204.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "104.103.64.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "139.123.228.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "8": {
+            "as": 174,
+            "prefixes": {
+                "2.58.4.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.157.72.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.182.110.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.24.64.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.24.72.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.148.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.149.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.154.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.155.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.138.128.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.146.192.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.148.192.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.154.0.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.161.96.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.179.208.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.0.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.2.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.4.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.6.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.8.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.16.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.18.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.20.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.24.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.25.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.26.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.28.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.30.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.31.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.32.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.34.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.36.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.38.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.40.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.41.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.42.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.44.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.47.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.48.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.49.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.50.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.52.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.53.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.54.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.56.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.58.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.59.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.60.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.237.62.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "9": {
+            "as": 7018,
+            "prefixes": {
+                "5.105.212.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.182.114.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.249.176.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.0.0.0/8": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.0.0.0/9": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.48.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.48.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.52.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.54.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.56.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.56.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.58.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.60.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.72.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.73.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.74.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.75.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.76.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.77.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.78.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.79.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.66.80.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.67.4.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.67.8.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.67.10.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.67.11.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.127.255.255/32": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.128.0.0/9": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.129.28.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.129.85.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.129.100.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.130.63.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.130.108.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.130.142.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.130.176.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "12.130.177.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "15.0.64.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "15.0.104.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "15.0.112.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "15.12.72.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.0.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.4.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.8.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.12.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.112.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.195.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.233.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.251.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.112.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.130.40.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "10": {
+            "as": 2519,
+            "prefixes": {
+                "1.0.16.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.64.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.96.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.97.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.98.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.99.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.100.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.101.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.102.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.103.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.104.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.105.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.106.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.107.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.108.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.109.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.110.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.111.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.112.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.113.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.114.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.115.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.116.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.117.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.118.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.119.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.120.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.121.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.122.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.123.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.124.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.125.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.1.126.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.21.0.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.21.64.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.21.112.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.21.144.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.21.160.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.21.192.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.96.16.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.96.32.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.121.128.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.2.32.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.2.64.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.2.128.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.2.224.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.3.0.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.3.128.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.3.224.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.225.88.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "11": {
+            "as": 3257,
+            "prefixes": {
+                "2.56.236.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.58.75.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.83.96.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.133.190.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.178.16.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.19.112.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.19.203.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.31.122.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.35.16.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.35.16.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.35.21.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.35.24.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.35.30.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "8.37.186.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.27.8.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.27.236.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.184.144.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.230.1.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.230.64.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.230.83.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.230.115.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.230.121.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.230.186.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.230.234.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.230.235.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.234.128.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.234.132.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.234.136.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.234.140.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.234.144.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.234.152.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.234.156.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.252.77.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.252.78.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "24.219.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.12.12.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.1.152.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.8.164.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.38.206.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.38.234.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.38.251.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.39.39.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.39.66.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.39.77.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.39.95.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.39.161.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.39.174.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.41.12.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.41.60.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.56.195.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "12": {
+            "as": 3741,
+            "prefixes": {
+                "41.57.112.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.77.111.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.79.160.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.149.227.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.118.154.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "102.68.68.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "102.68.68.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "102.223.116.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "139.53.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "152.110.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "152.110.112.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "155.234.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "155.236.150.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "155.237.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "156.8.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "160.48.233.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "160.48.234.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "160.123.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "163.199.96.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "163.199.98.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "163.199.99.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "163.199.101.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "163.199.104.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "163.199.108.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "163.199.136.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "163.203.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "165.4.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.89.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.55.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.72.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.116.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.120.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.128.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.131.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.132.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.192.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.194.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.196.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.204.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.216.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.220.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.142.240.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.209.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "168.210.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "169.202.201.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "169.202.202.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "192.69.19.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "192.94.242.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "192.96.22.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "13": {
+            "as": 2914,
+            "prefixes": {
+                "2.58.196.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.158.208.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.217.216.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.110.64.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "50.31.236.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "61.58.32.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "61.120.144.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "61.200.80.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "61.213.144.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "61.213.160.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "61.251.96.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "62.73.160.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.113.4.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.253.90.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "81.19.96.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "81.20.64.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "81.25.192.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "81.93.176.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "81.93.208.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "82.112.96.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.217.224.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "83.231.128.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.186.160.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "103.13.80.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "103.20.18.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "104.152.144.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "109.238.168.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "115.167.24.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "115.167.28.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "116.51.16.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "116.51.40.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "116.197.144.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "116.197.148.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "116.197.149.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "117.103.176.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "117.104.64.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "117.104.128.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "117.104.132.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "120.29.144.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "120.88.48.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "120.88.48.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "122.255.80.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "124.40.0.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "124.40.32.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "128.121.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "128.241.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "128.242.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "128.242.94.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "129.250.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.94.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "14": {
+            "as": 6762,
+            "prefixes": {
+                "2.16.19.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.16.70.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.16.220.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.17.124.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.18.0.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.20.224.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.20.252.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.21.14.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.22.20.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.23.16.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.178.40.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.178.42.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.45.122.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.50.144.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.50.176.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.57.84.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.79.247.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.205.48.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.78.60.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "79.140.80.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "79.140.80.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "79.140.81.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "79.140.84.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "79.140.94.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.204.127.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "88.221.28.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "88.221.100.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "89.33.163.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "89.39.252.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "89.221.32.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "91.194.236.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "92.122.68.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "92.122.225.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "92.122.248.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "92.123.48.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "92.123.106.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "92.123.208.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "93.113.158.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "93.186.128.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "93.186.135.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "93.186.136.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "95.100.128.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "95.100.224.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "95.100.250.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "95.101.68.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "95.101.114.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "95.101.156.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "104.76.208.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "104.77.185.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "104.85.248.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "15": {
+            "as": 2516,
+            "prefixes": {
+                "14.8.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "14.10.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "14.12.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "14.101.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.80.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.81.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.82.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.83.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.84.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.85.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.86.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.87.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.88.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.89.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.90.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.91.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.92.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.93.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.94.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.95.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.8.0.0/13": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.246.192.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.121.148.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.122.224.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.124.216.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.126.156.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.127.28.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "49.132.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.128.0.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.128.64.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.128.96.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.128.128.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.129.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.130.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.131.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.132.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.133.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.134.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.135.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.136.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.137.0.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.137.128.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.138.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.139.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.140.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.141.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.142.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.143.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.153.140.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "61.114.0.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "16": {
+            "as": 38040,
+            "prefixes": {
+                "23.48.64.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.48.80.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.48.84.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.56.144.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.200.136.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.64.76.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.64.77.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.64.78.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "103.21.24.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "103.21.25.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "103.21.26.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "103.21.27.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "104.76.195.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "118.214.4.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "180.180.248.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "180.180.249.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "180.180.251.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "180.180.252.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "180.180.253.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "180.180.254.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "180.180.255.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "203.113.63.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "203.153.50.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "203.153.50.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "203.153.51.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "203.190.250.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "203.190.251.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "17": {
+            "as": 2152,
+            "prefixes": {
+                "64.39.112.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "76.78.96.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "104.249.91.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "104.249.94.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.17.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.65.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.150.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.157.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.166.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.166.51.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.182.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.191.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "130.212.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "132.241.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "134.139.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "134.139.1.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "134.139.2.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "134.154.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "134.154.1.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "134.154.206.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "136.168.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "136.228.176.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "137.145.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "137.150.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "137.151.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "137.151.251.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "137.151.252.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "18": {
+            "as": 5511,
+            "prefixes": {
+                "41.223.96.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.88.20.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.88.22.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.89.36.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.89.38.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.92.2.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.129.88.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.129.90.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.134.248.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.134.250.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.135.8.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.135.10.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.136.216.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.136.218.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.138.76.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.138.78.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.139.32.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.139.34.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.139.228.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.139.230.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.140.68.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.140.70.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.140.214.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.141.48.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.141.50.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.142.204.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.142.206.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "19": {
+            "as": 293,
+            "prefixes": {
+                "134.55.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "134.167.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "192.12.208.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "192.43.188.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "192.69.190.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "192.107.175.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "192.188.24.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "198.99.246.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "198.207.238.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "198.207.239.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "199.201.153.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "199.201.154.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "199.201.155.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "199.201.157.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "199.201.158.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "20": {
+            "as": 4837,
+            "prefixes": {
+                "1.24.0.0/13": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.56.0.0/13": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.188.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "14.204.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.0.128.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.0.130.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.0.132.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.8.0.0/13": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.50.128.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.98.224.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.112.0.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "27.192.0.0/11": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.32.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "36.248.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "39.64.0.0/11": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "21": {
+            "as": 1273,
+            "prefixes": {
+                "5.28.192.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.18.144.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.18.145.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.18.146.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.18.147.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.18.148.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.18.149.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.12.208.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.12.209.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.108.232.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.108.235.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.190.137.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.190.254.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "47.73.170.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "47.73.182.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "22": {
+            "as": 1239,
+            "prefixes": {
+                "2.56.32.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.58.170.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "2.58.176.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.86.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.87.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.88.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.89.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.128.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.160.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.176.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.190.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.191.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.192.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.194.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.105.206.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "23": {
+            "as": 6453,
+            "prefixes": {
+                "5.23.0.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "37.139.132.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.206.160.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.206.176.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.206.184.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.206.188.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.241.40.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.241.40.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.241.41.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.241.42.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.231.24.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.163.231.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.243.128.0/17": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.7.112.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.86.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "24": {
+            "as": 31133,
+            "prefixes": {
+                "31.173.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.128.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.129.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.130.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.136.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.137.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.138.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.139.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.140.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.141.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.142.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.144.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.147.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.148.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.173.149.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "25": {
+            "as": 64049,
+            "prefixes": {
+                "49.45.4.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "49.45.5.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.153.104.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.153.106.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "59.153.107.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "103.198.140.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "103.198.142.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "26": {
+            "as": 6461,
+            "prefixes": {
+                "23.162.208.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.208.55.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.249.63.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.30.158.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.56.211.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.124.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "64.124.188.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "27": {
+            "as": 3491,
+            "prefixes": {
+                "41.79.244.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.79.245.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.79.248.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.79.249.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.79.250.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.221.208.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.221.208.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "28": {
+            "as": 6939,
+            "prefixes": {
+                "5.180.83.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.26.128.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.142.192.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.145.128.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.146.80.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.164.160.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.171.48.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "29": {
+            "as": 9002,
+            "prefixes": {
+                "23.56.98.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.11.24.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.11.27.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.134.254.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.135.165.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.143.92.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.208.208.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "30": {
+            "as": 37100,
+            "prefixes": {
+                "41.87.96.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.206.96.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.207.232.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "41.217.212.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "102.221.24.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "105.16.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "154.72.240.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "31": {
+            "as": 3786,
+            "prefixes": {
+                "1.208.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.208.2.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.209.94.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.49.48.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.53.224.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.58.88.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.61.64.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "32": {
+            "as": 5413,
+            "prefixes": {
+                "5.22.224.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.44.252.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.59.183.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.179.96.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "5.252.36.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.83.76.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.83.76.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "33": {
+            "as": 701,
+            "prefixes": {
+                "23.29.96.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "23.29.104.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.0.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.16.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.48.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.64.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "63.80.0.0/12": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "34": {
+            "as": 4134,
+            "prefixes": {
+                "1.48.0.0/15": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.50.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.68.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.80.0.0/13": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.180.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.192.0.0/13": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.204.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "35": {
+            "as": 132203,
+            "prefixes": {
+                "1.12.0.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.12.34.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.201.184.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.201.188.0/23": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.128.0.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.128.52.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "43.128.64.0/18": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "36": {
+            "as": 4766,
+            "prefixes": {
+                "1.96.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.100.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.104.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.108.0.0/14": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.231.13.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.231.122.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "1.231.136.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "37": {
+            "as": 12552,
+            "prefixes": {
+                "2.56.28.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.204.64.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.209.176.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.209.176.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "31.209.177.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.15.29.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.92.12.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "38": {
+            "as": 57866,
+            "prefixes": {
+                "37.139.136.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.88.65.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.132.152.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.141.104.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "45.149.8.0/22": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "46.226.126.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "85.208.60.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "39": {
+            "as": 16735,
+            "prefixes": {
+                "177.69.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "177.126.96.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "179.108.96.0/19": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "186.237.192.0/21": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "187.32.0.0/16": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "187.44.96.0/20": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                },
+                "187.44.98.0/24": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "40": {
+            "as": 33891,
+            "prefixes": {}
+        },
+        "41": {
+            "as": 9607,
+            "prefixes": {}
+        },
+        "42": {
+            "as": 55410,
+            "prefixes": {}
+        },
+        "43": {
+            "as": 2497,
+            "prefixes": {}
+        },
+        "44": {
+            "as": 9680,
+            "prefixes": {}
+        },
+        "45": {
+            "as": 4775,
+            "prefixes": {}
+        },
+        "46": {
+            "as": 55644,
+            "prefixes": {}
+        },
+        "47": {
+            "as": 16509,
+            "prefixes": {}
+        },
+        "48": {
+            "as": 18403,
+            "prefixes": {}
+        },
+        "49": {
+            "as": 4809,
+            "prefixes": {}
+        },
+        "50": {
+            "as": 4637,
+            "prefixes": {}
+        },
+        "51": {
+            "as": 136907,
+            "prefixes": {}
+        },
+        "52": {
+            "as": 7303,
+            "prefixes": {}
+        },
+        "53": {
+            "as": 6663,
+            "prefixes": {}
+        },
+        "54": {
+            "as": 12479,
+            "prefixes": {}
+        },
+        "55": {
+            "as": 15169,
+            "prefixes": {}
+        },
+        "56": {
+            "as": 9505,
+            "prefixes": {}
+        },
+        "57": {
+            "as": 9957,
+            "prefixes": {}
+        },
+        "58": {
+            "as": 4657,
+            "prefixes": {}
+        },
+        "59": {
+            "as": 45974,
+            "prefixes": {}
+        },
+        "60": {
+            "as": 23764,
+            "prefixes": {}
+        },
+        "61": {
+            "as": 9304,
+            "prefixes": {}
+        },
+        "62": {
+            "as": 4651,
+            "prefixes": {}
+        },
+        "63": {
+            "as": 702,
+            "prefixes": {}
+        },
+        "64": {
+            "as": 4788,
+            "prefixes": {}
+        },
+        "65": {
+            "as": 9318,
+            "prefixes": {}
+        },
+        "66": {
+            "as": 8763,
+            "prefixes": {}
+        },
+        "67": {
+            "as": 9498,
+            "prefixes": {}
+        },
+        "68": {
+            "as": 3462,
+            "prefixes": {}
+        },
+        "69": {
+            "as": 58453,
+            "prefixes": {}
+        },
+        "70": {
+            "as": 9605,
+            "prefixes": {}
+        },
+        "71": {
+            "as": 10158,
+            "prefixes": {}
+        },
+        "72": {
+            "as": 20912,
+            "prefixes": {}
+        },
+        "73": {
+            "as": 49788,
+            "prefixes": {}
+        },
+        "74": {
+            "as": 18106,
+            "prefixes": {}
+        },
+        "75": {
+            "as": 11686,
+            "prefixes": {}
+        },
+        "76": {
+            "as": 22652,
+            "prefixes": {}
+        },
+        "77": {
+            "as": 8492,
+            "prefixes": {}
+        },
+        "78": {
+            "as": 23673,
+            "prefixes": {}
+        },
+        "79": {
+            "as": 1403,
+            "prefixes": {}
+        },
+        "80": {
+            "as": 17676,
+            "prefixes": {}
+        },
+        "81": {
+            "as": 7473,
+            "prefixes": {}
+        },
+        "82": {
+            "as": 3320,
+            "prefixes": {}
+        },
+        "83": {
+            "as": 3561,
+            "prefixes": {}
+        },
+        "84": {
+            "as": 7545,
+            "prefixes": {}
+        },
+        "85": {
+            "as": 15412,
+            "prefixes": {}
+        },
+        "86": {
+            "as": 9583,
+            "prefixes": {}
+        },
+        "87": {
+            "as": 24785,
+            "prefixes": {}
+        },
+        "88": {
+            "as": 64050,
+            "prefixes": {}
+        },
+        "89": {
+            "as": 10089,
+            "prefixes": {}
+        },
+        "90": {
+            "as": 15932,
+            "prefixes": {}
+        },
+        "91": {
+            "as": 4538,
+            "prefixes": {}
+        },
+        "92": {
+            "as": 4826,
+            "prefixes": {}
+        },
+        "93": {
+            "as": 6830,
+            "prefixes": {}
+        },
+        "94": {
+            "as": 20764,
+            "prefixes": {}
+        },
+        "95": {
+            "as": 1237,
+            "prefixes": {}
+        },
+        "96": {
+            "as": 20485,
+            "prefixes": {}
+        },
+        "97": {
+            "as": 7497,
+            "prefixes": {}
+        },
+        "98": {
+            "as": 9929,
+            "prefixes": {}
+        }
+    },
+    "links": [
+        [
+            "1",
+            "2",
+            "dsav"
+        ],
+        [
+            "1",
+            "3",
+            "dsav"
+        ],
+        [
+            "1",
+            "4",
+            "dsav"
+        ],
+        [
+            "1",
+            "5",
+            "dsav"
+        ],
+        [
+            "1",
+            "6",
+            "dsav"
+        ],
+        [
+            "1",
+            "7",
+            "dsav"
+        ],
+        [
+            "1",
+            "8",
+            "dsav"
+        ],
+        [
+            "1",
+            "9",
+            "dsav"
+        ],
+        [
+            "1",
+            "10",
+            "dsav"
+        ],
+        [
+            "1",
+            "11",
+            "dsav"
+        ],
+        [
+            "1",
+            "12",
+            "dsav"
+        ],
+        [
+            "1",
+            "13",
+            "dsav"
+        ],
+        [
+            "1",
+            "14",
+            "dsav"
+        ],
+        [
+            "1",
+            "15",
+            "dsav"
+        ],
+        [
+            "1",
+            "16",
+            "dsav"
+        ],
+        [
+            "1",
+            "17",
+            "dsav"
+        ],
+        [
+            "1",
+            "18",
+            "dsav"
+        ],
+        [
+            "1",
+            "19",
+            "dsav"
+        ],
+        [
+            "1",
+            "20",
+            "dsav"
+        ],
+        [
+            "1",
+            "21",
+            "dsav"
+        ],
+        [
+            "1",
+            "22",
+            "dsav"
+        ],
+        [
+            "1",
+            "23",
+            "dsav"
+        ],
+        [
+            "1",
+            "24",
+            "dsav"
+        ],
+        [
+            "1",
+            "25",
+            "dsav"
+        ],
+        [
+            "1",
+            "26",
+            "dsav"
+        ],
+        [
+            "1",
+            "27",
+            "dsav"
+        ],
+        [
+            "1",
+            "28",
+            "dsav"
+        ],
+        [
+            "1",
+            "29",
+            "dsav"
+        ],
+        [
+            "1",
+            "30",
+            "dsav"
+        ],
+        [
+            "1",
+            "31",
+            "dsav"
+        ],
+        [
+            "1",
+            "32",
+            "dsav"
+        ],
+        [
+            "1",
+            "33",
+            "dsav"
+        ],
+        [
+            "1",
+            "34",
+            "dsav"
+        ],
+        [
+            "1",
+            "35",
+            "dsav"
+        ],
+        [
+            "1",
+            "36",
+            "dsav"
+        ],
+        [
+            "1",
+            "37",
+            "dsav"
+        ],
+        [
+            "1",
+            "38",
+            "dsav"
+        ],
+        [
+            "1",
+            "39",
+            "dsav"
+        ],
+        [
+            "1",
+            "40",
+            "dsav"
+        ],
+        [
+            "1",
+            "41",
+            "dsav"
+        ],
+        [
+            "1",
+            "42",
+            "dsav"
+        ],
+        [
+            "1",
+            "43",
+            "dsav"
+        ],
+        [
+            "1",
+            "44",
+            "dsav"
+        ],
+        [
+            "1",
+            "45",
+            "dsav"
+        ],
+        [
+            "1",
+            "46",
+            "dsav"
+        ],
+        [
+            "1",
+            "47",
+            "dsav"
+        ],
+        [
+            "1",
+            "48",
+            "dsav"
+        ],
+        [
+            "1",
+            "49",
+            "dsav"
+        ],
+        [
+            "1",
+            "50",
+            "dsav"
+        ],
+        [
+            "1",
+            "51",
+            "dsav"
+        ],
+        [
+            "2",
+            "4",
+            "dsav"
+        ],
+        [
+            "2",
+            "28",
+            "dsav"
+        ],
+        [
+            "2",
+            "61",
+            "dsav"
+        ],
+        [
+            "2",
+            "16",
+            "dsav"
+        ],
+        [
+            "2",
+            "62",
+            "dsav"
+        ],
+        [
+            "2",
+            "23",
+            "dsav"
+        ],
+        [
+            "2",
+            "63",
+            "dsav"
+        ],
+        [
+            "2",
+            "64",
+            "dsav"
+        ],
+        [
+            "2",
+            "65",
+            "dsav"
+        ],
+        [
+            "2",
+            "35",
+            "dsav"
+        ],
+        [
+            "2",
+            "66",
+            "dsav"
+        ],
+        [
+            "2",
+            "67",
+            "dsav"
+        ],
+        [
+            "2",
+            "29",
+            "dsav"
+        ],
+        [
+            "2",
+            "14",
+            "dsav"
+        ],
+        [
+            "2",
+            "68",
+            "dsav"
+        ],
+        [
+            "2",
+            "45",
+            "dsav"
+        ],
+        [
+            "2",
+            "69",
+            "dsav"
+        ],
+        [
+            "2",
+            "60",
+            "dsav"
+        ],
+        [
+            "2",
+            "48",
+            "dsav"
+        ],
+        [
+            "2",
+            "70",
+            "dsav"
+        ],
+        [
+            "2",
+            "53",
+            "dsav"
+        ],
+        [
+            "2",
+            "55",
+            "dsav"
+        ],
+        [
+            "2",
+            "71",
+            "dsav"
+        ],
+        [
+            "3",
+            "45",
+            "dsav"
+        ],
+        [
+            "4",
+            "9",
+            "dsav"
+        ],
+        [
+            "4",
+            "72",
+            "dsav"
+        ],
+        [
+            "4",
+            "11",
+            "dsav"
+        ],
+        [
+            "4",
+            "73",
+            "dsav"
+        ],
+        [
+            "4",
+            "12",
+            "dsav"
+        ],
+        [
+            "4",
+            "74",
+            "dsav"
+        ],
+        [
+            "4",
+            "75",
+            "dsav"
+        ],
+        [
+            "4",
+            "76",
+            "dsav"
+        ],
+        [
+            "4",
+            "38",
+            "dsav"
+        ],
+        [
+            "4",
+            "77",
+            "dsav"
+        ],
+        [
+            "4",
+            "7",
+            "dsav"
+        ],
+        [
+            "4",
+            "17",
+            "dsav"
+        ],
+        [
+            "4",
+            "28",
+            "dsav"
+        ],
+        [
+            "4",
+            "43",
+            "dsav"
+        ],
+        [
+            "4",
+            "19",
+            "dsav"
+        ],
+        [
+            "4",
+            "32",
+            "dsav"
+        ],
+        [
+            "4",
+            "13",
+            "dsav"
+        ],
+        [
+            "4",
+            "78",
+            "dsav"
+        ],
+        [
+            "4",
+            "79",
+            "dsav"
+        ],
+        [
+            "4",
+            "22",
+            "dsav"
+        ],
+        [
+            "5",
+            "28",
+            "dsav"
+        ],
+        [
+            "5",
+            "61",
+            "dsav"
+        ],
+        [
+            "5",
+            "43",
+            "dsav"
+        ],
+        [
+            "5",
+            "16",
+            "dsav"
+        ],
+        [
+            "5",
+            "62",
+            "dsav"
+        ],
+        [
+            "5",
+            "20",
+            "dsav"
+        ],
+        [
+            "5",
+            "23",
+            "dsav"
+        ],
+        [
+            "5",
+            "80",
+            "dsav"
+        ],
+        [
+            "5",
+            "13",
+            "dsav"
+        ],
+        [
+            "5",
+            "8",
+            "dsav"
+        ],
+        [
+            "5",
+            "81",
+            "dsav"
+        ],
+        [
+            "5",
+            "27",
+            "dsav"
+        ],
+        [
+            "5",
+            "64",
+            "dsav"
+        ],
+        [
+            "5",
+            "25",
+            "dsav"
+        ],
+        [
+            "5",
+            "31",
+            "dsav"
+        ],
+        [
+            "5",
+            "65",
+            "dsav"
+        ],
+        [
+            "5",
+            "34",
+            "dsav"
+        ],
+        [
+            "5",
+            "35",
+            "dsav"
+        ],
+        [
+            "5",
+            "36",
+            "dsav"
+        ],
+        [
+            "5",
+            "66",
+            "dsav"
+        ],
+        [
+            "5",
+            "50",
+            "dsav"
+        ],
+        [
+            "5",
+            "21",
+            "dsav"
+        ],
+        [
+            "5",
+            "67",
+            "dsav"
+        ],
+        [
+            "5",
+            "29",
+            "dsav"
+        ],
+        [
+            "5",
+            "26",
+            "dsav"
+        ],
+        [
+            "5",
+            "60",
+            "dsav"
+        ],
+        [
+            "5",
+            "69",
+            "dsav"
+        ],
+        [
+            "5",
+            "11",
+            "dsav"
+        ],
+        [
+            "5",
+            "82",
+            "dsav"
+        ],
+        [
+            "5",
+            "55",
+            "dsav"
+        ],
+        [
+            "6",
+            "83",
+            "dsav"
+        ],
+        [
+            "7",
+            "9",
+            "dsav"
+        ],
+        [
+            "7",
+            "84",
+            "dsav"
+        ],
+        [
+            "7",
+            "11",
+            "dsav"
+        ],
+        [
+            "7",
+            "38",
+            "dsav"
+        ],
+        [
+            "7",
+            "10",
+            "dsav"
+        ],
+        [
+            "7",
+            "76",
+            "dsav"
+        ],
+        [
+            "7",
+            "79",
+            "dsav"
+        ],
+        [
+            "7",
+            "85",
+            "dsav"
+        ],
+        [
+            "7",
+            "43",
+            "dsav"
+        ],
+        [
+            "7",
+            "16",
+            "dsav"
+        ],
+        [
+            "7",
+            "81",
+            "dsav"
+        ],
+        [
+            "7",
+            "73",
+            "dsav"
+        ],
+        [
+            "7",
+            "20",
+            "dsav"
+        ],
+        [
+            "7",
+            "32",
+            "dsav"
+        ],
+        [
+            "7",
+            "13",
+            "dsav"
+        ],
+        [
+            "7",
+            "80",
+            "dsav"
+        ],
+        [
+            "7",
+            "86",
+            "dsav"
+        ],
+        [
+            "7",
+            "24",
+            "dsav"
+        ],
+        [
+            "7",
+            "8",
+            "dsav"
+        ],
+        [
+            "7",
+            "23",
+            "dsav"
+        ],
+        [
+            "7",
+            "28",
+            "dsav"
+        ],
+        [
+            "7",
+            "14",
+            "dsav"
+        ],
+        [
+            "7",
+            "21",
+            "dsav"
+        ],
+        [
+            "7",
+            "25",
+            "dsav"
+        ],
+        [
+            "7",
+            "22",
+            "dsav"
+        ],
+        [
+            "7",
+            "26",
+            "dsav"
+        ],
+        [
+            "7",
+            "27",
+            "dsav"
+        ],
+        [
+            "7",
+            "64",
+            "dsav"
+        ],
+        [
+            "7",
+            "30",
+            "dsav"
+        ],
+        [
+            "7",
+            "65",
+            "dsav"
+        ],
+        [
+            "7",
+            "34",
+            "dsav"
+        ],
+        [
+            "7",
+            "35",
+            "dsav"
+        ],
+        [
+            "7",
+            "36",
+            "dsav"
+        ],
+        [
+            "7",
+            "87",
+            "dsav"
+        ],
+        [
+            "7",
+            "67",
+            "dsav"
+        ],
+        [
+            "7",
+            "88",
+            "dsav"
+        ],
+        [
+            "7",
+            "58",
+            "dsav"
+        ],
+        [
+            "7",
+            "29",
+            "dsav"
+        ],
+        [
+            "7",
+            "44",
+            "dsav"
+        ],
+        [
+            "7",
+            "45",
+            "dsav"
+        ],
+        [
+            "7",
+            "47",
+            "dsav"
+        ],
+        [
+            "7",
+            "89",
+            "dsav"
+        ],
+        [
+            "7",
+            "90",
+            "dsav"
+        ],
+        [
+            "7",
+            "91",
+            "dsav"
+        ],
+        [
+            "7",
+            "60",
+            "dsav"
+        ],
+        [
+            "7",
+            "48",
+            "dsav"
+        ],
+        [
+            "7",
+            "69",
+            "dsav"
+        ],
+        [
+            "7",
+            "49",
+            "dsav"
+        ],
+        [
+            "7",
+            "50",
+            "dsav"
+        ],
+        [
+            "8",
+            "84",
+            "dsav"
+        ],
+        [
+            "8",
+            "75",
+            "dsav"
+        ],
+        [
+            "8",
+            "10",
+            "dsav"
+        ],
+        [
+            "8",
+            "12",
+            "dsav"
+        ],
+        [
+            "8",
+            "18",
+            "dsav"
+        ],
+        [
+            "8",
+            "73",
+            "dsav"
+        ],
+        [
+            "8",
+            "27",
+            "dsav"
+        ],
+        [
+            "8",
+            "30",
+            "dsav"
+        ],
+        [
+            "8",
+            "86",
+            "dsav"
+        ],
+        [
+            "8",
+            "9",
+            "dsav"
+        ],
+        [
+            "8",
+            "11",
+            "dsav"
+        ],
+        [
+            "8",
+            "76",
+            "dsav"
+        ],
+        [
+            "8",
+            "93",
+            "dsav"
+        ],
+        [
+            "8",
+            "24",
+            "dsav"
+        ],
+        [
+            "8",
+            "13",
+            "dsav"
+        ],
+        [
+            "8",
+            "22",
+            "dsav"
+        ],
+        [
+            "8",
+            "79",
+            "dsav"
+        ],
+        [
+            "8",
+            "23",
+            "dsav"
+        ],
+        [
+            "8",
+            "94",
+            "dsav"
+        ],
+        [
+            "8",
+            "64",
+            "dsav"
+        ],
+        [
+            "8",
+            "16",
+            "dsav"
+        ],
+        [
+            "8",
+            "65",
+            "dsav"
+        ],
+        [
+            "8",
+            "34",
+            "dsav"
+        ],
+        [
+            "8",
+            "95",
+            "dsav"
+        ],
+        [
+            "8",
+            "74",
+            "dsav"
+        ],
+        [
+            "8",
+            "96",
+            "dsav"
+        ],
+        [
+            "8",
+            "43",
+            "dsav"
+        ],
+        [
+            "8",
+            "97",
+            "dsav"
+        ],
+        [
+            "8",
+            "62",
+            "dsav"
+        ],
+        [
+            "8",
+            "67",
+            "dsav"
+        ],
+        [
+            "8",
+            "21",
+            "dsav"
+        ],
+        [
+            "8",
+            "98",
+            "dsav"
+        ],
+        [
+            "8",
+            "26",
+            "dsav"
+        ],
+        [
+            "8",
+            "44",
+            "dsav"
+        ],
+        [
+            "8",
+            "46",
+            "dsav"
+        ],
+        [
+            "8",
+            "47",
+            "dsav"
+        ],
+        [
+            "8",
+            "20",
+            "dsav"
+        ],
+        [
+            "8",
+            "60",
+            "dsav"
+        ],
+        [
+            "8",
+            "14",
+            "dsav"
+        ],
+        [
+            "8",
+            "85",
+            "dsav"
+        ],
+        [
+            "8",
+            "31",
+            "dsav"
+        ],
+        [
+            "8",
+            "69",
+            "dsav"
+        ],
+        [
+            "9",
+            "13",
+            "dsav"
+        ],
+        [
+            "9",
+            "43",
+            "dsav"
+        ],
+        [
+            "9",
+            "23",
+            "dsav"
+        ],
+        [
+            "9",
+            "18",
+            "dsav"
+        ],
+        [
+            "9",
+            "20",
+            "dsav"
+        ],
+        [
+            "9",
+            "22",
+            "dsav"
+        ],
+        [
+            "9",
+            "26",
+            "dsav"
+        ],
+        [
+            "9",
+            "27",
+            "dsav"
+        ],
+        [
+            "9",
+            "34",
+            "dsav"
+        ],
+        [
+            "9",
+            "33",
+            "dsav"
+        ],
+        [
+            "9",
+            "28",
+            "dsav"
+        ],
+        [
+            "9",
+            "44",
+            "dsav"
+        ],
+        [
+            "9",
+            "45",
+            "dsav"
+        ],
+        [
+            "9",
+            "47",
+            "dsav"
+        ],
+        [
+            "9",
+            "11",
+            "dsav"
+        ],
+        [
+            "9",
+            "55",
+            "dsav"
+        ],
+        [
+            "9",
+            "14",
+            "dsav"
+        ],
+        [
+            "10",
+            "43",
+            "dsav"
+        ],
+        [
+            "10",
+            "74",
+            "dsav"
+        ],
+        [
+            "10",
+            "50",
+            "dsav"
+        ],
+        [
+            "10",
+            "28",
+            "dsav"
+        ],
+        [
+            "11",
+            "72",
+            "dsav"
+        ],
+        [
+            "11",
+            "13",
+            "dsav"
+        ],
+        [
+            "11",
+            "43",
+            "dsav"
+        ],
+        [
+            "11",
+            "69",
+            "dsav"
+        ],
+        [
+            "11",
+            "30",
+            "dsav"
+        ],
+        [
+            "11",
+            "20",
+            "dsav"
+        ],
+        [
+            "11",
+            "27",
+            "dsav"
+        ],
+        [
+            "11",
+            "80",
+            "dsav"
+        ],
+        [
+            "11",
+            "23",
+            "dsav"
+        ],
+        [
+            "11",
+            "26",
+            "dsav"
+        ],
+        [
+            "11",
+            "34",
+            "dsav"
+        ],
+        [
+            "11",
+            "36",
+            "dsav"
+        ],
+        [
+            "11",
+            "22",
+            "dsav"
+        ],
+        [
+            "11",
+            "21",
+            "dsav"
+        ],
+        [
+            "11",
+            "67",
+            "dsav"
+        ],
+        [
+            "11",
+            "76",
+            "dsav"
+        ],
+        [
+            "11",
+            "47",
+            "dsav"
+        ],
+        [
+            "11",
+            "60",
+            "dsav"
+        ],
+        [
+            "11",
+            "93",
+            "dsav"
+        ],
+        [
+            "11",
+            "50",
+            "dsav"
+        ],
+        [
+            "11",
+            "92",
+            "dsav"
+        ],
+        [
+            "11",
+            "18",
+            "dsav"
+        ],
+        [
+            "11",
+            "55",
+            "dsav"
+        ],
+        [
+            "11",
+            "14",
+            "dsav"
+        ],
+        [
+            "12",
+            "28",
+            "dsav"
+        ],
+        [
+            "12",
+            "85",
+            "dsav"
+        ],
+        [
+            "12",
+            "62",
+            "dsav"
+        ],
+        [
+            "12",
+            "29",
+            "dsav"
+        ],
+        [
+            "12",
+            "34",
+            "dsav"
+        ],
+        [
+            "12",
+            "13",
+            "dsav"
+        ],
+        [
+            "12",
+            "26",
+            "dsav"
+        ],
+        [
+            "12",
+            "25",
+            "dsav"
+        ],
+        [
+            "12",
+            "64",
+            "dsav"
+        ],
+        [
+            "12",
+            "65",
+            "dsav"
+        ],
+        [
+            "12",
+            "68",
+            "dsav"
+        ],
+        [
+            "12",
+            "60",
+            "dsav"
+        ],
+        [
+            "12",
+            "55",
+            "dsav"
+        ],
+        [
+            "13",
+            "23",
+            "dsav"
+        ],
+        [
+            "13",
+            "19",
+            "dsav"
+        ],
+        [
+            "13",
+            "61",
+            "dsav"
+        ],
+        [
+            "13",
+            "26",
+            "dsav"
+        ],
+        [
+            "13",
+            "38",
+            "dsav"
+        ],
+        [
+            "13",
+            "50",
+            "dsav"
+        ],
+        [
+            "13",
+            "16",
+            "dsav"
+        ],
+        [
+            "13",
+            "62",
+            "dsav"
+        ],
+        [
+            "13",
+            "20",
+            "dsav"
+        ],
+        [
+            "13",
+            "80",
+            "dsav"
+        ],
+        [
+            "13",
+            "60",
+            "dsav"
+        ],
+        [
+            "13",
+            "86",
+            "dsav"
+        ],
+        [
+            "13",
+            "22",
+            "dsav"
+        ],
+        [
+            "13",
+            "30",
+            "dsav"
+        ],
+        [
+            "13",
+            "27",
+            "dsav"
+        ],
+        [
+            "13",
+            "74",
+            "dsav"
+        ],
+        [
+            "13",
+            "43",
+            "dsav"
+        ],
+        [
+            "13",
+            "25",
+            "dsav"
+        ],
+        [
+            "13",
+            "81",
+            "dsav"
+        ],
+        [
+            "13",
+            "64",
+            "dsav"
+        ],
+        [
+            "13",
+            "31",
+            "dsav"
+        ],
+        [
+            "13",
+            "65",
+            "dsav"
+        ],
+        [
+            "13",
+            "34",
+            "dsav"
+        ],
+        [
+            "13",
+            "35",
+            "dsav"
+        ],
+        [
+            "13",
+            "36",
+            "dsav"
+        ],
+        [
+            "13",
+            "14",
+            "dsav"
+        ],
+        [
+            "13",
+            "69",
+            "dsav"
+        ],
+        [
+            "13",
+            "67",
+            "dsav"
+        ],
+        [
+            "13",
+            "21",
+            "dsav"
+        ],
+        [
+            "13",
+            "98",
+            "dsav"
+        ],
+        [
+            "13",
+            "88",
+            "dsav"
+        ],
+        [
+            "13",
+            "68",
+            "dsav"
+        ],
+        [
+            "13",
+            "45",
+            "dsav"
+        ],
+        [
+            "13",
+            "47",
+            "dsav"
+        ],
+        [
+            "13",
+            "89",
+            "dsav"
+        ],
+        [
+            "13",
+            "90",
+            "dsav"
+        ],
+        [
+            "13",
+            "91",
+            "dsav"
+        ],
+        [
+            "13",
+            "48",
+            "dsav"
+        ],
+        [
+            "13",
+            "70",
+            "dsav"
+        ],
+        [
+            "13",
+            "49",
+            "dsav"
+        ],
+        [
+            "13",
+            "32",
+            "dsav"
+        ],
+        [
+            "13",
+            "53",
+            "dsav"
+        ],
+        [
+            "13",
+            "18",
+            "dsav"
+        ],
+        [
+            "13",
+            "55",
+            "dsav"
+        ],
+        [
+            "13",
+            "85",
+            "dsav"
+        ],
+        [
+            "14",
+            "61",
+            "dsav"
+        ],
+        [
+            "14",
+            "30",
+            "dsav"
+        ],
+        [
+            "14",
+            "23",
+            "dsav"
+        ],
+        [
+            "14",
+            "16",
+            "dsav"
+        ],
+        [
+            "14",
+            "44",
+            "dsav"
+        ],
+        [
+            "14",
+            "21",
+            "dsav"
+        ],
+        [
+            "14",
+            "27",
+            "dsav"
+        ],
+        [
+            "14",
+            "34",
+            "dsav"
+        ],
+        [
+            "14",
+            "28",
+            "dsav"
+        ],
+        [
+            "14",
+            "52",
+            "dsav"
+        ],
+        [
+            "14",
+            "18",
+            "dsav"
+        ],
+        [
+            "14",
+            "22",
+            "dsav"
+        ],
+        [
+            "15",
+            "17",
+            "dsav"
+        ],
+        [
+            "16",
+            "28",
+            "dsav"
+        ],
+        [
+            "16",
+            "23",
+            "dsav"
+        ],
+        [
+            "16",
+            "69",
+            "dsav"
+        ],
+        [
+            "16",
+            "74",
+            "dsav"
+        ],
+        [
+            "16",
+            "81",
+            "dsav"
+        ],
+        [
+            "16",
+            "77",
+            "dsav"
+        ],
+        [
+            "16",
+            "43",
+            "dsav"
+        ],
+        [
+            "16",
+            "29",
+            "dsav"
+        ],
+        [
+            "16",
+            "27",
+            "dsav"
+        ],
+        [
+            "16",
+            "37",
+            "dsav"
+        ],
+        [
+            "16",
+            "94",
+            "dsav"
+        ],
+        [
+            "16",
+            "19",
+            "dsav"
+        ],
+        [
+            "17",
+            "28",
+            "dsav"
+        ],
+        [
+            "17",
+            "22",
+            "dsav"
+        ],
+        [
+            "17",
+            "26",
+            "dsav"
+        ],
+        [
+            "17",
+            "31",
+            "dsav"
+        ],
+        [
+            "17",
+            "65",
+            "dsav"
+        ],
+        [
+            "17",
+            "35",
+            "dsav"
+        ],
+        [
+            "17",
+            "36",
+            "dsav"
+        ],
+        [
+            "17",
+            "44",
+            "dsav"
+        ],
+        [
+            "17",
+            "47",
+            "dsav"
+        ],
+        [
+            "17",
+            "55",
+            "dsav"
+        ],
+        [
+            "17",
+            "56",
+            "dsav"
+        ],
+        [
+            "17",
+            "85",
+            "dsav"
+        ],
+        [
+            "18",
+            "20",
+            "dsav"
+        ],
+        [
+            "18",
+            "58",
+            "dsav"
+        ],
+        [
+            "18",
+            "28",
+            "dsav"
+        ],
+        [
+            "18",
+            "22",
+            "dsav"
+        ],
+        [
+            "18",
+            "82",
+            "dsav"
+        ],
+        [
+            "18",
+            "26",
+            "dsav"
+        ],
+        [
+            "18",
+            "93",
+            "dsav"
+        ],
+        [
+            "18",
+            "43",
+            "dsav"
+        ],
+        [
+            "18",
+            "23",
+            "dsav"
+        ],
+        [
+            "18",
+            "54",
+            "dsav"
+        ],
+        [
+            "19",
+            "28",
+            "dsav"
+        ],
+        [
+            "19",
+            "43",
+            "dsav"
+        ],
+        [
+            "19",
+            "23",
+            "dsav"
+        ],
+        [
+            "19",
+            "27",
+            "dsav"
+        ],
+        [
+            "19",
+            "64",
+            "dsav"
+        ],
+        [
+            "19",
+            "21",
+            "dsav"
+        ],
+        [
+            "19",
+            "29",
+            "dsav"
+        ],
+        [
+            "19",
+            "88",
+            "dsav"
+        ],
+        [
+            "19",
+            "70",
+            "dsav"
+        ],
+        [
+            "19",
+            "55",
+            "dsav"
+        ],
+        [
+            "20",
+            "26",
+            "dsav"
+        ],
+        [
+            "20",
+            "23",
+            "dsav"
+        ],
+        [
+            "20",
+            "93",
+            "dsav"
+        ],
+        [
+            "20",
+            "96",
+            "dsav"
+        ],
+        [
+            "20",
+            "43",
+            "dsav"
+        ],
+        [
+            "20",
+            "63",
+            "dsav"
+        ],
+        [
+            "20",
+            "28",
+            "dsav"
+        ],
+        [
+            "20",
+            "34",
+            "dsav"
+        ],
+        [
+            "20",
+            "33",
+            "dsav"
+        ],
+        [
+            "20",
+            "98",
+            "dsav"
+        ],
+        [
+            "20",
+            "91",
+            "dsav"
+        ],
+        [
+            "20",
+            "22",
+            "dsav"
+        ],
+        [
+            "21",
+            "62",
+            "dsav"
+        ],
+        [
+            "21",
+            "23",
+            "dsav"
+        ],
+        [
+            "21",
+            "81",
+            "dsav"
+        ],
+        [
+            "21",
+            "42",
+            "dsav"
+        ],
+        [
+            "21",
+            "87",
+            "dsav"
+        ],
+        [
+            "21",
+            "43",
+            "dsav"
+        ],
+        [
+            "21",
+            "22",
+            "dsav"
+        ],
+        [
+            "21",
+            "28",
+            "dsav"
+        ],
+        [
+            "21",
+            "26",
+            "dsav"
+        ],
+        [
+            "21",
+            "93",
+            "dsav"
+        ],
+        [
+            "21",
+            "46",
+            "dsav"
+        ],
+        [
+            "22",
+            "61",
+            "dsav"
+        ],
+        [
+            "22",
+            "36",
+            "dsav"
+        ],
+        [
+            "22",
+            "23",
+            "dsav"
+        ],
+        [
+            "22",
+            "28",
+            "dsav"
+        ],
+        [
+            "22",
+            "80",
+            "dsav"
+        ],
+        [
+            "22",
+            "26",
+            "dsav"
+        ],
+        [
+            "22",
+            "27",
+            "dsav"
+        ],
+        [
+            "22",
+            "31",
+            "dsav"
+        ],
+        [
+            "22",
+            "65",
+            "dsav"
+        ],
+        [
+            "22",
+            "33",
+            "dsav"
+        ],
+        [
+            "22",
+            "98",
+            "dsav"
+        ],
+        [
+            "22",
+            "68",
+            "dsav"
+        ],
+        [
+            "22",
+            "45",
+            "dsav"
+        ],
+        [
+            "22",
+            "47",
+            "dsav"
+        ],
+        [
+            "22",
+            "69",
+            "dsav"
+        ],
+        [
+            "22",
+            "70",
+            "dsav"
+        ],
+        [
+            "22",
+            "54",
+            "dsav"
+        ],
+        [
+            "23",
+            "84",
+            "dsav"
+        ],
+        [
+            "23",
+            "43",
+            "dsav"
+        ],
+        [
+            "23",
+            "79",
+            "dsav"
+        ],
+        [
+            "23",
+            "30",
+            "dsav"
+        ],
+        [
+            "23",
+            "26",
+            "dsav"
+        ],
+        [
+            "23",
+            "76",
+            "dsav"
+        ],
+        [
+            "23",
+            "38",
+            "dsav"
+        ],
+        [
+            "23",
+            "80",
+            "dsav"
+        ],
+        [
+            "23",
+            "86",
+            "dsav"
+        ],
+        [
+            "23",
+            "58",
+            "dsav"
+        ],
+        [
+            "23",
+            "60",
+            "dsav"
+        ],
+        [
+            "23",
+            "81",
+            "dsav"
+        ],
+        [
+            "23",
+            "64",
+            "dsav"
+        ],
+        [
+            "23",
+            "34",
+            "dsav"
+        ],
+        [
+            "23",
+            "67",
+            "dsav"
+        ],
+        [
+            "23",
+            "29",
+            "dsav"
+        ],
+        [
+            "23",
+            "27",
+            "dsav"
+        ],
+        [
+            "23",
+            "45",
+            "dsav"
+        ],
+        [
+            "23",
+            "47",
+            "dsav"
+        ],
+        [
+            "23",
+            "91",
+            "dsav"
+        ],
+        [
+            "23",
+            "48",
+            "dsav"
+        ],
+        [
+            "23",
+            "50",
+            "dsav"
+        ],
+        [
+            "23",
+            "62",
+            "dsav"
+        ],
+        [
+            "23",
+            "31",
+            "dsav"
+        ],
+        [
+            "24",
+            "77",
+            "dsav"
+        ],
+        [
+            "24",
+            "50",
+            "dsav"
+        ],
+        [
+            "24",
+            "31",
+            "dsav"
+        ],
+        [
+            "24",
+            "34",
+            "dsav"
+        ],
+        [
+            "24",
+            "36",
+            "dsav"
+        ],
+        [
+            "24",
+            "65",
+            "dsav"
+        ],
+        [
+            "24",
+            "66",
+            "dsav"
+        ],
+        [
+            "24",
+            "67",
+            "dsav"
+        ],
+        [
+            "24",
+            "69",
+            "dsav"
+        ],
+        [
+            "24",
+            "60",
+            "dsav"
+        ],
+        [
+            "24",
+            "48",
+            "dsav"
+        ],
+        [
+            "24",
+            "71",
+            "dsav"
+        ],
+        [
+            "25",
+            "30",
+            "dsav"
+        ],
+        [
+            "25",
+            "28",
+            "dsav"
+        ],
+        [
+            "25",
+            "37",
+            "dsav"
+        ],
+        [
+            "25",
+            "74",
+            "dsav"
+        ],
+        [
+            "25",
+            "76",
+            "dsav"
+        ],
+        [
+            "25",
+            "78",
+            "dsav"
+        ],
+        [
+            "25",
+            "94",
+            "dsav"
+        ],
+        [
+            "26",
+            "75",
+            "dsav"
+        ],
+        [
+            "26",
+            "38",
+            "dsav"
+        ],
+        [
+            "26",
+            "81",
+            "dsav"
+        ],
+        [
+            "26",
+            "80",
+            "dsav"
+        ],
+        [
+            "26",
+            "79",
+            "dsav"
+        ],
+        [
+            "26",
+            "32",
+            "dsav"
+        ],
+        [
+            "26",
+            "30",
+            "dsav"
+        ],
+        [
+            "26",
+            "37",
+            "dsav"
+        ],
+        [
+            "26",
+            "27",
+            "dsav"
+        ],
+        [
+            "26",
+            "65",
+            "dsav"
+        ],
+        [
+            "26",
+            "34",
+            "dsav"
+        ],
+        [
+            "26",
+            "35",
+            "dsav"
+        ],
+        [
+            "26",
+            "67",
+            "dsav"
+        ],
+        [
+            "26",
+            "29",
+            "dsav"
+        ],
+        [
+            "26",
+            "44",
+            "dsav"
+        ],
+        [
+            "26",
+            "28",
+            "dsav"
+        ],
+        [
+            "26",
+            "43",
+            "dsav"
+        ],
+        [
+            "26",
+            "50",
+            "dsav"
+        ],
+        [
+            "27",
+            "43",
+            "dsav"
+        ],
+        [
+            "27",
+            "86",
+            "dsav"
+        ],
+        [
+            "27",
+            "28",
+            "dsav"
+        ],
+        [
+            "27",
+            "97",
+            "dsav"
+        ],
+        [
+            "27",
+            "93",
+            "dsav"
+        ],
+        [
+            "27",
+            "96",
+            "dsav"
+        ],
+        [
+            "27",
+            "62",
+            "dsav"
+        ],
+        [
+            "27",
+            "35",
+            "dsav"
+        ],
+        [
+            "27",
+            "67",
+            "dsav"
+        ],
+        [
+            "27",
+            "88",
+            "dsav"
+        ],
+        [
+            "27",
+            "32",
+            "dsav"
+        ],
+        [
+            "27",
+            "46",
+            "dsav"
+        ],
+        [
+            "27",
+            "91",
+            "dsav"
+        ],
+        [
+            "27",
+            "48",
+            "dsav"
+        ],
+        [
+            "27",
+            "60",
+            "dsav"
+        ],
+        [
+            "27",
+            "49",
+            "dsav"
+        ],
+        [
+            "27",
+            "92",
+            "dsav"
+        ],
+        [
+            "27",
+            "71",
+            "dsav"
+        ],
+        [
+            "28",
+            "30",
+            "dsav"
+        ],
+        [
+            "28",
+            "84",
+            "dsav"
+        ],
+        [
+            "28",
+            "32",
+            "dsav"
+        ],
+        [
+            "28",
+            "73",
+            "dsav"
+        ],
+        [
+            "28",
+            "79",
+            "dsav"
+        ],
+        [
+            "28",
+            "72",
+            "dsav"
+        ],
+        [
+            "28",
+            "74",
+            "dsav"
+        ],
+        [
+            "28",
+            "75",
+            "dsav"
+        ],
+        [
+            "28",
+            "76",
+            "dsav"
+        ],
+        [
+            "28",
+            "77",
+            "dsav"
+        ],
+        [
+            "28",
+            "78",
+            "dsav"
+        ],
+        [
+            "28",
+            "85",
+            "dsav"
+        ],
+        [
+            "28",
+            "62",
+            "dsav"
+        ],
+        [
+            "28",
+            "86",
+            "dsav"
+        ],
+        [
+            "28",
+            "64",
+            "dsav"
+        ],
+        [
+            "28",
+            "43",
+            "dsav"
+        ],
+        [
+            "28",
+            "31",
+            "dsav"
+        ],
+        [
+            "28",
+            "65",
+            "dsav"
+        ],
+        [
+            "28",
+            "34",
+            "dsav"
+        ],
+        [
+            "28",
+            "35",
+            "dsav"
+        ],
+        [
+            "28",
+            "36",
+            "dsav"
+        ],
+        [
+            "28",
+            "37",
+            "dsav"
+        ],
+        [
+            "28",
+            "66",
+            "dsav"
+        ],
+        [
+            "28",
+            "67",
+            "dsav"
+        ],
+        [
+            "28",
+            "33",
+            "dsav"
+        ],
+        [
+            "28",
+            "88",
+            "dsav"
+        ],
+        [
+            "28",
+            "29",
+            "dsav"
+        ],
+        [
+            "28",
+            "81",
+            "dsav"
+        ],
+        [
+            "28",
+            "44",
+            "dsav"
+        ],
+        [
+            "28",
+            "68",
+            "dsav"
+        ],
+        [
+            "28",
+            "45",
+            "dsav"
+        ],
+        [
+            "28",
+            "47",
+            "dsav"
+        ],
+        [
+            "28",
+            "89",
+            "dsav"
+        ],
+        [
+            "28",
+            "91",
+            "dsav"
+        ],
+        [
+            "29",
+            "38",
+            "dsav"
+        ],
+        [
+            "29",
+            "62",
+            "dsav"
+        ],
+        [
+            "29",
+            "88",
+            "dsav"
+        ],
+        [
+            "29",
+            "37",
+            "dsav"
+        ],
+        [
+            "29",
+            "32",
+            "dsav"
+        ],
+        [
+            "29",
+            "74",
+            "dsav"
+        ],
+        [
+            "30",
+            "43",
+            "dsav"
+        ],
+        [
+            "30",
+            "61",
+            "dsav"
+        ],
+        [
+            "30",
+            "62",
+            "dsav"
+        ],
+        [
+            "30",
+            "86",
+            "dsav"
+        ],
+        [
+            "30",
+            "64",
+            "dsav"
+        ],
+        [
+            "30",
+            "35",
+            "dsav"
+        ],
+        [
+            "30",
+            "65",
+            "dsav"
+        ],
+        [
+            "30",
+            "67",
+            "dsav"
+        ],
+        [
+            "30",
+            "68",
+            "dsav"
+        ],
+        [
+            "30",
+            "45",
+            "dsav"
+        ],
+        [
+            "30",
+            "60",
+            "dsav"
+        ],
+        [
+            "30",
+            "55",
+            "dsav"
+        ],
+        [
+            "31",
+            "93",
+            "dsav"
+        ],
+        [
+            "31",
+            "43",
+            "dsav"
+        ],
+        [
+            "31",
+            "58",
+            "dsav"
+        ],
+        [
+            "31",
+            "88",
+            "dsav"
+        ],
+        [
+            "31",
+            "65",
+            "dsav"
+        ],
+        [
+            "31",
+            "50",
+            "dsav"
+        ],
+        [
+            "32",
+            "50",
+            "dsav"
+        ],
+        [
+            "32",
+            "85",
+            "dsav"
+        ],
+        [
+            "32",
+            "63",
+            "dsav"
+        ],
+        [
+            "32",
+            "64",
+            "dsav"
+        ],
+        [
+            "32",
+            "55",
+            "dsav"
+        ],
+        [
+            "33",
+            "65",
+            "dsav"
+        ],
+        [
+            "33",
+            "98",
+            "dsav"
+        ],
+        [
+            "33",
+            "44",
+            "dsav"
+        ],
+        [
+            "33",
+            "93",
+            "dsav"
+        ],
+        [
+            "34",
+            "58",
+            "dsav"
+        ],
+        [
+            "34",
+            "97",
+            "dsav"
+        ],
+        [
+            "34",
+            "93",
+            "dsav"
+        ],
+        [
+            "34",
+            "43",
+            "dsav"
+        ],
+        [
+            "34",
+            "60",
+            "dsav"
+        ],
+        [
+            "34",
+            "94",
+            "dsav"
+        ],
+        [
+            "34",
+            "49",
+            "dsav"
+        ],
+        [
+            "35",
+            "74",
+            "dsav"
+        ],
+        [
+            "35",
+            "37",
+            "dsav"
+        ],
+        [
+            "35",
+            "96",
+            "dsav"
+        ],
+        [
+            "35",
+            "78",
+            "dsav"
+        ],
+        [
+            "35",
+            "36",
+            "dsav"
+        ],
+        [
+            "36",
+            "62",
+            "dsav"
+        ],
+        [
+            "36",
+            "43",
+            "dsav"
+        ],
+        [
+            "36",
+            "57",
+            "dsav"
+        ],
+        [
+            "36",
+            "93",
+            "dsav"
+        ],
+        [
+            "36",
+            "95",
+            "dsav"
+        ],
+        [
+            "36",
+            "88",
+            "dsav"
+        ],
+        [
+            "36",
+            "45",
+            "dsav"
+        ],
+        [
+            "36",
+            "65",
+            "dsav"
+        ],
+        [
+            "37",
+            "73",
+            "dsav"
+        ],
+        [
+            "37",
+            "50",
+            "dsav"
+        ],
+        [
+            "37",
+            "61",
+            "dsav"
+        ],
+        [
+            "37",
+            "63",
+            "dsav"
+        ],
+        [
+            "37",
+            "82",
+            "dsav"
+        ],
+        [
+            "37",
+            "65",
+            "dsav"
+        ],
+        [
+            "37",
+            "66",
+            "dsav"
+        ],
+        [
+            "37",
+            "67",
+            "dsav"
+        ],
+        [
+            "37",
+            "68",
+            "dsav"
+        ],
+        [
+            "37",
+            "60",
+            "dsav"
+        ],
+        [
+            "37",
+            "48",
+            "dsav"
+        ],
+        [
+            "37",
+            "69",
+            "dsav"
+        ],
+        [
+            "37",
+            "70",
+            "dsav"
+        ],
+        [
+            "37",
+            "53",
+            "dsav"
+        ],
+        [
+            "37",
+            "55",
+            "dsav"
+        ],
+        [
+            "37",
+            "56",
+            "dsav"
+        ],
+        [
+            "37",
+            "71",
+            "dsav"
+        ],
+        [
+            "38",
+            "93",
+            "dsav"
+        ],
+        [
+            "38",
+            "55",
+            "dsav"
+        ],
+        [
+            "40",
+            "74",
+            "dsav"
+        ],
+        [
+            "40",
+            "76",
+            "dsav"
+        ],
+        [
+            "40",
+            "78",
+            "dsav"
+        ],
+        [
+            "41",
+            "50",
+            "dsav"
+        ],
+        [
+            "42",
+            "67",
+            "dsav"
+        ],
+        [
+            "42",
+            "46",
+            "dsav"
+        ],
+        [
+            "43",
+            "61",
+            "dsav"
+        ],
+        [
+            "43",
+            "93",
+            "dsav"
+        ],
+        [
+            "43",
+            "80",
+            "dsav"
+        ],
+        [
+            "43",
+            "81",
+            "dsav"
+        ],
+        [
+            "43",
+            "64",
+            "dsav"
+        ],
+        [
+            "43",
+            "65",
+            "dsav"
+        ],
+        [
+            "43",
+            "62",
+            "dsav"
+        ],
+        [
+            "43",
+            "67",
+            "dsav"
+        ],
+        [
+            "43",
+            "68",
+            "dsav"
+        ],
+        [
+            "43",
+            "45",
+            "dsav"
+        ],
+        [
+            "43",
+            "47",
+            "dsav"
+        ],
+        [
+            "43",
+            "70",
+            "dsav"
+        ],
+        [
+            "43",
+            "74",
+            "dsav"
+        ],
+        [
+            "43",
+            "69",
+            "dsav"
+        ],
+        [
+            "43",
+            "50",
+            "dsav"
+        ],
+        [
+            "43",
+            "55",
+            "dsav"
+        ],
+        [
+            "44",
+            "68",
+            "dsav"
+        ],
+        [
+            "45",
+            "85",
+            "dsav"
+        ],
+        [
+            "45",
+            "74",
+            "dsav"
+        ],
+        [
+            "45",
+            "81",
+            "dsav"
+        ],
+        [
+            "45",
+            "50",
+            "dsav"
+        ],
+        [
+            "46",
+            "67",
+            "dsav"
+        ],
+        [
+            "47",
+            "74",
+            "dsav"
+        ],
+        [
+            "47",
+            "82",
+            "dsav"
+        ],
+        [
+            "47",
+            "75",
+            "dsav"
+        ],
+        [
+            "47",
+            "96",
+            "dsav"
+        ],
+        [
+            "47",
+            "78",
+            "dsav"
+        ],
+        [
+            "48",
+            "74",
+            "dsav"
+        ],
+        [
+            "48",
+            "78",
+            "dsav"
+        ],
+        [
+            "48",
+            "50",
+            "dsav"
+        ],
+        [
+            "48",
+            "69",
+            "dsav"
+        ],
+        [
+            "48",
+            "81",
+            "dsav"
+        ],
+        [
+            "49",
+            "82",
+            "dsav"
+        ],
+        [
+            "49",
+            "74",
+            "dsav"
+        ],
+        [
+            "49",
+            "61",
+            "dsav"
+        ],
+        [
+            "49",
+            "60",
+            "dsav"
+        ],
+        [
+            "50",
+            "67",
+            "dsav"
+        ],
+        [
+            "50",
+            "58",
+            "dsav"
+        ],
+        [
+            "50",
+            "93",
+            "dsav"
+        ],
+        [
+            "50",
+            "62",
+            "dsav"
+        ],
+        [
+            "51",
+            "52",
+            "dsav"
+        ],
+        [
+            "53",
+            "74",
+            "dsav"
+        ],
+        [
+            "55",
+            "72",
+            "dsav"
+        ],
+        [
+            "55",
+            "74",
+            "dsav"
+        ],
+        [
+            "55",
+            "75",
+            "dsav"
+        ],
+        [
+            "55",
+            "76",
+            "dsav"
+        ],
+        [
+            "55",
+            "77",
+            "dsav"
+        ],
+        [
+            "55",
+            "78",
+            "dsav"
+        ],
+        [
+            "55",
+            "79",
+            "dsav"
+        ],
+        [
+            "56",
+            "74",
+            "dsav"
+        ],
+        [
+            "56",
+            "78",
+            "dsav"
+        ],
+        [
+            "57",
+            "60",
+            "dsav"
+        ],
+        [
+            "57",
+            "69",
+            "dsav"
+        ],
+        [
+            "58",
+            "74",
+            "dsav"
+        ],
+        [
+            "58",
+            "68",
+            "dsav"
+        ],
+        [
+            "59",
+            "65",
+            "dsav"
+        ],
+        [
+            "60",
+            "78",
+            "dsav"
+        ],
+        [
+            "60",
+            "65",
+            "dsav"
+        ],
+        [
+            "60",
+            "68",
+            "dsav"
+        ],
+        [
+            "60",
+            "81",
+            "dsav"
+        ],
+        [
+            "60",
+            "91",
+            "dsav"
+        ],
+        [
+            "60",
+            "74",
+            "dsav"
+        ],
+        [
+            "61",
+            "85",
+            "dsav"
+        ],
+        [
+            "61",
+            "65",
+            "dsav"
+        ],
+        [
+            "62",
+            "74",
+            "dsav"
+        ],
+        [
+            "64",
+            "90",
+            "dsav"
+        ],
+        [
+            "65",
+            "74",
+            "dsav"
+        ],
+        [
+            "65",
+            "94",
+            "dsav"
+        ],
+        [
+            "66",
+            "87",
+            "dsav"
+        ],
+        [
+            "67",
+            "74",
+            "dsav"
+        ],
+        [
+            "67",
+            "78",
+            "dsav"
+        ],
+        [
+            "69",
+            "91",
+            "dsav"
+        ],
+        [
+            "69",
+            "78",
+            "dsav"
+        ],
+        [
+            "70",
+            "74",
+            "dsav"
+        ],
+        [
+            "70",
+            "96",
+            "dsav"
+        ],
+        [
+            "71",
+            "85",
+            "dsav"
+        ],
+        [
+            "71",
+            "74",
+            "dsav"
+        ],
+        [
+            "71",
+            "78",
+            "dsav"
+        ],
+        [
+            "74",
+            "85",
+            "dsav"
+        ],
+        [
+            "74",
+            "80",
+            "dsav"
+        ],
+        [
+            "74",
+            "86",
+            "dsav"
+        ],
+        [
+            "74",
+            "88",
+            "dsav"
+        ],
+        [
+            "74",
+            "90",
+            "dsav"
+        ],
+        [
+            "74",
+            "89",
+            "dsav"
+        ],
+        [
+            "74",
+            "92",
+            "dsav"
+        ],
+        [
+            "77",
+            "96",
+            "dsav"
+        ],
+        [
+            "77",
+            "94",
+            "dsav"
+        ],
+        [
+            "78",
+            "86",
+            "dsav"
+        ],
+        [
+            "78",
+            "88",
+            "dsav"
+        ],
+        [
+            "80",
+            "96",
+            "dsav"
+        ],
+        [
+            "80",
+            "88",
+            "dsav"
+        ],
+        [
+            "81",
+            "86",
+            "dsav"
+        ],
+        [
+            "81",
+            "88",
+            "dsav"
+        ],
+        [
+            "82",
+            "86",
+            "dsav"
+        ],
+        [
+            "87",
+            "93",
+            "dsav"
+        ],
+        [
+            "88",
+            "96",
+            "dsav"
+        ]
+    ]
+}
