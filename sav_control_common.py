@@ -38,10 +38,10 @@ def whoami():
         return i["addr_info"][-1]["local"]
 
 
-def run_cmd(cmd):
+def run_cmd(cmd,expected_returncode=0):
     """print output if returncode != 0"""
     ret = subprocess_cmd(cmd)
-    if ret.returncode != 0:
+    if ret.returncode != expected_returncode:
         print(ret)
     return ret.returncode, ret.stdout, ret.stderr
 
