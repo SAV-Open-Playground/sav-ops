@@ -112,7 +112,7 @@ class RunEmulation():
 
     def ready_base(self, force_restart=False):
         """
-        start base ,starting containers and links
+        start base ,starting  containers and links
         """
         if self.if_base_started() and not force_restart:
             self.logger.info("base already started")
@@ -269,6 +269,7 @@ class DevicePerformance():
     __memorycommand = "dstat -m --nocolor 1 2 --nocolor| sed -e '1,3d'"
     __diskcommand = "dstat -d --nocolor 1 2 --nocolor| sed -e '1,3d'"
     __networkcommand = "dstat -n --nocolor 1 2 --nocolor| sed -e '1,3d'"
+    __hostCommand = "dstat -c -m -d -n --nocolor 1 2 --nocolor | sed -e '1,3d'"
     __dockerStatscommand = "docker stats --no-stream --format json"
 
     def get_cpu_performance(self):
@@ -287,6 +288,10 @@ class DevicePerformance():
         ret = subprocess_cmd(cmd=self.__networkcommand)
         return ret.returncode, ret.stderr, ret.stdout
 
+    def get_host_performance(self):
+        ret = subprocess_cmd(cmd=self.__hostCommand)
+        return ret.returncode, ret.stderr, ret.stdout
+
     def get_docker_container_performance(self):
         ret = subprocess_cmd(cmd=self.__dockerStatscommand)
         return ret.returncode, ret.stderr, ret.stdout
@@ -298,22 +303,20 @@ class Minitor:
     def host_performance():
         performance = DevicePerformance()
         performance_dict = {"CPU": {}, "memory": {}, "disk": {}, "network": {}}
+        returncode, stderr, stdout = performance.get_host_performance()
+        std_list = stdout.split("|")
         # CPU
-        returncode, stderr, stdout = performance.get_cpu_performance()
-        cpu_performance = stdout.replace("\n", "").replace("  ", " ").strip().split()
+        cpu_performance = std_list[0].replace("  ", " ").strip().split()
         performance_dict["CPU"] = {"usr": cpu_performance[0], "sys": cpu_performance[1], "usage": f"{100-int(cpu_performance[2])}",
                               "wai": cpu_performance[3], "stl": cpu_performance[4]}
         # memory
-        returncode, stderr, stdout = performance.get_memory_performace()
-        memory_performance = stdout.replace("\n", "").strip().split()
+        memory_performance = std_list[1].strip().split()
         performance_dict["memory"] = {"used": memory_performance[0], "free": memory_performance[1], "buff": memory_performance[2], "cache": memory_performance[3]}
         # disk
-        returncode, stderr, stdout = performance.get_disk_performance()
-        disk_performance = stdout.replace("\n", "").strip().split()
+        disk_performance = std_list[2].strip().split()
         performance_dict["disk"] = {"read": disk_performance[0], "writ": disk_performance[1]}
         # network
-        returncode, stderr, stdout = performance.get_network_performance()
-        network_performance = stdout.replace("\n", "").strip().split()
+        network_performance = std_list[3].replace("\n", "").strip().split()
         performance_dict["network"] = {"recv": network_performance[0], "send": network_performance[1]}
         return performance_dict
 
@@ -347,6 +350,7 @@ def run(args):
                 result = "SAVOP stop"
             case 'restart':
                 result = "SAVOP restart"
+        return result
     if performance is not None:
         match performance:
             case 'host':
@@ -354,10 +358,11 @@ def run(args):
             case 'container':
                 result = Minitor.container_performance()
             case 'all':
-                result = {"host_performance": "", "container_performance": ""}
-                result["host_performance"] = Minitor.host_performance()
-                result["container_performance"] = Minitor.container_performance()
-    return json.dumps(result, indent=4)
+                result_ = {"host_performance": "", "container_performance": ""}
+                result_["host_performance"] = Minitor.host_performance()
+                result_["container_performance"] = Minitor.container_performance()
+                result = {int(time.time()): result_}
+        return json.dumps(result, indent=4)
 
 
 if __name__ == "__main__":
