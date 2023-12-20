@@ -93,8 +93,11 @@ def extract_mem_and_cpu_stats_from_dstat(data):
                 mem_list = []
                 for value in child_data_list:
                     if value[-1] == "G":
-                        value = str(int(float(value[:-1]) * 1024)) + "M"
-                        mem_list.append(value)
+                        try:
+                            value = str(int(float(value[:-1]) * 1024)) + "M"
+                            mem_list.append(value)
+                        except Exception as e:
+                            mem_list.append("NaN")
                     else:
                         mem_list.append(value)
                 for value in mem_list:
