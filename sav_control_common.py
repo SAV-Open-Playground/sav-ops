@@ -12,6 +12,7 @@ import logging
 import os
 import time
 from logging.handlers import RotatingFileHandler
+import sys
 
 
 def json_r(path, encoding='utf-8'):

@@ -10,12 +10,10 @@
 
 
 import os
-import sys
 import subprocess
 import json
 import netaddr
 import copy
-import argparse
 
 CURRENT_DIR = os.getcwd()
 
@@ -149,7 +147,11 @@ def gen_bird_conf(node, delay, mode, base):
                      "\tipv6;\n" \
                      "\tinterface \"eth_*\";\n" \
                      "};\n"
-    v = tell_prefix_version(list(node["prefixes"].keys())[0])
+    try:
+        v = tell_prefix_version(list(node["prefixes"].keys())[0])
+    except IndexError:
+        v = 4
+        # self.logger.warning(f"forcing version to {v}")
     bird_conf_str += "protocol static {\n"
     bird_conf_str += f"\tipv{v} {{\n" \
                      "\t\texport all;\n" \
@@ -272,9 +274,8 @@ def refresh_folder(src, dst):
     run_cmd(f"cp -r {src} {dst}")
 
 
-def ready_input_json(input_json, selected_nodes):
-    with open(input_json, 'r') as f:
-        base = json.load(f)
+def ready_input_json(json_content, selected_nodes):
+    base = json_content
     if selected_nodes:
         temp_node = {}
         temp_links = []
@@ -350,7 +351,7 @@ def build_as_scope(as_scope, link, base_device):
     return as_scope
 
 
-def regenerate_config(src_folder, input_json,  base_config_folder,  out_folder=r'{src_folder}/savop/this_config/',  selected_nodes=None):
+def regenerate_config(src_folder, input_json,  base_config_folder,selected_nodes,  out_folder):
     if os.path.exists(out_folder):
         run_cmd(f"rm -r {out_folder}")
     os.makedirs(out_folder)
@@ -359,12 +360,13 @@ def regenerate_config(src_folder, input_json,  base_config_folder,  out_folder=r
     delay = 0
     docker_src_dir = r'/root/savop'
     # compose
-    for f in ["docker-compose.yml", "sign_key.sh", "topo.sh"]:
+    for f in ["sign_key.sh", "topo.sh"]:
         cp_cmd = f"cp {os.path.join(base_config_folder, f)} {os.path.join(out_folder, f)}"
         run_cmd(cp_cmd)
     refresh_folder(os.path.join(base_config_folder, "ca"), os.path.join(out_folder, "ca"))
     # build docker compose
     compose_f = open(os.path.join(out_folder, "docker-compose.yml"), 'a')
+    compose_f.write("version: \"2\"\n")
     key_f = open(os.path.join(out_folder, 'sign_key.sh'), 'a')
     if base["enable_rpki"]:
         docker_network_content = "networks:\n" \
@@ -391,9 +393,14 @@ def regenerate_config(src_folder, input_json,  base_config_folder,  out_folder=r
         with open(os.path.join(node_folder, "sa.json"), 'w') as f:
             json.dump(sa_config, f, indent=4)
         # resign keys
-        # if base["enable_rpki"]:
-        resign_keys(out_folder, node, key_f, base_config_folder)
+        if base["enable_rpki"]:
+            resign_keys(out_folder, node, key_f, base_config_folder)
         tag = f"{node}"
+        while src_folder.endswith("/"):
+            src_folder = src_folder[:-1]
+        # TODO resource limit
+        resource_limit = False
+
         docker_compose_content = f"  r{tag}:\n" \
                          f"    sysctls:\n" \
                          f"      - net.ipv6.conf.all.disable_ipv6=0\n" \
@@ -402,28 +409,30 @@ def regenerate_config(src_folder, input_json,  base_config_folder,  out_folder=r
                          f"    container_name: \"r{tag}\"\n" \
                          f"    cap_add:\n" \
                          f"      - NET_ADMIN\n" \
-                         f"    deploy:\n" \
-                         f"      resources:\n" \
+                         f"    deploy:\n"
+        if resource_limit:
+            docker_compose_content += f"      resources:\n" \
                          f"        limits:\n" \
                          f"          cpus: '0.3'\n" \
-                         f"          memory: 512M\n" \
-                         f"    volumes:\n" \
+                         f"          memory: 512M\n"
+        docker_compose_content += f"    volumes:\n" \
                          f"      - type: bind\n" \
-                         f"        source:  {src_folder}/savop_run/this_config/{node}/bird.conf\n" \
+                         f"        source:  {src_folder}/savop_run/{node}/bird.conf\n" \
                          f"        target: /usr/local/etc/bird.conf\n" \
                          f"      - type: bind\n" \
-                         f"        source: {src_folder}/savop_run/this_config/{node}/sa.json\n" \
+                         f"        source: {src_folder}/savop_run/{node}/sa.json\n" \
                          f"        target: /root/savop/SavAgent_config.json\n" \
                          f"      - {src_folder}/savop_run/{node}/log/:/root/savop/logs/\n" \
                          f"      - {src_folder}/savop_run/{node}/log/data:/root/savop/sav-agent/data/\n" \
                          f"      - type: bind\n" \
-                         f"        source: {src_folder}/savop_run/this_config/active_signal.json\n" \
+                         f"        source: {src_folder}/savop_run/active_signal.json\n" \
                          f"        target: /root/savop/signal.json\n" \
-                         f"      - /etc/localtime:/etc/localtime\n" \
-                         f"      - {src_folder}/savop_run/this_config/{node}/cert.pem:/root/savop/cert.pem\n" \
-                         f"      - {src_folder}/savop_run/this_config/{node}/key.pem:/root/savop/key.pem\n" \
-                         f"      - {src_folder}/savop_run/this_config/ca/cert.pem:/root/savop/ca_cert.pem\n" \
-                         f"    command:\n" \
+                         f"      - /etc/localtime:/etc/localtime\n"
+        if base["enable_rpki"]:
+            docker_compose_content += f"      - {src_folder}/savop_run/{node}/cert.pem:/root/savop/cert.pem\n"
+            docker_compose_content += f"      - {src_folder}/savop_run/{node}/key.pem:/root/savop/key.pem\n" 
+            docker_compose_content += f"      - {src_folder}/savop_run/ca/cert.pem:/root/savop/ca_cert.pem\n"
+        docker_compose_content += f"    command:\n" \
                          f"        python3 /root/savop/sav-agent/unisav_bot.py\n" \
                          f"    privileged: true\n"
         compose_f.write(docker_compose_content)
@@ -458,8 +467,8 @@ def regenerate_config(src_folder, input_json,  base_config_folder,  out_folder=r
             topo_f.write(f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
 
     topo_f.close()
-    # os.chdir(f"{src_folder}/")
-    # run_cmd("python3 change_eol.py")
+    os.chdir(f"{src_folder}/")
+    run_cmd("python3 change_eol.py")
     # os.chdir(out_folder)
     # run_cmd("bash sign_key.sh")
     return len(base["devices"])
@@ -476,10 +485,11 @@ def resign_keys(out_folder, node, key_f, base_cfg_folder):
     key_f.write(f"\rfunCGenPrivateKeyAndSign ./{node} ./ca")
 
 
-def script_builder(src_folder, savop_dir, input_json, out_folder):
-    # recompile_bird(os.path.join(src_folder, "sav-reference-router"))
-    # rebuild_img(src_folder)
+def script_builder(src_folder, savop_dir, json_content, out_folder,skip_bird=False,skip_img=False):
+    if skip_bird:
+        recompile_bird(os.path.join(src_folder, "sav-reference-router"))
+    if skip_img:
+        rebuild_img(src_folder)
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
-    input_json = os.path.join(base_cfg_folder, input_json)
-    device_number = regenerate_config(src_folder, input_json, base_cfg_folder, out_folder)
+    device_number = regenerate_config(src_folder, json_content, base_cfg_folder,None,out_folder)
     return device_number
