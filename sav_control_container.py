@@ -64,15 +64,6 @@ class Bot():
         conn.close()
         return results
 
-    def _get_sav_rule_number(self, source):
-        conn = sqlite3.connect('/root/savop/sav-agent/data/sib.sqlite')
-        cursor = conn.cursor()
-        query = f'SELECT COUNT(*) FROM STB WHERE source="{source}"'
-        cursor.execute(query)
-        results = cursor.fetchone()[0]
-        cursor.close()
-        conn.close()
-        return results
     def check_signal_file(self):
         # 根据signal.json, sav_agent_config判断下一步路由器的执行动作
         # 执行动作有：start, stop, keep

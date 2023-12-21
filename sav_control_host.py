@@ -6,12 +6,6 @@
 @Version :   0.1
 @Desc    :   The sav_control_host.py is responsible for the management of current host(slave).
 """
-import json
-import time
-import os
-import sys
-import logging
-from logging.handlers import RotatingFileHandler
 from sav_control_common import *
 import argparse
 import threading
@@ -59,7 +53,7 @@ class RunEmulation():
         self._id = whoami()
         if not self._id:
             raise ValueError("get id error")
-        self.logger = self.get_logger()
+        self.logger = get_logger(self._id)
         self.root_dir = root_dir
         self.host_signal_path = host_signal_path
         self.base_compose_path = base_compose
@@ -67,35 +61,6 @@ class RunEmulation():
         self.base_node_num = base_node_num
         self.active_app = None
 
-    def get_logger(self):
-        """
-        get logger function for all modules
-        """
-        maxsize = 1024*1024*500
-        backup_num = 5
-        level = logging.WARN
-        level = logging.DEBUG
-        logger = logging.getLogger(__name__)
-        logger.setLevel(level)
-        path = os.path.dirname(os.path.abspath(__file__))+f"/{self._id}_{__name__}.log"
-        if not os.path.exists(path):
-            os.system(f"touch {path}")
-        with open(path, "w") as f:
-            pass
-        handler = RotatingFileHandler(path, maxBytes=maxsize, backupCount=backup_num)
-        handler.setLevel(level)
-
-        formatter = logging.Formatter("[%(asctime)s] [%(filename)s:%(lineno)s-%(funcName)s] [%(levelname)s] %(message)s")
-        formatter.converter = time.gmtime
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-
-        logging.StreamHandler(stream=None)
-
-        # sh = logging.StreamHandler(stream=sys.stdout)
-        # sh.setFormatter(formatter)
-        # logger.addHandler(sh)
-        return logger
 
     def if_base_started(self):
         """
@@ -106,18 +71,23 @@ class RunEmulation():
         bird_count = 0
         krill_count = 0
         routinator_count = 0
+        self.active_containers = set()
         for line in out:
             if "savop_bird_base" in line:
+                self.active_containers.add(line.split()[-1])
                 bird_count += 1
-            if "routinator" in line:
+            elif "routinator" in line:
                 routinator_count += 1
-            if "krill" in line:
+            elif "krill" in line:
                 krill_count += 1
+        if bird_count != self.base_node_num:
+            self.logger.info(f"bird count error, should be {self.base_node_num}, but {bird_count}")
+            return False
         rpki = False
         if rpki:
-            return bird_count == self.base_node_num and routinator_count == 1 and krill_count == 1
+            return routinator_count == 1 and krill_count == 1
         else:
-            return bird_count == self.base_node_num
+            return True
 
     def send_stop_signal(self):
         """stop sav-agent and bird on all nodes"""
@@ -125,7 +95,12 @@ class RunEmulation():
         data["command"] = "stop"
         json_w(self.host_signal_path, data)
         self.logger.info("stop signal sent")
-
+    def send_start_signal(self):
+        """start sav-agent and bird on all nodes"""
+        data = json_r(self.host_signal_path)
+        data["command"] = "start"
+        json_w(self.host_signal_path, data)
+        self.logger.info("start signal sent")
     def clear_logs(self):
         """
         clear log folders, should be called in start base function
@@ -156,26 +131,20 @@ class RunEmulation():
             return
         self.logger.info(f"init base with {self.base_compose_path}")
         t = time.time()
-        cmd = f"docker compose -f {self.base_compose_path} down"
-        subprocess_cmd(cmd)
-        cmd = f"docker build --build-arg root_dir=./ -f {self.root_dir}/savop/dockerfiles/reference_router {self.root_dir} -t savop_bird_base"
-        ret = subprocess_cmd(cmd)
-        # self.clear_logs()
+        subprocess_cmd(f"docker compose -f {self.base_compose_path} down")
         self.logger.info("container stopped")
-        cmd = f"docker compose -f {self.base_compose_path} up -d"
-        # os.system(cmd)
-        ret = subprocess_cmd(cmd)
+        cmd = f"docker build --build-arg root_dir=./ -f {self.root_dir}/savop/dockerfiles/reference_router {self.root_dir} -t savop_bird_base"
+        run_cmd(cmd)
+        self.clear_logs()
+        self.logger.debug(f"docker compose -f {self.base_compose_path} up -d")
+        run_cmd(f"docker compose -f {self.base_compose_path} up -d")
         self.logger.info("container started")
-        cmd = f"bash {self.base_topo}"
-
-        ret = run_cmd(cmd)
+        run_cmd(f"bash {self.base_topo}")
         self.logger.info("link added")
         t = time.time()-t
         self.logger.info(f"base start finished in {t:.4f} seconds")
         if self.if_base_started():
             self.logger.info("base ready")
-            print(f"{self.base_node_num} router run successfully!")
-            return
         else:
             self.logger.error("base start failed")
             sys.exit(1)
@@ -308,34 +277,67 @@ class RunEmulation():
         self.container_monitor_thread.start()
         self.host_monitor_thread_start_dt = time.time()
         self.host_monitor_thread.start()
-        print("monitor started")
+        self.logger.debug("monitor started")
     def _stop_metric_monitor(self):
         """our cmd will quit but new monitor thread will be created,
         we need to kill the monitor thread"""
         cmd = f"ps -aux|grep dstat|awk '{{print $2}}'|xargs kill -9"
         self.host_monitor_thread_stop_dt = time.time()
+        run_cmd(cmd)
         cmd = f"ps -aux|grep 'docker stats'|awk '{{print $2}}'|xargs kill -9"
         self.container_monitor_thread_stop_dt = time.time()
-        print("monitor stopped")
+        run_cmd(cmd)
+        self.logger.debug("monitor stopped")
     def _get_result(self):
         """parse the file generated by dstat and docker stats"""
         ret = {"host_metric":{"start_dt":self.host_monitor_thread_start_dt,"stop_dt":self.host_monitor_thread_stop_dt}}
         ret["container_metric"] = {"start_dt":self.container_monitor_thread_start_dt,"stop_dt":self.container_monitor_thread_stop_dt}
-        # ret["container_metric"]["data"] = json_r(CONTAINER_METRIC_PATH)
-        # try:
-        #     ret["host_metric"]["data"] = parse_dstat_file(HOST_METRIC_PATH)
-        # except Exception as e:
-        #     print(e)
-        #     self.logger.error(e)
-        #     self.logger.exception(e)
+        with open(HOST_METRIC_PATH) as f:
+            ret["host_metric"]["data"] = f.read()
+        with open(CONTAINER_METRIC_PATH) as f:
+            ret["container_metric"]["data"] = f.read()
         return ret
-    def start(self,monitor_overlap_sec=3):
+    def wait_for_all_fib_stable(self,check_interval=5):
+        """
+        will block until all nodes's fib is stable
+        collect metric output and return a dict of results
+        """
+        is_all_fib_stable = False
+        ret = {}
+        while not is_all_fib_stable:
+            is_all_fib_stable = True
+            for container_id in self.active_containers:
+                cmd = f"docker exec -it {container_id} curl http://localhost:8888/metric/"
+                _,out,_ = run_cmd(cmd)
+                try:
+                    out = json.loads(out)
+                    if not out["agent"]["is_fib_stable"]:
+                        is_all_fib_stable = False
+                        break
+                    else:
+                        ret[container_id] = out
+                except Exception as e:
+                    is_all_fib_stable = False
+                    break
+            time.sleep(check_interval)
+        return ret
+    def start(self,monitor_overlap_sec=10):
+        # for dev, stop history monitors
+        self._stop_metric_monitor()
         self._start_metric_monitor()
         time.sleep(monitor_overlap_sec)
-        # self.ready_base(force_restart=True)    
+        self.ready_base(force_restart=True)
+        start_dt = time.time()
+        self.send_start_signal()
+        agents_out = self.wait_for_all_fib_stable()
+        self.send_stop_signal()
+        subprocess_cmd(f"docker compose -f {self.base_compose_path} down")
         time.sleep(monitor_overlap_sec)
         self._stop_metric_monitor()
-        return self._get_result()
+        ret = self._get_result()
+        ret["agents_metric"] = agents_out
+        ret["start_signal_dt"] = start_dt
+        return ret
         
 
 
@@ -394,11 +396,13 @@ def run(args):
     action = args.action
     result = ""
     if action is not None:
-        savop_root_dir = ensure_no_trailing_slash(args.dir)
-        host_signal_path = f"{savop_root_dir}/savop_run/this_config/active_signal.json"
-        base_compose = f"{savop_root_dir}/savop_run/this_config/docker-compose.yml"
-        base_topo = f"{savop_root_dir}/savop_run/this_config/topo.sh"
-        run_emulation = RunEmulation(root_dir=savop_root_dir, 
+
+        host_root_dir = os.path.join(args.dir)
+        cfg_root_dir = os.path.join(host_root_dir, "savop_run")
+        host_signal_path = os.path.join(cfg_root_dir, "active_signal.json")
+        base_compose = os.path.join(cfg_root_dir, "docker-compose.yml")
+        base_topo = os.path.join(cfg_root_dir,"topo.sh")
+        run_emulation = RunEmulation(root_dir=host_root_dir, 
                                      host_signal_path=host_signal_path,
                                      base_compose=base_compose, 
                                      base_topo=base_topo,
@@ -420,9 +424,7 @@ if __name__ == "__main__":
     operate_group = parser.add_argument_group("operate", "control the operation of SAVOP")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart"],
                         help="control SAVOP execution, only support three values: start, stop and restart")
-    operate_group.add_argument("-d", "--dir", help="SAVOP root directory")
+    operate_group.add_argument("-d", "--dir", help="directory that contains the config files")
     operate_group.add_argument("-n", "--node_num", type=int, help="the count of the running container on the slave")
     args = parser.parse_args()
-    result = run(args=args)
-    if result is not None:
-        print(result)
+    print(run(args=args))
