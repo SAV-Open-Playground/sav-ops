@@ -493,8 +493,8 @@ def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="this scripts control SAVOP")
-    operate_group = parser.add_argument_group("operate", "control the operation of SAVOP")
-                        help="control SAVOP execution, only support three values: start, stop and restart")
+    operate_group = parser.add_argument_group("operate", "control the operation of SAVOP",
+                                              help="control SAVOP execution, only support three values: start, stop and restart")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart", "start_dons"],
                         help="control SAVOP execution, only support three values: start, stop, restart and start_dons")
     operate_group.add_argument("-d", "--dir", help="directory that contains the config files")
