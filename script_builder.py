@@ -496,3 +496,4 @@ def script_builder(src_folder, savop_dir, json_content, out_folder,skip_bird=Fal
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
     device_number = regenerate_config(src_folder, json_content, base_cfg_folder, None, out_folder)
     return device_number
+
