@@ -346,8 +346,8 @@ class DevicePerformance():
     __memorycommand = "dstat -m --nocolor 1 2 --nocolor| sed -e '1,3d'"
     __diskcommand = "dstat -d --nocolor 1 2 --nocolor| sed -e '1,3d'"
     __networkcommand = "dstat -n --nocolor 1 2 --nocolor| sed -e '1,3d'"
-
-    docker_stats_cmd = "docker stats -a --format json"
+    __hostCommand = "dstat -c -m -d -n --nocolor 1 2 --nocolor | sed -e '1,3d'"
+    __dockerStatscommand = "docker stats --no-stream --format json"
     def get_cpu_performance(self):
         ret = subprocess_cmd(cmd=self.__cpucommand)
         return ret.returncode, ret.stderr, ret.stdout
@@ -367,6 +367,11 @@ class DevicePerformance():
     def get_host_performance(self):
         ret = subprocess_cmd(cmd=self.__hostCommand)
         return ret.returncode, ret.stderr, ret.stdout
+
+    def get_docker_container_performance(self):
+        ret = subprocess_cmd(cmd=self.__dockerStatscommand)
+        return ret.returncode, ret.stderr, ret.stdout
+
 
 class Monitor:
     performance = DevicePerformance()
@@ -391,9 +396,19 @@ class Monitor:
         performance_dict["network"] = {"recv": network_performance[0], "send": network_performance[1]}
         return performance_dict
 
+    @staticmethod
+    def container_performance():
+        performance = DevicePerformance()
+        performance_dict = []
+        returncode, stderr, stdout = performance.get_docker_container_performance()
+        for item in stdout.strip().split("\n"):
+            performance_dict.append(json.loads(item))
+        return performance_dict
+
 
 def run(args):
     action = args.action
+    performance = args.performance
     result = ""
     if action is not None:
 
@@ -415,7 +430,18 @@ def run(args):
                 result = "SAVOP stop"
             case 'restart':
                 result = "SAVOP restart"
-        
+    if performance is not None:
+        match performance:
+            case 'host':
+                result = Monitor.host_performance()
+            case 'container':
+                result = Monitor.container_performance()
+            case 'all':
+                result_ = {"host_performance": "", "container_performance": ""}
+                result_["host_performance"] = Monitor.host_performance()
+                result_["container_performance"] = Monitor.container_performance()
+                result = {int(time.time()): result_}
+        return json.dumps(result, indent=4)
     return result
 
 
@@ -426,5 +452,8 @@ if __name__ == "__main__":
                         help="control SAVOP execution, only support three values: start, stop and restart")
     operate_group.add_argument("-d", "--dir", help="directory that contains the config files")
     operate_group.add_argument("-n", "--node_num", type=int, help="the count of the running container on the slave")
+    monitor_group = parser.add_argument_group("monitor", "Monitor the operational status of SAVOP")
+    monitor_group.add_argument("-p", "--performance", choices=["host", "container", "all"],
+                               help="monitor the performance of machines or containers")
     args = parser.parse_args()
     print(run(args=args))

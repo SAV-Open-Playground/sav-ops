@@ -14,6 +14,7 @@ import subprocess
 import json
 import netaddr
 import copy
+import platform
 
 CURRENT_DIR = os.getcwd()
 
@@ -467,8 +468,10 @@ def regenerate_config(src_folder, input_json,  base_config_folder,selected_nodes
             topo_f.write(f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
 
     topo_f.close()
+
     os.chdir(f"{src_folder}/")
-    run_cmd("python3 change_eol.py")
+    if platform.system() == "Windows":
+        run_cmd("python3 change_eol.py")
     # os.chdir(out_folder)
     # run_cmd("bash sign_key.sh")
     return len(base["devices"])
@@ -491,5 +494,5 @@ def script_builder(src_folder, savop_dir, json_content, out_folder,skip_bird=Fal
     if skip_img:
         rebuild_img(src_folder)
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
-    device_number = regenerate_config(src_folder, json_content, base_cfg_folder,None,out_folder)
+    device_number = regenerate_config(src_folder, json_content, base_cfg_folder, None, out_folder)
     return device_number

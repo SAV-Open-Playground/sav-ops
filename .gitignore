@@ -13,3 +13,4 @@ __pycache__/
 *.tar.gz
 sav_control_master_config.json
 master_config.json
+*.log
