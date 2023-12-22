@@ -131,7 +131,7 @@ class MasterController:
             cmd = f"python3 {path2hostpy} -a start_dons -d {node['root_dir']} -n {node_num}"
             node_result = self._remote_run(node_id, node, cmd)
             if node_id in result:
-                self.logger.error("duplic keys")
+                self.logger.error("keys conflict")
             result[node_id] = node_result
         return result
 
