@@ -122,7 +122,18 @@ class MasterController:
                 self.logger.error("duplic keys")
             result[node_id] = node_result
         return result
-
+    def mode_dons(self):
+        result = {}
+        # TODO we should calculate the container number on each node,but here we just use a fixed number
+        for node_id, node_num in self.distribution_d.items():
+            node = self.host_node[node_id]
+            path2hostpy = os.path.join(node["root_dir"], "savop", "sav_control_host.py")
+            cmd = f"python3 {path2hostpy} -a start_dons -d {node['root_dir']} -n {node_num}"
+            node_result = self._remote_run(node_id, node, cmd)
+            if node_id in result:
+                self.logger.error("duplic keys")
+            result[node_id] = node_result
+        return result
 
 class ThreadWithReturnValue(Thread):
     def __init__(self, target, args=()):
@@ -172,7 +183,6 @@ class SavExperiment:
         """
         parse bgp experiment result,return a json object
         """
-
         std_out = result.split("CompletedProcess")
         while "" in std_out:
             std_out.remove("")
@@ -189,6 +199,7 @@ class SavExperiment:
         std_out = temp[0].split("\n")[1:]
         csv_str = "\n".join(std_out)
         result = json.loads(csv_str)
+        input(result.keys())
         del result["container_metric"]
         for node, node_data in result["agents_metric"].items():
             self.logger.debug(f"{node} {node_data}")
@@ -219,7 +230,7 @@ class SavExperiment:
         for topo in full_list:
             self.controller.config_file_generate(input_json=topo)
             self.controller.config_file_distribute()
-            ret = self.controller.mode_start()
+            ret = self.controller.mode_dons()
             for node, result in ret.items():
                 std_out = result["cmd_result"]["stdout"]
                 std_err = result["cmd_result"]["stderr"]
@@ -232,6 +243,7 @@ class SavExperiment:
                 result_file_name = topo.replace(".json", "_result.json")
                 json_w(result_file_name, result)
                 print(f"result saved to {result_file_name}")
+                input()
 
 def run(args):
     # topo_json = args.topo_json
@@ -242,32 +254,32 @@ def run(args):
     performance = args.performance
     experiment = args.experiment
 
-    master_controller = MasterController()
-    # generate config files
-    if config:
-        match config:
-            case "refresh:":
-                base_node_num = script_builder(
-                    SAV_ROOT_DIR, SAV_OP_DIR, input_json=topo_json, out_folder=OUT_DIR)
-    # distribute config file
-    if distribute:
-        match distribute:
-            case "all":
-                master_controller.config_file_distribute()
-    # start, stop, restart the savop in every host
-    if action:
-        match action:
-            case "start":
-                master_controller.mode_start()
-            case "stop":
-                pass
-            case "restart":
-                pass
-    # the performance of machines and containers
-    if performance:
-        match performance:
-            case "all":
-                performance_content = master_controller.mode_performance()
+    # master_controller = MasterController("sav_control_master_config.json")
+    # # generate config files
+    # if config:
+    #     match config:
+    #         case "refresh:":
+    #             base_node_num = script_builder(
+    #                 SAV_ROOT_DIR, SAV_OP_DIR, input_json=topo_json, out_folder=OUT_DIR)
+    # # distribute config file
+    # if distribute:
+    #     match distribute:
+    #         case "all":
+    #             master_controller.config_file_distribute()
+    # # start, stop, restart the savop in every host
+    # if action:
+    #     match action:
+    #         case "start":
+    #             master_controller.mode_start()
+    #         case "stop":
+    #             pass
+    #         case "restart":
+    #             pass
+    # # the performance of machines and containers
+    # if performance:
+    #     match performance:
+    #         case "all":
+    #             performance_content = master_controller.mode_performance()
     if experiment is not None:
         sav_exp = SavExperiment()
         match experiment:
