@@ -41,8 +41,7 @@ class MasterController:
         self.host_node = self.config["host_node"]
         if logger is None:
             self.logger = get_logger("master_controller")
-
-    def _self_host(self, input_json):
+    def _self_host(self,input_json):
         ret = {}
         host_node = self.host_node[SELF_HOST_ID]
         path2json = os.path.join(SAV_OP_DIR, "base_configs", input_json)
@@ -98,7 +97,6 @@ class MasterController:
             cfg_src_dir = node["cfg_src_dir"]
             if node_id == "localhost":
                 cfg_dst_dir = os.path.join(node["root_dir"], "savop_run")
-
                 if os.path.exists(cfg_dst_dir):
                     shutil.rmtree(cfg_dst_dir)
                 shutil.copytree(cfg_src_dir, cfg_dst_dir)
@@ -141,10 +139,22 @@ class MasterController:
             cmd = f"python3 {path2hostpy} -a start -d {node['root_dir']} -n {node_num}"
             node_result = self._remote_run(node_id, node, cmd)
             if node_id in result:
-                self.logger.error("duplic keys")
+                self.logger.error("keys conflict")
             result[node_id] = node_result
         return result
-
+    
+    def mode_dons(self):
+        result = {}
+        # TODO we should calculate the container number on each node,but here we just use a fixed number
+        for node_id, node_num in self.distribution_d.items():
+            node = self.host_node[node_id]
+            path2hostpy = os.path.join(node["root_dir"], "savop", "sav_control_host.py")
+            cmd = f"python3 {path2hostpy} -a start_dons -d {node['root_dir']} -n {node_num}"
+            node_result = self._remote_run(node_id, node, cmd)
+            if node_id in result:
+                self.logger.error("keys conflict")
+            result[node_id] = node_result
+        return result
 
 class ThreadWithReturnValue(Thread):
     def __init__(self, target, args=()):
@@ -193,7 +203,6 @@ class SavExperiment:
         """
         parse bgp experiment result,return a json object
         """
-
         std_out = result.split("CompletedProcess")
         while "" in std_out:
             std_out.remove("")
@@ -210,6 +219,7 @@ class SavExperiment:
         std_out = temp[0].split("\n")[1:]
         csv_str = "\n".join(std_out)
         result = json.loads(csv_str)
+        input(result.keys())
         del result["container_metric"]
         for node, node_data in result["agents_metric"].items():
             self.logger.debug(f"{node} {node_data}")
@@ -240,7 +250,7 @@ class SavExperiment:
         for topo in full_list:
             self.controller.config_file_generate(input_json=topo)
             self.controller.config_file_distribute()
-            ret = self.controller.mode_start()
+            ret = self.controller.mode_dons()
             for node, result in ret.items():
                 std_out = result["cmd_result"]["stdout"]
                 std_err = result["cmd_result"]["stderr"]
@@ -253,7 +263,7 @@ class SavExperiment:
                 result_file_name = topo.replace(".json", "_result.json")
                 json_w(result_file_name, result)
                 print(f"result saved to {result_file_name}")
-
+                input()
 
 def run(args):
     # topo_json = args.topo_json
