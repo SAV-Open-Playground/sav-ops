@@ -15,14 +15,13 @@
                     - sav_control_master.py
                     - sav_control_master_config.json
 """
-
-
 from sav_control_common import *
 from script_builder import script_builder
 from fabric2 import Connection
 import argparse
 from threading import Thread
 import shutil
+import os
 
 # change the dirs here
 SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -48,9 +47,22 @@ class MasterController:
         path2json = os.path.join(SAV_OP_DIR, "base_configs", input_json)
         json_content = json_r(path2json)
         generated_config_dir = os.path.join(OUT_DIR, SELF_HOST_ID)
-        ret[SELF_HOST_ID] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir)
+        ret[SELF_HOST_ID] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content,
+                                           out_folder=generated_config_dir)
         self.host_node[SELF_HOST_ID]["cfg_src_dir"] = generated_config_dir
         return ret
+
+    def _not_self_host(self, input_json):
+        ret = {}
+        for host_id in list(self.host_node.keys()):
+            host_node = self.host_node[host_id]
+            path2json = os.path.join(SAV_OP_DIR, f"base_configs", input_json)
+            json_content = json_r(path2json)
+            generated_config_dir = os.path.join(OUT_DIR, host_id)
+            ret[host_id] = script_builder(SAV_OP_DIR, SAV_OP_DIR, json_content, out_folder=generated_config_dir)
+            self.host_node[host_id]["cfg_src_dir"] = generated_config_dir
+        return ret
+
     def config_file_generate(self, input_json):
         """
         add load balancing here
@@ -58,10 +70,14 @@ class MasterController:
         """
         shutil.rmtree(OUT_DIR)
         os.mkdir(OUT_DIR)
-        ret = self._self_host(input_json=input_json)
+        if len(list(self.host_node.keys())) and list(self.host_node.keys())[0] == "localhost":
+            ret = self._self_host(input_json=input_json)
+        else:
+            ret = self._not_self_host(input_json=input_json)
         self.distribution_d = ret
         return ret
-    def _remote_run(self, node_id,node, cmd):
+
+    def _remote_run(self, node_id, node, cmd):
         ret = {}
         if node_id == "localhost":
             ret["cmd_start_dt"] = time.time()
@@ -74,46 +90,50 @@ class MasterController:
                 ret["cmd_result"] = conn.run(command=cmd)
                 ret["cmd_end_dt"] = time.time()
         return ret
+
     def config_file_distribute(self):
-        for node_id,node in self.host_node.items():
+        for node_id, node in self.host_node.items():
             # use my self as a host
             cfg_src_dir = node["cfg_src_dir"]
             if node_id == "localhost":
-                cfg_dst_dir = os.path.join(node["root_dir"],"savop_run")
-
+                cfg_dst_dir = os.path.join(node["root_dir"], "savop_run")
                 if os.path.exists(cfg_dst_dir):
                     shutil.rmtree(cfg_dst_dir)
                 shutil.copytree(cfg_src_dir, cfg_dst_dir)
                 print(f"config file copied to: {cfg_dst_dir}")
                 continue
             with Connection(host=node_id, user=node["user"], connect_kwargs={"password": node["password"]}) as conn:
-                clear_config = conn.run(
-                    command=f"rm -rf {self.host_root_dir}/savop_run/*")
+                clear_config = conn.run(command=f"rm -rf {node['root_dir']}/savop_run/*")
                 if clear_config.return_code == 0:
                     print("clear old config successfully.")
                 else:
                     print("clear old config fail!")
-                compress_config = run_cmd(
-                    cmd="tar -czf this_config.tar.gz this_config")
+                compress_config = run_cmd(cmd=f"tar -czf this_config/{node_id}.tar.gz this_config/{node_id}")
                 if compress_config[0] == 0:
                     print("compress config files successfully.")
                 else:
                     print("compress config files fail!")
-                result = conn.put(
-                    local=f"{SAV_OP_DIR}/this_config.tar.gz", remote=f"{self.host_root_dir}/savop_run/")
-                transfer_config = conn.run(
-                    command=f"ls -al {self.host_root_dir}/savop_run/this_config.tar.gz")
+                result = conn.put(local=f"{SAV_OP_DIR}/this_config/{node_id}.tar.gz", remote=f"{node['root_dir']}/savop_run/")
+                transfer_config = conn.run(command=f"ls -al {node['root_dir']}/savop_run/{node_id}.tar.gz")
                 if transfer_config.return_code == 0:
                     print("transfer config files successfully.")
                 else:
                     print("transfer config files fail!")
-                uncompress_config = conn.run(
-                    command=f"cd {self.host_root_dir}/savop_run; tar -xzf {self.host_root_dir}/savop_run/this_config.tar.gz")
+                uncompress_config = conn.run(command=f"cd {node['root_dir']}/savop_run; tar -xzf {node['root_dir']}/savop_run/{node_id}.tar.gz")
+                mv_config = conn.run(command=f"mv {node['root_dir']}/savop_run/this_config/{node_id}/*  {node['root_dir']}/savop_run"
+                                             f" && rm -rf {node['root_dir']}/savop_run/this_config")
+
+    def mode_performance(self):
+        for node_id in list(self.host_node.keys()):
+            node = self.host_node[node_id]
+            cmd = f'python3 {node["root_dir"]}/savop/sav_control_host.py -p all'
+            run_result = self._remote_run(node_id=node_id, node=node, cmd=cmd)
+        return run_result["cmd_result"]
 
     def mode_start(self):
         result = {}
         # TODO we should calculate the container number on each node,but here we just use a fixed number
-        for node_id, node_num in self.distribution_d.items():
+        for node_id, node_num in self.config["host_node"].items():
             node = self.host_node[node_id]
             path2hostpy = os.path.join(node["root_dir"], "savop", "sav_control_host.py")
             cmd = f"python3 {path2hostpy} -a start -d {node['root_dir']} -n {node_num}"
@@ -122,6 +142,7 @@ class MasterController:
                 self.logger.error("keys conflict")
             result[node_id] = node_result
         return result
+    
     def mode_dons(self):
         result = {}
         # TODO we should calculate the container number on each node,but here we just use a fixed number
@@ -163,9 +184,8 @@ class SavExperiment:
     logger = get_logger("SAVExp")
     controller = MasterController("sav_control_master_config.json", logger)
 
-
-    def experiment_3_nodes_v4(self):
-        self.controller.config_file_generate(input_json="3_nodes_v4.json")
+    def experiment_testing_v4_inter(self):
+        self.controller.config_file_generate(input_json="testing_v4_inter.json")
         self.controller.config_file_distribute()
         before_performance = self.controller.mode_performance().stdout
         t1 = ThreadWithReturnValue(target=self.controller.mode_start)
@@ -254,37 +274,38 @@ def run(args):
     performance = args.performance
     experiment = args.experiment
 
-    # master_controller = MasterController("sav_control_master_config.json")
-    # # generate config files
-    # if config:
-    #     match config:
-    #         case "refresh:":
-    #             base_node_num = script_builder(
-    #                 SAV_ROOT_DIR, SAV_OP_DIR, input_json=topo_json, out_folder=OUT_DIR)
-    # # distribute config file
-    # if distribute:
-    #     match distribute:
-    #         case "all":
-    #             master_controller.config_file_distribute()
-    # # start, stop, restart the savop in every host
-    # if action:
-    #     match action:
-    #         case "start":
-    #             master_controller.mode_start()
-    #         case "stop":
-    #             pass
-    #         case "restart":
-    #             pass
-    # # the performance of machines and containers
-    # if performance:
-    #     match performance:
-    #         case "all":
-    #             performance_content = master_controller.mode_performance()
+    # generate config files
+    if config:
+        match config:
+            case "refresh:":
+                base_node_num = script_builder(SAV_ROOT_DIR, SAV_OP_DIR, input_json=topo_json, out_folder=OUT_DIR)
+    # distribute config file
+    if distribute:
+        master_controller = MasterController("sav_control_master_config.json")
+        match distribute:
+            case "all":
+                master_controller.config_file_distribute()
+    # start, stop, restart the savop in every host
+    if action:
+        master_controller = MasterController("sav_control_master_config.json")
+        match action:
+            case "start":
+                master_controller.mode_start()
+            case "stop":
+                pass
+            case "restart":
+                pass
+    # the performance of machines and containers
+    if performance:
+        master_controller = MasterController("sav_control_master_config.json")
+        match performance:
+            case "all":
+                performance_content = master_controller.mode_performance()
     if experiment is not None:
         sav_exp = SavExperiment()
         match experiment:
-            case "3_nodes_v4":
-                return sav_exp.experiment_3_nodes_v4()
+            case "testing_v4_inter":
+                return sav_exp.experiment_testing_v4_inter()
             case "dons":
                 return sav_exp.bgp_performance()
 
@@ -312,7 +333,7 @@ if __name__ == "__main__":
     experiment_group = parser.add_argument_group("experiment", "refresh the SAVOP coniguration files, "
                                                                "restart the simulation and record experimental process "
                                                                "data.")
-    monitor_group.add_argument("-e", "--experiment", choices=["3_nodes_v4","dons"], help="initiate a new experiment cycle")
+    experiment_group.add_argument("-e", "--experiment", choices=["testing_v4_inter", "dons"], help="initiate a new experiment cycle")
     args = parser.parse_args()
     result = run(args=args)
     print(f"run over, show: \n{result}")
