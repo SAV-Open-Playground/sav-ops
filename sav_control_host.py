@@ -297,7 +297,7 @@ class RunEmulation():
         with open(CONTAINER_METRIC_PATH) as f:
             ret["container_metric"]["data"] = f.read()
         return ret
-    def wait_for_all_fib_stable(self,check_interval=5):
+    def _wait_for_all_fib_stable(self,check_interval=5):
         """
         will block until all nodes's fib is stable
         collect metric output and return a dict of results
@@ -311,7 +311,7 @@ class RunEmulation():
                 _,out,_ = run_cmd(cmd)
                 try:
                     out = json.loads(out)
-                    if not out["agent"]["is_fib_stable"]:
+                    if not out["agent"]["initial_fib_stable"]:
                         is_all_fib_stable = False
                         break
                     else:
@@ -321,7 +321,23 @@ class RunEmulation():
                     break
             time.sleep(check_interval)
         return ret
+    def _get_kernel_fib(self):
+        """
+        using route command(route -n -F -4) to get the kernel fib
+        """
+        ret = {}
+        for container_id in self.active_containers:
+            ret[container_id] = {}
+            for v in [4,6]:
+                cmd = f"docker exec -it {container_id} route -{v} -n -F"
+                _,out,_ = run_cmd(cmd)
+                ret[container_id][v] = out
+        return ret
     def start(self,monitor_overlap_sec=10):
+        """
+        will monitor the host and containers during the exp
+        
+        """
         # for dev, stop history monitors
         self._stop_metric_monitor()
         self._start_metric_monitor()
@@ -330,6 +346,32 @@ class RunEmulation():
         start_dt = time.time()
         self.send_start_signal()
         agents_out = self.wait_for_all_fib_stable()
+        # TODO add logic to tell when to stop
+        self.send_stop_signal()
+        subprocess_cmd(f"docker compose -f {self.base_compose_path} down")
+        time.sleep(monitor_overlap_sec)
+        self._stop_metric_monitor()
+        ret = self._get_result()
+        # ret["agents_metric"] = agents_out
+        ret["start_signal_dt"] = start_dt
+        return ret
+    
+    def start_dons(self,monitor_overlap_sec=10):
+        """
+        will monitor the host and containers during the exp
+        1. wait for all fib stable
+        2. randomly remove 10 links
+        3. wait for all fib stable  
+        """
+        # for dev, stop history monitors
+        self._stop_metric_monitor()
+        self._start_metric_monitor()
+        time.sleep(monitor_overlap_sec)
+        self.ready_base(force_restart=True)
+        start_dt = time.time()
+        self.send_start_signal()
+        agents_out = self._wait_for_all_fib_stable()
+        ret["first_fib_table"] = self._get_kernel_fib()
         self.send_stop_signal()
         subprocess_cmd(f"docker compose -f {self.base_compose_path} down")
         time.sleep(monitor_overlap_sec)
@@ -348,6 +390,7 @@ class DevicePerformance():
     __networkcommand = "dstat -n --nocolor 1 2 --nocolor| sed -e '1,3d'"
     __hostCommand = "dstat -c -m -d -n --nocolor 1 2 --nocolor | sed -e '1,3d'"
     __dockerStatscommand = "docker stats --no-stream --format json"
+
     def get_cpu_performance(self):
         ret = subprocess_cmd(cmd=self.__cpucommand)
         return ret.returncode, ret.stderr, ret.stdout
@@ -430,6 +473,9 @@ def run(args):
                 result = "SAVOP stop"
             case 'restart':
                 result = "SAVOP restart"
+            case 'start_dons':
+                result = json.dumps(run_emulation.start_dons())
+
     if performance is not None:
         match performance:
             case 'host':
@@ -448,8 +494,9 @@ def run(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="this scripts control SAVOP")
     operate_group = parser.add_argument_group("operate", "control the operation of SAVOP")
-    operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart"],
                         help="control SAVOP execution, only support three values: start, stop and restart")
+    operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart", "start_dons"],
+                        help="control SAVOP execution, only support three values: start, stop, restart and start_dons")
     operate_group.add_argument("-d", "--dir", help="directory that contains the config files")
     operate_group.add_argument("-n", "--node_num", type=int, help="the count of the running container on the slave")
     monitor_group = parser.add_argument_group("monitor", "Monitor the operational status of SAVOP")
