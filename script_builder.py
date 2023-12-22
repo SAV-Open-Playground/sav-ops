@@ -92,7 +92,8 @@ def get_bird_cfg_relation_str(my_as, peer_as, as_relations):
     return f"\tlocal role peer;\n"
     return ""
 
-def gen_bird_conf(node, delay, mode, base):
+
+def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
     """
     add everything but actual bgp links
     """
@@ -183,12 +184,13 @@ def gen_bird_conf(node, delay, mode, base):
                      "};\n"
     bird_conf_str += f"template bgp sav_inter from basic{v} "
     bird_conf_str += "{\n"
-    bird_conf_str += f"\trpdp{v} "
-    bird_conf_str += "{\n" \
+    if enable_rpdp:
+        bird_conf_str += f"\trpdp{v} "
+        bird_conf_str += "{\n" \
                      "\timport all;\n" \
                      "\texport all;\n" \
-                     "\t};\n" \
-                     "};\n"
+                     "\t};\n"
+    bird_conf_str += "};\n"
     link_map = {}
     for src_id, dst_id, link_type, src_ip, dst_ip in base["links"]:
         if not dev_id in [src_id, dst_id]:
@@ -389,7 +391,7 @@ def regenerate_config(src_folder, input_json,  base_config_folder,selected_nodes
         with open(os.path.join(node_folder, "bird.conf"), 'w') as f:
             f.write(bird_config_str)
         ret = run_cmd(command=f"chmod 666 {node_folder}/bird.conf")
-        sa_config = gen_sa_config(base["auto_ip_version"], temp, link_map, base["as_scope"])
+        sa_config = gen_sa_config(base["auto_ip_version"], temp, link_map, base["as_scope"],fib_threshold=60)
         with open(os.path.join(node_folder, "sa.json"), 'w') as f:
             json.dump(sa_config, f, indent=4)
         # resign keys
