@@ -16,7 +16,6 @@ import netaddr
 import copy
 import platform
 
-CURRENT_DIR = os.getcwd()
 
 
 def tell_prefix_version(prefix):
@@ -61,14 +60,14 @@ def run_cmd(command):
     return process.stdout.encode("utf-8")
 
 
-def recompile_bird(path=r'{src_folder}/sav-reference-router'):
+def recompile_bird(path=r'{host_dir}/sav-reference-router'):
     os.chdir(path)
     run_cmd("autoreconf")
     run_cmd("./configure")
     run_cmd("make")
 
 
-def rebuild_img(path=r'{src_folder}', file="docker_file_update_bird_bin", tag="savop_bird_base"):
+def rebuild_img(path=r'{host_dir}', file="docker_file_update_bird_bin", tag="savop_bird_base"):
     """
     build docker image
     rebuild docker image without any tag
@@ -354,19 +353,18 @@ def build_as_scope(as_scope, link, base_device):
     return as_scope
 
 
-def regenerate_config(src_folder, input_json, base_config_folder, selected_nodes,  out_folder):
+def regenerate_config(savop_dir, host_dir, input_json, base_config_dir, selected_nodes,  out_folder):
     if os.path.exists(out_folder):
         run_cmd(f"rm -r {out_folder}")
     os.makedirs(out_folder)
     base = ready_input_json(input_json, selected_nodes)
     base = assign_ip(base)
     delay = 0
-    docker_src_dir = r'/root/savop'
     # compose
     for f in ["sign_key.sh", "topo.sh"]:
-        cp_cmd = f"cp {os.path.join(base_config_folder, f)} {os.path.join(out_folder, f)}"
+        cp_cmd = f"cp {os.path.join(base_config_dir, f)} {os.path.join(out_folder, f)}"
         run_cmd(cp_cmd)
-    refresh_folder(os.path.join(base_config_folder, "ca"),
+    refresh_folder(os.path.join(base_config_dir, "ca"),
                    os.path.join(out_folder, "ca"))
     # build docker compose
     compose_f = open(os.path.join(out_folder, "docker-compose.yml"), 'a')
@@ -395,8 +393,7 @@ def regenerate_config(src_folder, input_json, base_config_folder, selected_nodes
             f.write(bird_config_str)
         ret = run_cmd(command=f"chmod 666 {node_folder}/bird.conf")
         if not "fib_threshold" in base:
-            self.logger.warning(
-                "fib_threshold not found, using default value 60")
+            print("fib_threshold not found, using default value 60")
             base["fib_threshold"] = 60
         sa_config = gen_sa_config(base["auto_ip_version"],
                                   nodes, link_map, base["as_scope"], base["sav_apps"],
@@ -405,10 +402,10 @@ def regenerate_config(src_folder, input_json, base_config_folder, selected_nodes
             json.dump(sa_config, f, indent=4)
         # resign keys
         if base["enable_rpki"]:
-            resign_keys(out_folder, node, key_f, base_config_folder)
+            resign_keys(out_folder, node, key_f, base_config_dir)
         tag = f"{node}"
-        while src_folder.endswith("/"):
-            src_folder = src_folder[:-1]
+        while host_dir.endswith("/"):
+            host_dir = host_dir[:-1]
         # TODO resource limit
         resource_limit = False
 
@@ -428,21 +425,21 @@ def regenerate_config(src_folder, input_json, base_config_folder, selected_nodes
                 f"          memory: 512M\n"
         docker_compose_content += f"    volumes:\n" \
             f"      - type: bind\n" \
-            f"        source:  {src_folder}/savop_run/{node}/bird.conf\n" \
+            f"        source: {host_dir}/savop_run/{node}/bird.conf\n" \
             f"        target: /usr/local/etc/bird.conf\n" \
             f"      - type: bind\n" \
-            f"        source: {src_folder}/savop_run/{node}/sa.json\n" \
+            f"        source: {host_dir}/savop_run/{node}/sa.json\n" \
             f"        target: /root/savop/SavAgent_config.json\n" \
-            f"      - {src_folder}/savop_run/{node}/log/:/root/savop/logs/\n" \
-            f"      - {src_folder}/savop_run/{node}/log/data:/root/savop/sav-agent/data/\n" \
+            f"      - {host_dir}/savop_run/{node}/log/:/root/savop/logs/\n" \
+            f"      - {host_dir}/savop_run/{node}/log/data:/root/savop/sav-agent/data/\n" \
             f"      - type: bind\n" \
-            f"        source: {src_folder}/savop_run/active_signal.json\n" \
+            f"        source: {host_dir}/savop_run/active_signal.json\n" \
             f"        target: /root/savop/signal.json\n" \
             f"      - /etc/localtime:/etc/localtime\n"
         if base["enable_rpki"]:
-            docker_compose_content += f"      - {src_folder}/savop_run/{node}/cert.pem:/root/savop/cert.pem\n"
-            docker_compose_content += f"      - {src_folder}/savop_run/{node}/key.pem:/root/savop/key.pem\n"
-            docker_compose_content += f"      - {src_folder}/savop_run/ca/cert.pem:/root/savop/ca_cert.pem\n"
+            docker_compose_content += f"      - {host_dir}/savop_run/{node}/cert.pem:/root/savop/cert.pem\n"
+            docker_compose_content += f"      - {host_dir}/savop_run/{node}/key.pem:/root/savop/key.pem\n"
+            docker_compose_content += f"      - {host_dir}/savop_run/ca/cert.pem:/root/savop/ca_cert.pem\n"
         docker_compose_content += f"    command:\n" \
             f"        python3 /root/savop/sav-agent/sav_control_container.py\n" \
             f"    privileged: true\n"
@@ -481,7 +478,7 @@ def regenerate_config(src_folder, input_json, base_config_folder, selected_nodes
 
     topo_f.close()
 
-    os.chdir(f"{CURRENT_DIR}/")
+    os.chdir(f"{savop_dir}/")
     if platform.system() == "Windows":
         run_cmd("python3 change_eol.py")
     # os.chdir(out_folder)
@@ -501,12 +498,12 @@ def resign_keys(out_folder, node, key_f, base_cfg_folder):
     key_f.write(f"\rfunCGenPrivateKeyAndSign ./{node} ./ca")
 
 
-def script_builder(src_folder, savop_dir, json_content, out_folder, skip_bird=False, skip_img=False):
+def script_builder(host_dir, savop_dir, json_content, out_folder, skip_bird=False, skip_img=False):
     if skip_bird:
-        recompile_bird(os.path.join(src_folder, "sav-reference-router"))
+        recompile_bird(os.path.join(host_dir, "sav-reference-router"))
     if skip_img:
-        rebuild_img(src_folder)
-    base_cfg_folder = os.path.join(src_folder, "base_configs")
+        rebuild_img(host_dir)
+    base_cfg_folder = os.path.join(savop_dir, "base_configs")
     device_number = regenerate_config(
-        savop_dir, json_content, base_cfg_folder, None, out_folder)
+        savop_dir, host_dir, json_content, base_cfg_folder, None, out_folder)
     return device_number

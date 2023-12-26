@@ -15,7 +15,9 @@ SAV_ROOT_DIR = os.path.dirname(SAV_OP_DIR)
 SAV_RUN_DIR = os.path.join(SAV_ROOT_DIR, "savop_run")
 HOST_METRIC_PATH = "./host_metric.txt"
 CONTAINER_METRIC_PATH = "./containers_metric.json"
-def monitor_host(stat_out_file = HOST_METRIC_PATH):
+
+
+def monitor_host(stat_out_file=HOST_METRIC_PATH):
     """
     monitor resource usage of the host
     the default interval is one second
@@ -23,12 +25,16 @@ def monitor_host(stat_out_file = HOST_METRIC_PATH):
     if os.path.exists(stat_out_file):
         os.unlink(stat_out_file)
     cmd = f"dstat -f -m -a --bits --nocolor>{stat_out_file}"
-    run_cmd(cmd,1)
-def monitor_containers(stat_out_file = CONTAINER_METRIC_PATH):
+    run_cmd(cmd, 1)
+
+
+def monitor_containers(stat_out_file=CONTAINER_METRIC_PATH):
     if os.path.exists(stat_out_file):
         os.unlink(stat_out_file)
     cmd = f"docker stats -a --format json>{stat_out_file}"
     run_cmd(cmd)
+
+
 def parse_dstat_file(file_path):
     """
     parse dstat file
@@ -37,7 +43,7 @@ def parse_dstat_file(file_path):
     with open(file_path) as f:
         lines = f.readlines()
     headers = lines[0].strip().split("|")
-    print(headers)
+    # print(headers)
     lines = lines[3:]
     ret = []
     for line in lines:
@@ -48,7 +54,7 @@ def parse_dstat_file(file_path):
         line = list(map(lambda x: x.strip(), line))
         line = list(filter(lambda x: x, line))
         ret.append(line)
-    return 
+    return
 
 
 class RunEmulation():
@@ -64,7 +70,6 @@ class RunEmulation():
         self.base_topo = base_topo
         self.base_node_num = base_node_num
         self.active_app = None
-
 
     def if_base_started(self):
         """
@@ -85,7 +90,8 @@ class RunEmulation():
             elif "krill" in line:
                 krill_count += 1
         if bird_count != self.base_node_num:
-            self.logger.info(f"bird count error, should be {self.base_node_num}, but {bird_count}")
+            self.logger.info(
+                f"bird count error, should be {self.base_node_num}, but {bird_count}")
             return False
         rpki = False
         if rpki:
@@ -99,17 +105,20 @@ class RunEmulation():
         data["command"] = "stop"
         json_w(self.host_signal_path, data)
         self.logger.info("stop signal sent")
+
     def send_start_signal(self):
         """start sav-agent and bird on all nodes"""
         data = json_r(self.host_signal_path)
         data["command"] = "start"
         json_w(self.host_signal_path, data)
         self.logger.info("start signal sent")
+
     def clear_logs(self):
         """
         clear log folders, should be called in start base function
         """
         cur_dir = os.path.dirname(os.path.abspath(__file__))
+        print(cur_dir)
         self.logger.debug(cur_dir)
         path = r'./logs'
         if not os.path.exists(path):
@@ -145,7 +154,7 @@ class RunEmulation():
         self.logger.info("container started")
         run_cmd(f"bash {self.base_topo}")
         self.logger.info("link added")
-        t = time.time()-t
+        t = time.time() - t
         self.logger.info(f"base start finished in {t:.4f} seconds")
         if self.if_base_started():
             self.logger.info("base ready")
@@ -214,7 +223,8 @@ class RunEmulation():
 
     def _log_to_cmd_file(self, msg, result_path, log_level='info'):
         if not log_level in ['info', 'error', 'warn']:
-            raise ValueError(f"log_level should be info, error or warn: {log_level}")
+            raise ValueError(
+                f"log_level should be info, error or warn: {log_level}")
         match log_level:
             case 'info':
                 self.logger.info(msg)
@@ -268,13 +278,14 @@ class RunEmulation():
             elif "peer" in node_roles:
                 results.append(node)
         return results
-    
+
     def _start_metric_monitor(self):
         """
         clear metric history and start metric monitor (a thread)
         """
-        self.host_monitor_thread= threading.Thread(target=monitor_host)
-        self.container_monitor_thread= threading.Thread(target=monitor_containers)
+        self.host_monitor_thread = threading.Thread(target=monitor_host)
+        self.container_monitor_thread = threading.Thread(
+            target=monitor_containers)
         self.container_monitor_thread.daemon = True
         self.host_monitor_thread.daemon = True
         self.container_monitor_thread_start_dt = time.time()
@@ -282,6 +293,7 @@ class RunEmulation():
         self.host_monitor_thread_start_dt = time.time()
         self.host_monitor_thread.start()
         self.logger.debug("monitor started")
+
     def _stop_metric_monitor(self):
         """our cmd will quit but new monitor thread will be created,
         we need to kill the monitor thread"""
@@ -292,39 +304,64 @@ class RunEmulation():
         self.container_monitor_thread_stop_dt = time.time()
         run_cmd(cmd)
         self.logger.debug("monitor stopped")
+
     def _get_result(self):
         """parse the file generated by dstat and docker stats"""
-        ret = {"host_metric":{"start_dt":self.host_monitor_thread_start_dt,"stop_dt":self.host_monitor_thread_stop_dt}}
-        ret["container_metric"] = {"start_dt":self.container_monitor_thread_start_dt,"stop_dt":self.container_monitor_thread_stop_dt}
+        ret = {"host_metric": {"start_dt": self.host_monitor_thread_start_dt,
+                               "stop_dt": self.host_monitor_thread_stop_dt}}
+        ret["container_metric"] = {
+            "start_dt": self.container_monitor_thread_start_dt, "stop_dt": self.container_monitor_thread_stop_dt}
         with open(HOST_METRIC_PATH) as f:
             ret["host_metric"]["data"] = f.read()
         with open(CONTAINER_METRIC_PATH) as f:
             ret["container_metric"]["data"] = f.read()
         return ret
-    def _wait_for_all_fib_stable(self,check_interval=5):
+
+    def _wait_for_initial_fib_stable(self, check_interval=5, containers_to_go=None):
         """
         will block until all nodes's fib is stable
         collect metric output and return a dict of results
         """
-        is_all_fib_stable = False
         ret = {}
-        while not is_all_fib_stable:
-            is_all_fib_stable = True
-            for container_id in self.active_containers:
+        if containers_to_go is None:
+            containers_to_go = self.active_containers
+        while len(containers_to_go) > 0:
+            self.logger.debug(f"containers to go: {containers_to_go}")
+            new_containers_to_go = []
+            for container_id in containers_to_go:
                 cmd = f"docker exec -it {container_id} curl http://localhost:8888/metric/"
-                _,out,_ = run_cmd(cmd)
-                try:
-                    out = json.loads(out)
-                    if not out["agent"]["initial_fib_stable"]:
-                        is_all_fib_stable = False
-                        break
-                    else:
-                        ret[container_id] = out
-                except Exception as e:
-                    is_all_fib_stable = False
-                    break
+                _, out, _ = run_cmd(cmd)
+                out = json.loads(out)
+                if out["agent"]["initial_fib_stable"]:
+                    ret[container_id] = out
+                else:
+                    # self.logger.debug(out["agent"])
+                    new_containers_to_go.append(container_id)
+            containers_to_go = new_containers_to_go
             time.sleep(check_interval)
         return ret
+
+    def _wait_for_fib_stable(self, initial_wait, check_interval=5, containers_to_go=None):
+        ret = {}
+        time.sleep(initial_wait)
+        if containers_to_go is None:
+            containers_to_go = self.active_containers
+        while len(containers_to_go) > 0:
+            self.logger.debug(f"containers to go: {containers_to_go}")
+            new_containers_to_go = []
+            for container_id in containers_to_go:
+                cmd = f"docker exec -it {container_id} curl http://localhost:8888/metric/"
+                _, out, _ = run_cmd(cmd)
+                out = json.loads(out)
+                input(out["agent"])
+                if out["agent"]["fib_stable"]:
+                    ret[container_id] = out
+                else:
+                    # self.logger.debug(out["agent"])
+                    new_containers_to_go.append(container_id)
+            containers_to_go = new_containers_to_go
+            time.sleep(check_interval)
+
     def _get_kernel_fib(self):
         """
         using route command(route -n -F -4) to get the kernel fib
@@ -332,20 +369,20 @@ class RunEmulation():
         ret = {}
         for container_id in self.active_containers:
             ret[container_id] = {}
-            for v in [4,6]:
+            for v in [4, 6]:
                 cmd = f"docker exec -it {container_id} route -{v} -n -F"
-                _,out,_ = run_cmd(cmd)
+                _, out, _ = run_cmd(cmd)
                 ret[container_id][v] = out
         return ret
 
     def start(self, monitor_overlap_sec=10):
         """
         start the containers
-        
+
         """
         self.ready_base(force_restart=True)
 
-    def start_dons(self,monitor_overlap_sec=10):
+    def start_dons(self, monitor_overlap_sec=10):
         """
         will monitor the host and containers during the exp
         1. wait for all fib stable
@@ -353,23 +390,27 @@ class RunEmulation():
         3. wait for all fib stable  
         """
         # for dev, stop history monitors
+        self.logger.debug(self.base_topo)
         self._stop_metric_monitor()
         self._start_metric_monitor()
         time.sleep(monitor_overlap_sec)
         self.ready_base(force_restart=True)
         start_dt = time.time()
         self.send_start_signal()
-        agents_out = self._wait_for_all_fib_stable()
-        ret["first_fib_table"] = self._get_kernel_fib()
+        # wait for all fib stable
+        agents_out = self._wait_for_initial_fib_stable()
+        # randomly remove 10 links
+
+        fib_table_data = self._get_kernel_fib()
         self.send_stop_signal()
         subprocess_cmd(f"docker compose -f {self.base_compose_path} down")
         time.sleep(monitor_overlap_sec)
         self._stop_metric_monitor()
         ret = self._get_result()
         ret["agents_metric"] = agents_out
+        ret["fib_table_data"] = fib_table_data
         ret["start_signal_dt"] = start_dt
         return ret
-        
 
 
 class DevicePerformance():
@@ -379,6 +420,7 @@ class DevicePerformance():
     __networkcommand = "dstat -n --nocolor 1 2 --nocolor| sed -e '1,3d'"
     __hostCommand = "dstat -c -m -d -n --nocolor 1 2 --nocolor | sed -e '1,3d'"
     __dockerStatscommand = "docker stats --no-stream --format json"
+
     def get_cpu_performance(self):
         ret = subprocess_cmd(cmd=self.__cpucommand)
         return ret.returncode, ret.stderr, ret.stdout
@@ -406,6 +448,7 @@ class DevicePerformance():
 
 class Monitor:
     performance = DevicePerformance()
+
     @staticmethod
     def host_performance():
         performance = DevicePerformance()
@@ -415,16 +458,19 @@ class Monitor:
         # CPU
         cpu_performance = std_list[0].replace("  ", " ").strip().split()
         performance_dict["CPU"] = {"usr": cpu_performance[0], "sys": cpu_performance[1], "usage": f"{100-int(cpu_performance[2])}",
-                              "wai": cpu_performance[3], "stl": cpu_performance[4]}
+                                   "wai": cpu_performance[3], "stl": cpu_performance[4]}
         # memory
         memory_performance = std_list[1].strip().split()
-        performance_dict["memory"] = {"used": memory_performance[0], "free": memory_performance[1], "buff": memory_performance[2], "cache": memory_performance[3]}
+        performance_dict["memory"] = {"used": memory_performance[0], "free": memory_performance[1],
+                                      "buff": memory_performance[2], "cache": memory_performance[3]}
         # disk
         disk_performance = std_list[2].strip().split()
-        performance_dict["disk"] = {"read": disk_performance[0], "writ": disk_performance[1]}
+        performance_dict["disk"] = {
+            "read": disk_performance[0], "writ": disk_performance[1]}
         # network
         network_performance = std_list[3].replace("\n", "").strip().split()
-        performance_dict["network"] = {"recv": network_performance[0], "send": network_performance[1]}
+        performance_dict["network"] = {
+            "recv": network_performance[0], "send": network_performance[1]}
         return performance_dict
 
     @staticmethod
@@ -448,9 +494,9 @@ def run(args):
         host_signal_path = os.path.join(cfg_root_dir, "active_signal.json")
         base_compose = os.path.join(cfg_root_dir, "docker-compose.yml")
         base_topo = os.path.join(cfg_root_dir, "topo.sh")
-        run_emulation = RunEmulation(root_dir=host_root_dir, 
+        run_emulation = RunEmulation(root_dir=host_root_dir,
                                      host_signal_path=host_signal_path,
-                                     base_compose=base_compose, 
+                                     base_compose=base_compose,
                                      base_topo=base_topo,
                                      base_node_num=node_num)
         match action:
@@ -484,7 +530,8 @@ if __name__ == "__main__":
                                               "control SAVOP execution, only support three values: start, stop and restart")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart", "start_dons"],
                                help="control SAVOP execution, only support three values: start, stop, restart and start_dons")
-    monitor_group = parser.add_argument_group("monitor", "Monitor the operational status of SAVOP")
+    monitor_group = parser.add_argument_group(
+        "monitor", "Monitor the operational status of SAVOP")
     monitor_group.add_argument("-p", "--performance", choices=["host", "container", "all"],
                                help="monitor the performance of machines or containers")
     args = parser.parse_args()

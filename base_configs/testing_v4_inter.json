@@ -60,5 +60,7 @@
     },
     "enable_rpki": false,
     "prefix_method": "blackhole",
-    "auto_ip_version": 4
+    "auto_ip_version": 4,
+    "sav_apps": ["rpdp_app"],
+    "active_sav_app": "rpdp_app"
 }
