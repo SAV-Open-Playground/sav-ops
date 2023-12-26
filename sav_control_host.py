@@ -9,6 +9,10 @@
 from sav_control_common import *
 import argparse
 import threading
+
+SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
+SAV_ROOT_DIR = os.path.dirname(SAV_OP_DIR)
+SAV_RUN_DIR = os.path.join(SAV_ROOT_DIR, "savop_run")
 HOST_METRIC_PATH = "./host_metric.txt"
 CONTAINER_METRIC_PATH = "./containers_metric.json"
 def monitor_host(stat_out_file = HOST_METRIC_PATH):
@@ -333,29 +337,14 @@ class RunEmulation():
                 _,out,_ = run_cmd(cmd)
                 ret[container_id][v] = out
         return ret
-    def start(self,monitor_overlap_sec=10):
+
+    def start(self, monitor_overlap_sec=10):
         """
-        will monitor the host and containers during the exp
+        start the containers
         
         """
-        # for dev, stop history monitors
-        self._stop_metric_monitor()
-        self._start_metric_monitor()
-        time.sleep(monitor_overlap_sec)
         self.ready_base(force_restart=True)
-        start_dt = time.time()
-        self.send_start_signal()
-        agents_out = self.wait_for_all_fib_stable()
-        # TODO add logic to tell when to stop
-        self.send_stop_signal()
-        subprocess_cmd(f"docker compose -f {self.base_compose_path} down")
-        time.sleep(monitor_overlap_sec)
-        self._stop_metric_monitor()
-        ret = self._get_result()
-        # ret["agents_metric"] = agents_out
-        ret["start_signal_dt"] = start_dt
-        return ret
-    
+
     def start_dons(self,monitor_overlap_sec=10):
         """
         will monitor the host and containers during the exp
@@ -451,23 +440,22 @@ class Monitor:
 def run(args):
     action = args.action
     performance = args.performance
+    node_num = get_container_node_num(SAV_RUN_DIR)
     result = ""
     if action is not None:
-
-        host_root_dir = os.path.join(args.dir)
+        host_root_dir = os.path.join(SAV_ROOT_DIR)
         cfg_root_dir = os.path.join(host_root_dir, "savop_run")
         host_signal_path = os.path.join(cfg_root_dir, "active_signal.json")
         base_compose = os.path.join(cfg_root_dir, "docker-compose.yml")
-        base_topo = os.path.join(cfg_root_dir,"topo.sh")
+        base_topo = os.path.join(cfg_root_dir, "topo.sh")
         run_emulation = RunEmulation(root_dir=host_root_dir, 
                                      host_signal_path=host_signal_path,
                                      base_compose=base_compose, 
                                      base_topo=base_topo,
-                                     base_node_num=args.node_num)
-        
+                                     base_node_num=node_num)
         match action:
             case 'start':
-                result = json.dumps(run_emulation.start(),indent=2)
+                run_emulation.start()
             case 'stop':
                 result = "SAVOP stop"
             case 'restart':
@@ -495,9 +483,7 @@ if __name__ == "__main__":
     operate_group = parser.add_argument_group("operate control the operation of SAVOP",
                                               "control SAVOP execution, only support three values: start, stop and restart")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart", "start_dons"],
-                        help="control SAVOP execution, only support three values: start, stop, restart and start_dons")
-    operate_group.add_argument("-d", "--dir", help="directory that contains the config files")
-    operate_group.add_argument("-n", "--node_num", type=int, help="the count of the running container on the slave")
+                               help="control SAVOP execution, only support three values: start, stop, restart and start_dons")
     monitor_group = parser.add_argument_group("monitor", "Monitor the operational status of SAVOP")
     monitor_group.add_argument("-p", "--performance", choices=["host", "container", "all"],
                                help="monitor the performance of machines or containers")

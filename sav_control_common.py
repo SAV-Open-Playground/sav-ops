@@ -26,8 +26,7 @@ def json_w(path, data, encoding='utf-8', mode='w'):
 
 
 def subprocess_cmd(cmd):
-    out = subprocess.run(
-        cmd, shell=True, capture_output=True, encoding='utf-8')
+    out = subprocess.run(cmd, shell=True, capture_output=True, encoding='utf-8')
     return out
 
 
@@ -125,8 +124,7 @@ def extract_mem_and_cpu_stats_from_dstat(data_content_list):
     for data in data_content_list[2:]:
         data_list = [i.strip() for i in data.split("|")][0:2]
         for index in range(0, len(data_list)):
-            child_data_list = [
-                i for i in data_list[index].split(" ") if len(i) != 0]
+            child_data_list = [i for i in data_list[index].split(" ") if len(i) != 0]
             if index == 0:
                 mem_list = []
                 for value in child_data_list:
@@ -148,3 +146,11 @@ def extract_mem_and_cpu_stats_from_dstat(data_content_list):
                     cvs_content += value + ","
                 cvs_content = cvs_content[:-1] + "\n"
     return cvs_content
+
+
+def get_container_node_num(root_dir):
+    cmd = f'grep "container_name" {root_dir}/docker-compose.yml |wc -l'
+    returncode, stdout, stderr = run_cmd(cmd)
+    if returncode != 0:
+        raise
+    return int(stdout)

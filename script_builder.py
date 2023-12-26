@@ -354,7 +354,7 @@ def build_as_scope(as_scope, link, base_device):
     return as_scope
 
 
-def regenerate_config(src_folder, input_json,  base_config_folder,selected_nodes,  out_folder):
+def regenerate_config(src_folder, input_json, base_config_folder, selected_nodes,  out_folder):
     if os.path.exists(out_folder):
         run_cmd(f"rm -r {out_folder}")
     os.makedirs(out_folder)
@@ -471,7 +471,7 @@ def regenerate_config(src_folder, input_json,  base_config_folder,selected_nodes
 
     topo_f.close()
 
-    os.chdir(f"{src_folder}/")
+    os.chdir(f"{CURRENT_DIR}/")
     if platform.system() == "Windows":
         run_cmd("python3 change_eol.py")
     # os.chdir(out_folder)
@@ -495,6 +495,6 @@ def script_builder(src_folder, savop_dir, json_content, out_folder,skip_bird=Fal
         recompile_bird(os.path.join(src_folder, "sav-reference-router"))
     if skip_img:
         rebuild_img(src_folder)
-    base_cfg_folder = os.path.join(savop_dir, "base_configs")
-    device_number = regenerate_config(src_folder, json_content, base_cfg_folder, None, out_folder)
+    base_cfg_folder = os.path.join(src_folder, "base_configs")
+    device_number = regenerate_config(savop_dir, json_content, base_cfg_folder, None, out_folder)
     return device_number

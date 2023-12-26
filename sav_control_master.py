@@ -59,7 +59,7 @@ class MasterController:
             path2json = os.path.join(SAV_OP_DIR, f"base_configs", input_json)
             json_content = json_r(path2json)
             generated_config_dir = os.path.join(OUT_DIR, host_id)
-            ret[host_id] = script_builder(SAV_OP_DIR, SAV_OP_DIR, json_content, out_folder=generated_config_dir)
+            ret[host_id] = script_builder(SAV_OP_DIR, host_node["root_dir"], json_content, out_folder=generated_config_dir)
             self.host_node[host_id]["cfg_src_dir"] = generated_config_dir
         return ret
 
@@ -126,7 +126,8 @@ class MasterController:
     def mode_performance(self):
         for node_id in list(self.host_node.keys()):
             node = self.host_node[node_id]
-            cmd = f'python3 {node["root_dir"]}/savop/sav_control_host.py -p all'
+            root_dir = node["root_dir"][:-1] if node["root_dir"].endswith("/") else node["root_dir"]
+            cmd = f'python3 {root_dir}/savop/sav_control_host.py -p all'
             run_result = self._remote_run(node_id=node_id, node=node, cmd=cmd)
         return run_result["cmd_result"]
 
@@ -136,10 +137,12 @@ class MasterController:
         for node_id, node_num in self.config["host_node"].items():
             node = self.host_node[node_id]
             path2hostpy = os.path.join(node["root_dir"], "savop", "sav_control_host.py")
-            cmd = f"python3 {path2hostpy} -a start -d {node['root_dir']} -n {node_num}"
+            cmd = f"python3 {path2hostpy} -a start"
             node_result = self._remote_run(node_id, node, cmd)
             if node_id in result:
                 self.logger.error("keys conflict")
+            if node_result["cmd_result"].return_code == 0:
+                node_result["cmd_result"] = "ok"
             result[node_id] = node_result
         return result
     
@@ -266,8 +269,7 @@ class SavExperiment:
                 input()
 
 def run(args):
-    # topo_json = args.topo_json
-
+    topo_json = args.topo_json
     config = args.config
     distribute = args.distribute
     action = args.action
@@ -275,10 +277,11 @@ def run(args):
     experiment = args.experiment
 
     # generate config files
-    if config:
+    if config is not None and topo_json is not None:
+        master_controller = MasterController("sav_control_master_config.json")
         match config:
-            case "refresh:":
-                base_node_num = script_builder(SAV_ROOT_DIR, SAV_OP_DIR, input_json=topo_json, out_folder=OUT_DIR)
+            case "refresh":
+                base_node_num = master_controller.config_file_generate(input_json=topo_json)
     # distribute config file
     if distribute:
         master_controller = MasterController("sav_control_master_config.json")
