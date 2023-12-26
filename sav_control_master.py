@@ -8,11 +8,13 @@
              excepted file structure:
              sav-root-dir
                 -sav-agent
+                    - sav_control_container.py
                 -sav-reference-router
                 -savop
                     - base_configs
                         - base_config.json
                     - sav_control_master.py
+                    - sav_control_host.py
                     - sav_control_master_config.json
 """
 from sav_control_common import *
@@ -27,7 +29,7 @@ import os
 SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
 SAV_ROOT_DIR = os.path.dirname(SAV_OP_DIR)
 SAV_AGENT_DIR = os.path.join(SAV_ROOT_DIR, "sav-agent")
-ROUTER_DIR = os.path.join(SAV_ROOT_DIR, "sav-reference-router")
+SAV_ROUTER_DIR = os.path.join(SAV_ROOT_DIR, "sav-reference-router")
 OUT_DIR = os.path.join(SAV_OP_DIR, "this_config")
 SELF_HOST_ID = "localhost"
 
@@ -41,6 +43,8 @@ class MasterController:
         self.host_node = self.config["host_node"]
         if logger is None:
             self.logger = get_logger("master_controller")
+        else:
+            self.logger = logger
     def _self_host(self,input_json):
         ret = {}
         host_node = self.host_node[SELF_HOST_ID]
@@ -71,7 +75,7 @@ class MasterController:
         shutil.rmtree(OUT_DIR)
         os.mkdir(OUT_DIR)
         if len(list(self.host_node.keys())) and list(self.host_node.keys())[0] == "localhost":
-            ret = self._self_host(input_json=input_json)
+            ret = self._self_host(input_json)
         else:
             ret = self._not_self_host(input_json=input_json)
         self.distribution_d = ret
@@ -152,7 +156,7 @@ class MasterController:
         for node_id, node_num in self.distribution_d.items():
             node = self.host_node[node_id]
             path2hostpy = os.path.join(node["root_dir"], "savop", "sav_control_host.py")
-            cmd = f"python3 {path2hostpy} -a start_dons -d {node['root_dir']} -n {node_num}"
+            cmd = f"python3 {path2hostpy} -a start_dons"
             node_result = self._remote_run(node_id, node, cmd)
             if node_id in result:
                 self.logger.error("keys conflict")
@@ -211,23 +215,27 @@ class SavExperiment:
             std_out.remove("")
         temp = []
         for i in std_out:
-            i = i.strip()
-            if i.startswith("(") and i.endswith(")"):
+            if i.endswith("No such process\\n\')\n"):
+                continue
+            if i.endswith("savop-dev/src/savop\n"):
+                continue
+            if i.startswith("(args='dstat -f "):
+                continue
+            if i.startswith("(args='docker stats -a"):
                 continue
             else:
                 temp.append(i)
-        if len(temp) != 1:
-            for i in temp:
-                input([i])
-        std_out = temp[0].split("\n")[1:]
-        csv_str = "\n".join(std_out)
-        result = json.loads(csv_str)
-        input(result.keys())
+        std_out = temp[0]
+        std_out = std_out.split("\n")[1:]
+        json_str = "\n".join(std_out)
+        result = json.loads(json_str)
         del result["container_metric"]
         for node, node_data in result["agents_metric"].items():
-            self.logger.debug(f"{node} {node_data}")
-            result["agents_metric"][node] = node_data["agent"]["fib_stable_dt"] - \
+            # self.logger.debug(f"{node} {node_data}")
+            node_result = {}
+            node_result["initial_fib_stable"] = node_data["agent"]["initial_fib_stable_dt"] - \
                 node_data["agent"]["first_dt"]
+            # node_result["second_fib_stable"] = node_data["agent"]["last_fib_stable_dt"] - \
         result["router_fib_stable_time_sec_detail"] = result["agents_metric"]
         result["router_fib_stable_time_sec_max"] = max(list(result["router_fib_stable_time_sec_detail"].values()))
         
@@ -251,7 +259,7 @@ class SavExperiment:
                      '246_90_50_50_221_nodes_inter_v4.json','246_95_50_50_233_nodes_inter_v4.json','246_100_50_50_246_nodes_inter_v4.json']
         # full_list = full_list[:1]
         for topo in full_list:
-            self.controller.config_file_generate(input_json=topo)
+            self.controller.config_file_generate(topo)
             self.controller.config_file_distribute()
             ret = self.controller.mode_dons()
             for node, result in ret.items():
@@ -259,13 +267,13 @@ class SavExperiment:
                 std_err = result["cmd_result"]["stderr"]
                 ret_code = result["cmd_result"]["returncode"]
                 if ret_code != 0:
-                    input(std_err)
+                    continue
                 time_usage = result["cmd_end_dt"] - result["cmd_start_dt"]
                 self.logger.debug(f"{node} finished in {time_usage}")
-                result = self._bgp_exp_result_parser(std_out)
+                parsed_std_out = self._bgp_exp_result_parser(std_out)
                 result_file_name = topo.replace(".json", "_result.json")
-                json_w(result_file_name, result)
-                print(f"result saved to {result_file_name}")
+                json_w(result_file_name, parsed_std_out)
+                print(f"parsed_std_out saved to {result_file_name}")
                 input()
 
 def run(args):
@@ -275,7 +283,13 @@ def run(args):
     action = args.action
     performance = args.performance
     experiment = args.experiment
-
+    if experiment is not None:
+        sav_exp = SavExperiment()
+        match experiment:
+            case "testing_v4_inter":
+                return sav_exp.experiment_testing_v4_inter()
+            case "dons":
+                return sav_exp.bgp_performance()
     # generate config files
     if config is not None and topo_json is not None:
         master_controller = MasterController("sav_control_master_config.json")
@@ -304,13 +318,7 @@ def run(args):
         match performance:
             case "all":
                 performance_content = master_controller.mode_performance()
-    if experiment is not None:
-        sav_exp = SavExperiment()
-        match experiment:
-            case "testing_v4_inter":
-                return sav_exp.experiment_testing_v4_inter()
-            case "dons":
-                return sav_exp.bgp_performance()
+
 
 
 if __name__ == "__main__":
