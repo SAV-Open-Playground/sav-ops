@@ -11,9 +11,8 @@ funCreateV4(){
     ln -sf /proc/$PID_P/ns/net /var/run/netns/$PID_P
     
     
-    NET_L="eth_`echo ${2}|awk -F"_" '{ print $NF }'`"
-    NET_P="eth_`echo ${1}|awk -F"_" '{ print $NF }'`"
-    
+    NET_L="eth_`echo ${2}|awk -F"r" '{ print $NF }'`"
+    NET_P="eth_`echo ${1}|awk -F"r" '{ print $NF }'`"
     ip link add ${NET_L} type veth peer name ${NET_P}
     ip link set ${NET_L}  netns ${PID_L}
     ip link set ${NET_P}  netns ${PID_P}
@@ -37,9 +36,9 @@ funCreateV6(){
     ln -sf /proc/$PID_P/ns/net /var/run/netns/$PID_P
     
     
-    NET_L="eth_`echo ${2}|awk -F"_" '{ print $NF }'`"
-    NET_P="eth_`echo ${1}|awk -F"_" '{ print $NF }'`"
-    
+    NET_L="eth_`echo ${2}|awk -F"r" '{ print $NF }'`"
+    NET_P="eth_`echo ${1}|awk -F"r" '{ print $NF }'`"
+
     ip link add ${NET_L} type veth peer name ${NET_P}
     ip link set ${NET_L}  netns ${PID_L}
     ip link set ${NET_P}  netns ${PID_P}

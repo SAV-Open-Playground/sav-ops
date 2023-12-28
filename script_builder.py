@@ -17,7 +17,6 @@ import copy
 import platform
 
 
-
 def tell_prefix_version(prefix):
     """
     use . and : to tell if prefix is ipv4 or ipv6
@@ -107,11 +106,11 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
     enable_rpki = base["enable_rpki"]
     bird_conf_str = f"router id {str(netaddr.IPAddress(router_id))};"
     if enable_rpki:
+        # "\tdebug all;\n" \
         bird_conf_str += "\nroa4 table r4 {	sorted 1; };\n"\
                          "roa6 table r6 { sorted 1; };\n" \
                          "protocol rpki rpki1\n"\
                          "{\n" \
-                         "\tdebug all;\n" \
                          "\troa4 {\n" \
                          "\t\ttable r4;\n" \
                          "\t\t};\n" \
@@ -161,11 +160,10 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
     for prefix in node["prefixes"]:
         bird_conf_str += f"\troute {prefix} {mode};\n"
     bird_conf_str += "};\n"
-
+#  "\tdebug all;\n" \
     bird_conf_str += "template bgp basic {\n"
     bird_conf_str += f"\tlocal as {node['as']};\n"
     bird_conf_str += "\tlong lived graceful restart on;\n" \
-                     "\tdebug all;\n" \
                      "\tenable extended messages;\n" \
                      "};\n" \
                      "template bgp basic4 from basic {\n" \

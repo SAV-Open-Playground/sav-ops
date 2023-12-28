@@ -45,7 +45,8 @@ class MasterController:
             self.logger = get_logger("master_controller")
         else:
             self.logger = logger
-    def _self_host(self,input_json):
+
+    def _self_host(self, input_json):
         ret = {}
         host_node = self.host_node[SELF_HOST_ID]
         path2json = os.path.join(SAV_OP_DIR, "base_configs", input_json)
@@ -63,7 +64,8 @@ class MasterController:
             path2json = os.path.join(SAV_OP_DIR, f"base_configs", input_json)
             json_content = json_r(path2json)
             generated_config_dir = os.path.join(OUT_DIR, host_id)
-            ret[host_id] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir)
+            ret[host_id] = script_builder(
+                host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir)
             self.host_node[host_id]["cfg_src_dir"] = generated_config_dir
         return ret
 
@@ -86,7 +88,8 @@ class MasterController:
         if node_id == "localhost":
             ret["cmd_start_dt"] = time.time()
             returncode, stdout, stderr = run_cmd(cmd)
-            ret["cmd_result"] = {"returncode": returncode, "stdout": stdout, "stderr": stderr,"cmd":cmd}
+            ret["cmd_result"] = {"returncode": returncode,
+                                 "stdout": stdout, "stderr": stderr, "cmd": cmd}
             ret["cmd_end_dt"] = time.time()
         else:
             with Connection(host=node_id, user=node["user"], connect_kwargs={"password": node["password"]}) as conn:
@@ -107,30 +110,36 @@ class MasterController:
                 print(f"config file copied to: {cfg_dst_dir}")
                 continue
             with Connection(host=node_id, user=node["user"], connect_kwargs={"password": node["password"]}) as conn:
-                clear_config = conn.run(command=f"rm -rf {node['root_dir']}/savop_run/*")
+                clear_config = conn.run(
+                    command=f"rm -rf {node['root_dir']}/savop_run/*")
                 if clear_config.return_code == 0:
                     print("clear old config successfully.")
                 else:
                     print("clear old config fail!")
-                compress_config = run_cmd(cmd=f"tar -czf this_config/{node_id}.tar.gz this_config/{node_id}")
+                compress_config = run_cmd(
+                    cmd=f"tar -czf this_config/{node_id}.tar.gz this_config/{node_id}")
                 if compress_config[0] == 0:
                     print("compress config files successfully.")
                 else:
                     print("compress config files fail!")
-                result = conn.put(local=f"{SAV_OP_DIR}/this_config/{node_id}.tar.gz", remote=f"{node['root_dir']}/savop_run/")
-                transfer_config = conn.run(command=f"ls -al {node['root_dir']}/savop_run/{node_id}.tar.gz")
+                result = conn.put(
+                    local=f"{SAV_OP_DIR}/this_config/{node_id}.tar.gz", remote=f"{node['root_dir']}/savop_run/")
+                transfer_config = conn.run(
+                    command=f"ls -al {node['root_dir']}/savop_run/{node_id}.tar.gz")
                 if transfer_config.return_code == 0:
                     print("transfer config files successfully.")
                 else:
                     print("transfer config files fail!")
-                uncompress_config = conn.run(command=f"cd {node['root_dir']}/savop_run; tar -xzf {node['root_dir']}/savop_run/{node_id}.tar.gz")
+                uncompress_config = conn.run(
+                    command=f"cd {node['root_dir']}/savop_run; tar -xzf {node['root_dir']}/savop_run/{node_id}.tar.gz")
                 mv_config = conn.run(command=f"mv {node['root_dir']}/savop_run/this_config/{node_id}/*  {node['root_dir']}/savop_run"
                                              f" && rm -rf {node['root_dir']}/savop_run/this_config")
 
     def mode_performance(self):
         for node_id in list(self.host_node.keys()):
             node = self.host_node[node_id]
-            root_dir = node["root_dir"][:-1] if node["root_dir"].endswith("/") else node["root_dir"]
+            root_dir = node["root_dir"][:-
+                                        1] if node["root_dir"].endswith("/") else node["root_dir"]
             cmd = f'python3 {root_dir}/savop/sav_control_host.py -p all'
             run_result = self._remote_run(node_id=node_id, node=node, cmd=cmd)
         return run_result["cmd_result"]
@@ -140,7 +149,8 @@ class MasterController:
         # TODO we should calculate the container number on each node,but here we just use a fixed number
         for node_id, node_num in self.config["host_node"].items():
             node = self.host_node[node_id]
-            path2hostpy = os.path.join(node["root_dir"], "savop", "sav_control_host.py")
+            path2hostpy = os.path.join(
+                node["root_dir"], "savop", "sav_control_host.py")
             cmd = f"python3 {path2hostpy} -a start"
             node_result = self._remote_run(node_id, node, cmd)
             if node_id in result:
@@ -149,19 +159,21 @@ class MasterController:
                 node_result["cmd_result"] = "ok"
             result[node_id] = node_result
         return result
-    
+
     def mode_dons(self):
         result = {}
         # TODO we should calculate the container number on each node,but here we just use a fixed number
         for node_id, node_num in self.distribution_d.items():
             node = self.host_node[node_id]
-            path2hostpy = os.path.join(node["root_dir"], "savop", "sav_control_host.py")
+            path2hostpy = os.path.join(
+                node["root_dir"], "savop", "sav_control_host.py")
             cmd = f"python3 {path2hostpy} -a start_dons"
             node_result = self._remote_run(node_id, node, cmd)
             if node_id in result:
                 self.logger.error("keys conflict")
             result[node_id] = node_result
         return result
+
 
 class ThreadWithReturnValue(Thread):
     def __init__(self, target, args=()):
@@ -192,7 +204,8 @@ class SavExperiment:
     controller = MasterController("sav_control_master_config.json", logger)
 
     def experiment_testing_v4_inter(self):
-        self.controller.config_file_generate(input_json="testing_v4_inter.json")
+        self.controller.config_file_generate(
+            input_json="testing_v4_inter.json")
         self.controller.config_file_distribute()
         before_performance = self.controller.mode_performance().stdout
         t1 = ThreadWithReturnValue(target=self.controller.mode_start)
@@ -229,17 +242,6 @@ class SavExperiment:
         std_out = std_out.split("\n")[1:]
         json_str = "\n".join(std_out)
         result = json.loads(json_str)
-        del result["container_metric"]
-        for node, node_data in result["agents_metric"].items():
-            # self.logger.debug(f"{node} {node_data}")
-            node_result = {}
-            node_result["initial_fib_stable"] = node_data["agent"]["initial_fib_stable_dt"] - \
-                node_data["agent"]["first_dt"]
-            # node_result["second_fib_stable"] = node_data["agent"]["last_fib_stable_dt"] - \
-        result["router_fib_stable_time_sec_detail"] = result["agents_metric"]
-        result["router_fib_stable_time_sec_max"] = max(list(result["router_fib_stable_time_sec_detail"].values()))
-        
-        del result["agents_metric"]
         result["host_metric"]["data"] = extract_mem_and_cpu_stats_from_dstat(
             result["host_metric"]["data"])
         return result
@@ -253,12 +255,12 @@ class SavExperiment:
         full_list = ['246_5_50_50_12_nodes_inter_v4.json',  '246_10_50_50_24_nodes_inter_v4.json', '246_15_50_50_36_nodes_inter_v4.json',
                      '246_15_50_50_36_nodes_inter_v4.json', '246_20_50_50_49_nodes_inter_v4.json', '246_25_50_50_61_nodes_inter_v4.json',
                      '246_30_50_50_73_nodes_inter_v4.json', '246_35_50_50_86_nodes_inter_v4.json', '246_40_50_50_98_nodes_inter_v4.json',
-                     '246_45_50_50_110_nodes_inter_v4.json','246_50_50_50_123_nodes_inter_v4.json','246_55_50_50_135_nodes_inter_v4.json',
-                     '246_60_50_50_147_nodes_inter_v4.json','246_65_50_50_159_nodes_inter_v4.json','246_70_50_50_172_nodes_inter_v4.json',
-                     '246_75_50_50_184_nodes_inter_v4.json','246_80_50_50_196_nodes_inter_v4.json','246_85_50_50_209_nodes_inter_v4.json',
-                     '246_90_50_50_221_nodes_inter_v4.json','246_95_50_50_233_nodes_inter_v4.json','246_100_50_50_246_nodes_inter_v4.json']
-        # full_list = full_list[:1]
+                     '246_45_50_50_110_nodes_inter_v4.json', '246_50_50_50_123_nodes_inter_v4.json', '246_55_50_50_135_nodes_inter_v4.json',
+                     '246_60_50_50_147_nodes_inter_v4.json', '246_65_50_50_159_nodes_inter_v4.json', '246_70_50_50_172_nodes_inter_v4.json',
+                     '246_75_50_50_184_nodes_inter_v4.json', '246_80_50_50_196_nodes_inter_v4.json', '246_85_50_50_209_nodes_inter_v4.json',
+                     '246_90_50_50_221_nodes_inter_v4.json', '246_95_50_50_233_nodes_inter_v4.json', '246_100_50_50_246_nodes_inter_v4.json']
         for topo in full_list:
+            print(f"start {topo}")
             self.controller.config_file_generate(topo)
             self.controller.config_file_distribute()
             ret = self.controller.mode_dons()
@@ -270,11 +272,16 @@ class SavExperiment:
                     continue
                 time_usage = result["cmd_end_dt"] - result["cmd_start_dt"]
                 self.logger.debug(f"{node} finished in {time_usage}")
-                parsed_std_out = self._bgp_exp_result_parser(std_out)
-                result_file_name = topo.replace(".json", "_result.json")
-                json_w(result_file_name, parsed_std_out)
-                print(f"parsed_std_out saved to {result_file_name}")
-                input()
+                raw_result = std_out
+                raw_result_file_name = topo.replace(".json", "_raw_result.txt")
+                with open(raw_result_file_name, "w") as f:
+                    f.write(raw_result)
+                print(f"raw_result saved to {raw_result_file_name}")
+                # parsed_std_out = self._bgp_exp_result_parser(std_out)
+                # result_file_name = topo.replace(".json", "_result.json")
+                # json_w(result_file_name, parsed_std_out)
+                # print(f"parsed_std_out saved to {result_file_name}")
+
 
 def run(args):
     topo_json = args.topo_json
@@ -295,7 +302,8 @@ def run(args):
         master_controller = MasterController("sav_control_master_config.json")
         match config:
             case "refresh":
-                base_node_num = master_controller.config_file_generate(input_json=topo_json)
+                base_node_num = master_controller.config_file_generate(
+                    input_json=topo_json)
     # distribute config file
     if distribute:
         master_controller = MasterController("sav_control_master_config.json")
@@ -320,7 +328,6 @@ def run(args):
                 performance_content = master_controller.mode_performance()
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="1 Control the generation and distribution of SAVOP configuration files. "
@@ -330,21 +337,26 @@ if __name__ == "__main__":
                         help="Json file for arbitrary topology.")
     config_group = parser.add_argument_group("config", "Control the generation and distribution of SAVOP "
                                                        "configuration files.")
-    config_group.add_argument("-c", "--config", choices=["refresh"], help="generate the configuration files")
-    config_group.add_argument("-d", "--distribute", choices=["all"], help="distribute the configuration files")
+    config_group.add_argument(
+        "-c", "--config", choices=["refresh"], help="generate the configuration files")
+    config_group.add_argument(
+        "-d", "--distribute", choices=["all"], help="distribute the configuration files")
 
-    operate_group = parser.add_argument_group("operate", "control the operation of SAVOP.")
+    operate_group = parser.add_argument_group(
+        "operate", "control the operation of SAVOP.")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart"],
                                help="control SAVOP execution, only support three values: start, stop and restart")
 
-    monitor_group = parser.add_argument_group("monitor", "Monitor the operational status of SAVOP.")
+    monitor_group = parser.add_argument_group(
+        "monitor", "Monitor the operational status of SAVOP.")
     monitor_group.add_argument("-p", "--performance", choices=["all"],
                                help="monitor the performance of machines and containers")
 
     experiment_group = parser.add_argument_group("experiment", "refresh the SAVOP coniguration files, "
                                                                "restart the simulation and record experimental process "
                                                                "data.")
-    experiment_group.add_argument("-e", "--experiment", choices=["testing_v4_inter", "dons"], help="initiate a new experiment cycle")
+    experiment_group.add_argument(
+        "-e", "--experiment", choices=["testing_v4_inter", "dons"], help="initiate a new experiment cycle")
     args = parser.parse_args()
     result = run(args=args)
     print(f"run over, show: \n{result}")
