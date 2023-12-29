@@ -75,7 +75,7 @@ class RunEmulation():
         """
         tell if base started
         """
-        s_cmd = subprocess_cmd("docker ps")
+        s_cmd = subprocess_cmd("docker ps", 30)
         out = s_cmd.stdout.split("\n")
         bird_count = 0
         krill_count = 0
@@ -108,6 +108,7 @@ class RunEmulation():
 
     def send_start_signal(self):
         """start sav-agent and bird on all nodes"""
+        self.logger.debug(self.host_signal_path)
         data = json_r(self.host_signal_path)
         data["command"] = "start"
         json_w(self.host_signal_path, data)
@@ -133,7 +134,7 @@ class RunEmulation():
                 else:
                     os.remove(file_path)
 
-    def ready_base(self, force_restart=False):
+    def _ready_base(self, force_restart=False):
         """
         start base ,starting  containers and links
         """
@@ -142,15 +143,24 @@ class RunEmulation():
             return
         self.logger.info(f"init base with {self.base_compose_path}")
         t = time.time()
-        subprocess_cmd(f"docker compose -f {self.base_compose_path} down")
+        subprocess_cmd(
+            f"docker compose -f {self.base_compose_path} down", None)
         self.logger.info("container stopped")
         cmd = f"docker build --build-arg root_dir=./ -f {self.root_dir}/savop/dockerfiles/reference_router {self.root_dir} -t savop_bird_base"
         run_cmd(cmd)
         self.clear_logs()
+        t = time.time()
         run_cmd(f"docker compose -f {self.base_compose_path} up -d")
-        self.logger.info("container started")
+        t1 = time.time()
+        log_str = f"container started in {t1-t:.4f} seconds"
+        print(log_str)
+        self.logger.info(log_str)
         run_cmd(f"bash {self.base_topo}")
-        self.logger.info("link added")
+        t2 = time.time()
+        log_str = f"link started in {t2-t1:.4f} seconds"
+        print(log_str)
+        self.logger.info(log_str)
+
         t = time.time() - t
         self.logger.info(f"base start finished in {t:.4f} seconds")
         if self.if_base_started():
@@ -289,6 +299,7 @@ class RunEmulation():
         self.host_monitor_thread_start_dt = time.time()
         self.host_monitor_thread.start()
         self.logger.info("monitor started")
+        return
 
     def _stop_metric_monitor(self):
         """our cmd will quit but new monitor thread will be created,
@@ -321,46 +332,64 @@ class RunEmulation():
         ret = {}
 
         if containers_to_go is None:
-            containers_to_go = self.active_containers
+            containers_to_go = list(self.active_containers)
         while len(containers_to_go) > 0:
             time.sleep(check_interval)
-            self.logger.debug(f"containers to go: {containers_to_go}")
+            self.logger.debug(
+                f"{len(containers_to_go)} containers to go: {containers_to_go}")
             new_containers_to_go = []
             for container_id in containers_to_go:
-                cmd = f"docker exec -it {container_id} curl http://localhost:8888/metric/"
-                _, out, _ = run_cmd(cmd)
-                out = json.loads(out)["agent"]
+                out = self._get_container_metric(
+                    container_id
+                    ,f"{containers_to_go.index(container_id)}/{len(containers_to_go)}"
+                    ,timeout=10)
+                if out is None:
+                    new_containers_to_go.append(container_id)
+                    continue
                 if out["initial_fib_stable"]:
                     ret[container_id] = out["initial_fib_stable_dt"] - \
                         out["first_dt"]
                 else:
-                    # self.logger.debug(out["agent"])
                     new_containers_to_go.append(container_id)
             containers_to_go = new_containers_to_go
         return ret
 
+    def _get_container_metric(self, container_id,extra_str, timeout=10):
+        """
+        return None if error
+        return agent of metric if success
+        """
+        cmd = f"docker exec -it {container_id} curl http://localhost:8888/metric/ --connect-timeout 2 -m 5"
+        try:
+            _, out, _ = run_cmd(cmd, timeout=timeout)
+            out = json.loads(out)["agent"]
+            return out
+        except Exception as e:
+            self.logger.debug(f"{cmd}; {extra_str}")
+            return None
     def _wait_for_fib_stable(self, initial_wait, check_interval=5, containers_to_go=None):
         ret = {}
         time.sleep(initial_wait)
         if containers_to_go is None:
-            containers_to_go = self.active_containers
+            containers_to_go = list(self.active_containers)
         while len(containers_to_go) > 0:
-            self.logger.debug(f"containers to go: {containers_to_go}")
+            self.logger.debug(
+                f"{len(containers_to_go)} containers to go: {containers_to_go}")
             new_containers_to_go = []
             for container_id in containers_to_go:
-                try:
-                    cmd = f"docker exec -it {container_id} curl http://localhost:8888/metric/"
-                    _, out, _ = run_cmd(cmd)
-                    out = json.loads(out)["agent"]
-                    if out["is_fib_stable"]:
-                        if out["initial_fib_stable_dt"] != out["last_fib_stable_dt"]:
-                            ret[container_id] = out["last_fib_stable_dt"] - \
-                                out["initial_fib_stable_dt"]
-                    else:
-                        new_containers_to_go.append(container_id)
-                except:
+                out = self._get_container_metric(
+                    container_id
+                    ,f"{containers_to_go.index(container_id)}/{len(containers_to_go)}"
+                    ,timeout=10)
+                if out is None:
                     new_containers_to_go.append(container_id)
-
+                    continue
+                if out["is_fib_stable"]:
+                    if out["initial_fib_stable_dt"] != out["last_fib_stable_dt"]:
+                        ret[container_id] = out["last_fib_stable_dt"] - \
+                            out["initial_fib_stable_dt"]
+                else:
+                    new_containers_to_go.append(container_id)
             containers_to_go = new_containers_to_go
             time.sleep(check_interval)
         return ret
@@ -383,7 +412,7 @@ class RunEmulation():
         start the containers
 
         """
-        self.ready_base(force_restart=True)
+        self._ready_base(force_restart=True)
 
     def _remove_top_n_links(self, n):
         """
@@ -431,7 +460,7 @@ class RunEmulation():
         self._stop_metric_monitor()
         self._start_metric_monitor()
         time.sleep(monitor_overlap_sec)
-        self.ready_base(force_restart=True)
+        self._ready_base(force_restart=True)
         start_dt = time.time()
         self.send_start_signal()
         # wait for all fib stable
@@ -441,7 +470,7 @@ class RunEmulation():
         fib_stable = self._wait_for_fib_stable(5)
         fib_table_data = self._get_kernel_fib()
         self.send_stop_signal()
-        subprocess_cmd(f"docker compose -f {self.base_compose_path} down")
+        subprocess_cmd(f"docker compose -f {self.base_compose_path} down", 300)
         time.sleep(monitor_overlap_sec)
         self._stop_metric_monitor()
         ret = self._get_result()
@@ -461,27 +490,26 @@ class DevicePerformance():
     __dockerStatscommand = "docker stats --no-stream --format json"
 
     def get_cpu_performance(self):
-        ret = subprocess_cmd(cmd=self.__cpucommand)
+        ret = subprocess_cmd(cmd=self.__cpucommand, timeout=None)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_memory_performace(self):
-        ret = subprocess_cmd(cmd=self.__memorycommand)
+        ret = subprocess_cmd(cmd=self.__memorycommand, timeout=None)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_disk_performance(self):
-        ret = subprocess_cmd(cmd=self.__diskcommand)
+        ret = subprocess_cmd(cmd=self.__diskcommand, timeout=None)
         return ret.returncode, ret.stderr, ret.stdout
-
     def get_network_performance(self):
-        ret = subprocess_cmd(cmd=self.__networkcommand)
+        ret = subprocess_cmd(cmd=self.__networkcommand, timeout=None)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_host_performance(self):
-        ret = subprocess_cmd(cmd=self.__hostCommand)
+        ret = subprocess_cmd(cmd=self.__hostCommand, timeout=None)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_docker_container_performance(self):
-        ret = subprocess_cmd(cmd=self.__dockerStatscommand)
+        ret = subprocess_cmd(cmd=self.__dockerStatscommand, timeout=None)
         return ret.returncode, ret.stderr, ret.stdout
 
 

@@ -259,6 +259,7 @@ class SavExperiment:
                      '246_60_50_50_147_nodes_inter_v4.json', '246_65_50_50_159_nodes_inter_v4.json', '246_70_50_50_172_nodes_inter_v4.json',
                      '246_75_50_50_184_nodes_inter_v4.json', '246_80_50_50_196_nodes_inter_v4.json', '246_85_50_50_209_nodes_inter_v4.json',
                      '246_90_50_50_221_nodes_inter_v4.json', '246_95_50_50_233_nodes_inter_v4.json', '246_100_50_50_246_nodes_inter_v4.json']
+        full_list.reverse()
         for topo in full_list:
             print(f"start {topo}")
             self.controller.config_file_generate(topo)
@@ -277,6 +278,7 @@ class SavExperiment:
                 with open(raw_result_file_name, "w") as f:
                     f.write(raw_result)
                 print(f"raw_result saved to {raw_result_file_name}")
+                input()
                 # parsed_std_out = self._bgp_exp_result_parser(std_out)
                 # result_file_name = topo.replace(".json", "_result.json")
                 # json_w(result_file_name, parsed_std_out)

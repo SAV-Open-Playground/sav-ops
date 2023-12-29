@@ -25,8 +25,9 @@ def json_w(path, data, encoding='utf-8', mode='w'):
         return json.dump(data, f, indent=2, sort_keys=True)
 
 
-def subprocess_cmd(cmd):
-    out = subprocess.run(cmd, shell=True, capture_output=True, encoding='utf-8')
+def subprocess_cmd(cmd, timeout):
+    out = subprocess.run(cmd, shell=True, capture_output=True,
+                         encoding='utf-8', timeout=timeout)
     return out
 
 
@@ -34,7 +35,7 @@ def whoami():
     """
     we use ip as the id of the node
     """
-    result = subprocess_cmd("ip -j -4 address")
+    result = subprocess_cmd("ip -j -4 address", 30)
     # print(result)
     results = json.loads(result.stdout)
     for i in results:
@@ -43,9 +44,9 @@ def whoami():
         return i["addr_info"][-1]["local"]
 
 
-def run_cmd(cmd, expected_return_code=0):
+def run_cmd(cmd, expected_return_code=0, timeout=None):
     """print output if return code is not expected"""
-    ret = subprocess_cmd(cmd)
+    ret = subprocess_cmd(cmd, timeout)
     if ret.returncode != expected_return_code:
         print(ret)
     return ret.returncode, ret.stdout, ret.stderr

@@ -453,7 +453,7 @@ def regenerate_config(savop_dir, host_dir, input_json, base_config_dir, selected
     compose_f.close()
     key_f.close()
     active_signal = {
-        "command": "start",
+        "command": "stop",
         "source": base["active_sav_app"],
         "command_scope": list(base["devices"].keys()),
         "stable_threshold": base["fib_threshold"]
