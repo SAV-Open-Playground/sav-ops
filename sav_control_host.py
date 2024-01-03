@@ -9,6 +9,9 @@
 from sav_control_common import *
 import argparse
 import threading
+import docker
+import requests
+
 
 SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
 SAV_ROOT_DIR = os.path.dirname(SAV_OP_DIR)
@@ -70,25 +73,34 @@ class RunEmulation():
         self.base_topo = base_topo
         self.base_node_num = base_node_num
         self.active_app = None
+        self.docker_client = docker.DockerClient.from_env()
 
     def if_base_started(self):
         """
         tell if base started
         """
-        s_cmd = subprocess_cmd("docker ps", 30)
-        out = s_cmd.stdout.split("\n")
         bird_count = 0
         krill_count = 0
         routinator_count = 0
         self.active_containers = set()
-        for line in out:
-            if "savop_bird_base" in line:
-                self.active_containers.add(line.split()[-1])
+        containers = self.docker_client.containers.list()
+
+        for container in containers:
+            tag = container.image.tags
+            if not len(tag) == 1:
+                continue
+            tag = tag[0]
+            if "savop_bird_base" in tag:
                 bird_count += 1
-            elif "routinator" in line:
+                self.active_containers.add(container.name)
+                continue
+            if "routinator" in tag:
                 routinator_count += 1
-            elif "krill" in line:
+                self.active_containers.add(container.name)
+                continue
+            if "krill" in tag:
                 krill_count += 1
+                self.active_containers.add(container.name)
         if bird_count != self.base_node_num:
             self.logger.info(
                 f"bird count error, should be {self.base_node_num}, but {bird_count}")
@@ -118,11 +130,10 @@ class RunEmulation():
         """
         clear log folders, should be called in start base function
         """
-        cur_dir = os.path.dirname(os.path.abspath(__file__))
-        path = r'./logs'
-        if not os.path.exists(path):
-            os.mkdir(path)
-        folders = os.listdir(path)
+        path = SAV_RUN_DIR
+        if not os.path.exists(SAV_RUN_DIR):
+            os.mkdir(SAV_RUN_DIR)
+        folders = os.listdir(SAV_RUN_DIR)
         folders = [i for i in folders if os.path.isdir(os.path.join(path, i))]
         for folder in folders:
             folder_path = os.path.join(path, folder)
@@ -148,7 +159,7 @@ class RunEmulation():
         self.logger.info("container stopped")
         cmd = f"docker build --build-arg root_dir=./ -f {self.root_dir}/savop/dockerfiles/reference_router {self.root_dir} -t savop_bird_base"
         run_cmd(cmd)
-        self.clear_logs()
+        # self.clear_logs()
         t = time.time()
         run_cmd(f"docker compose -f {self.base_compose_path} up -d")
         t1 = time.time()
@@ -330,7 +341,7 @@ class RunEmulation():
         collect metric output and return a dict of results
         """
         ret = {}
-
+        t0 = time.time()
         if containers_to_go is None:
             containers_to_go = list(self.active_containers)
         while len(containers_to_go) > 0:
@@ -340,35 +351,44 @@ class RunEmulation():
             new_containers_to_go = []
             for container_id in containers_to_go:
                 out = self._get_container_metric(
-                    container_id
-                    ,f"{containers_to_go.index(container_id)}/{len(containers_to_go)}"
-                    ,timeout=10)
+                    container_id, f"{containers_to_go.index(container_id)}/{len(containers_to_go)}", timeout=10)
                 if out is None:
                     new_containers_to_go.append(container_id)
                     continue
                 if out["initial_fib_stable"]:
-                    ret[container_id] = out["initial_fib_stable_dt"] - \
-                        out["first_dt"]
+                    ret[container_id] = out["initial_fib_stable_dt"] - t0
                 else:
                     new_containers_to_go.append(container_id)
             containers_to_go = new_containers_to_go
         return ret
 
-    def _get_container_metric(self, container_id,extra_str, timeout=10):
+    def _get_container_metric2(self, container_id):
+        exec_result = json_r(f"{SAV_RUN_DIR}/{container_id}/exec_result.json")
+        if exec_result["status"] == "error":
+            return None
+
+    def _get_container_metric(self, container_id, extra_str, timeout=10):
         """
         return None if error
         return agent of metric if success
         """
-        cmd = f"docker exec -it {container_id} curl http://localhost:8888/metric/ --connect-timeout 2 -m 5"
+        cmd = "curl http://localhost:8888/metric/ --connect-timeout 2 -m 5"
         try:
-            _, out, _ = run_cmd(cmd, timeout=timeout)
-            out = json.loads(out)["agent"]
-            return out
+            cmd = f"docker exec -it {container_id} {cmd}"
+            _, response, _ = run_cmd(cmd, timeout=timeout)
+            # container = self.docker_client.containers.get(container_id)
+            # response = container.exec_run(cmd).output
+            # response = response[response.index("{"):]
+            # self.logger.debug(response)
+            return json.loads(response)["agent"]
         except Exception as e:
-            self.logger.debug(f"{cmd}; {extra_str}")
+            # self.logger.exception(e)
+            # self.logger.debug(f"{cmd}  {extra_str}")
             return None
+
     def _wait_for_fib_stable(self, initial_wait, check_interval=5, containers_to_go=None):
         ret = {}
+        t0 = time.time()
         time.sleep(initial_wait)
         if containers_to_go is None:
             containers_to_go = list(self.active_containers)
@@ -378,16 +398,13 @@ class RunEmulation():
             new_containers_to_go = []
             for container_id in containers_to_go:
                 out = self._get_container_metric(
-                    container_id
-                    ,f"{containers_to_go.index(container_id)}/{len(containers_to_go)}"
-                    ,timeout=10)
+                    container_id, f"{containers_to_go.index(container_id)}/{len(containers_to_go)}", timeout=10)
                 if out is None:
                     new_containers_to_go.append(container_id)
                     continue
                 if out["is_fib_stable"]:
                     if out["initial_fib_stable_dt"] != out["last_fib_stable_dt"]:
-                        ret[container_id] = out["last_fib_stable_dt"] - \
-                            out["initial_fib_stable_dt"]
+                        ret[container_id] = out["last_fib_stable_dt"] - t0
                 else:
                     new_containers_to_go.append(container_id)
             containers_to_go = new_containers_to_go
@@ -464,13 +481,15 @@ class RunEmulation():
         start_dt = time.time()
         self.send_start_signal()
         # wait for all fib stable
-        initial_fib_stable = self._wait_for_initial_fib_stable()
+        check_interval = 30
+        initial_fib_stable = self._wait_for_initial_fib_stable(check_interval)
         # randomly remove 10 links
         self._remove_top_n_links(10)
-        fib_stable = self._wait_for_fib_stable(5)
+        fib_stable = self._wait_for_fib_stable(check_interval)
         fib_table_data = self._get_kernel_fib()
         self.send_stop_signal()
-        subprocess_cmd(f"docker compose -f {self.base_compose_path} down", 300)
+        subprocess_cmd(
+            f"docker compose -f {self.base_compose_path} down", None)
         time.sleep(monitor_overlap_sec)
         self._stop_metric_monitor()
         ret = self._get_result()
@@ -500,6 +519,7 @@ class DevicePerformance():
     def get_disk_performance(self):
         ret = subprocess_cmd(cmd=self.__diskcommand, timeout=None)
         return ret.returncode, ret.stderr, ret.stdout
+
     def get_network_performance(self):
         ret = subprocess_cmd(cmd=self.__networkcommand, timeout=None)
         return ret.returncode, ret.stderr, ret.stdout
