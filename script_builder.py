@@ -276,6 +276,9 @@ def refresh_folder(src, dst):
 
 def ready_input_json(json_content, selected_nodes):
     base = json_content
+    if not "fib_threshold" in base:
+        print("fib_threshold not found, using default value 60")
+        base["fib_threshold"] = 300
     if selected_nodes:
         temp_node = {}
         temp_links = []
@@ -357,7 +360,7 @@ def regenerate_config(savop_dir, host_dir, input_json, base_config_dir, selected
     os.makedirs(out_folder)
     base = ready_input_json(input_json, selected_nodes)
     base = assign_ip(base)
-    delay = 0
+
     # compose
     for f in ["sign_key.sh", "topo.sh"]:
         cp_cmd = f"cp {os.path.join(base_config_dir, f)} {os.path.join(out_folder, f)}"
@@ -379,20 +382,22 @@ def regenerate_config(savop_dir, host_dir, input_json, base_config_dir, selected
         compose_f.write(docker_network_content)
     compose_f.write("\nservices:\n")
     ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
+
     for node in base["devices"]:
+        cur_delay = 0
         nodes = base["devices"][node]
         nodes["device_id"] = node
-        delay, bird_config_str, link_map = gen_bird_conf(
-            nodes, delay, "blackhole", base)
+        rpdp_enable = "rpdp_app" in base["sav_apps"]
+        # generate bird conf
+        cur_delay, bird_config_str, link_map = gen_bird_conf(
+            nodes, cur_delay, "blackhole", base, rpdp_enable)
         node_folder = os.path.join(out_folder, node)
         if not os.path.exists(node_folder):
             os.makedirs(node_folder)
         with open(os.path.join(node_folder, "bird.conf"), 'w') as f:
             f.write(bird_config_str)
         ret = run_cmd(command=f"chmod 666 {node_folder}/bird.conf")
-        if not "fib_threshold" in base:
-            print("fib_threshold not found, using default value 60")
-            base["fib_threshold"] = 60
+
         sa_config = gen_sa_config(base["auto_ip_version"],
                                   nodes, link_map, base["as_scope"], base["sav_apps"],
                                   base["active_sav_app"], fib_threshold=base["fib_threshold"])
@@ -502,6 +507,7 @@ def script_builder(host_dir, savop_dir, json_content, out_folder, skip_bird=Fals
     if skip_img:
         rebuild_img(host_dir)
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
+    selected_nodes = None
     device_number = regenerate_config(
-        savop_dir, host_dir, json_content, base_cfg_folder, None, out_folder)
+        savop_dir, host_dir, json_content, base_cfg_folder, selected_nodes, out_folder)
     return device_number
