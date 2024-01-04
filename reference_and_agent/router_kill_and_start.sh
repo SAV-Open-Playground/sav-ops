@@ -7,7 +7,7 @@ CDDIR=${FOLDER}/sav-agent/
 GUNICORN_COUNT=`ps aux|grep gunicorn|grep -v grep|wc -l`
 BIRD_COUNT=`ps aux|grep bird|grep -v grep|wc -l`
 QUIC_COUNT=`ps aux |grep quic_server|grep -v grep|wc -l`
-START_GUNICORN_COMMAND="gunicorn -D --chdir ${CDDIR} -b 0.0.0.0:8888 server:app --timeout 0 --workers 1 --access-logfile ${ACCESS_LOGFILE} --error-logfile ${ERROR_LOGFILE} --log-level debug"
+START_GUNICORN_COMMAND="gunicorn -D --chdir ${CDDIR} -b 0.0.0.0:8888 server:app --timeout 0 --workers 1 --access-logfile ${ACCESS_LOGFILE} --error-logfile ${ERROR_LOGFILE} --log-level debug --worker-connections 5"
 if [ ${GUNICORN_COUNT} -gt 0 ];then
     ps aux|grep gunicorn|grep -v grep|awk '{ print $2 }'| xargs kill -9
 fi

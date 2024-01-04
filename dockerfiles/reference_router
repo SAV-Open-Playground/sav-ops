@@ -12,7 +12,6 @@ COPY $root_dir/sav-reference-router/bird /usr/local/sbin/
 COPY $root_dir/sav-reference-router/birdc /usr/local/sbin/
 COPY $root_dir/sav-reference-router/birdcl /usr/local/sbin/
 COPY $root_dir/sav-agent/ /root/savop/sav-agent/
-COPY $root_dir/savop/reference_and_agent/container_run.sh /root/savop/container_run.sh
 COPY $root_dir/savop/reference_and_agent/router_kill_and_start.sh /root/savop/router_kill_and_start.sh
 
 WORKDIR /root/savop/

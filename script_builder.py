@@ -106,12 +106,12 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
     enable_rpki = base["enable_rpki"]
     bird_conf_str = f"router id {str(netaddr.IPAddress(router_id))};"
     if enable_rpki:
-        # "\tdebug all;\n" \
         bird_conf_str += "\nroa4 table r4 {	sorted 1; };\n"\
                          "roa6 table r6 { sorted 1; };\n" \
                          "protocol rpki rpki1\n"\
-                         "{\n" \
-                         "\troa4 {\n" \
+                         "{\n"
+        # bird_conf_str += "\tdebug all;\n"
+        bird_conf_str += "\troa4 {\n" \
                          "\t\ttable r4;\n" \
                          "\t\t};\n" \
                          "\troa6 {\n" \
@@ -120,6 +120,7 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
                          "\tremote 10.10.0.3 port 3323;\n" \
                          "\tretry 1;\n" \
                          "}\n"
+
     bird_conf_str += "\nipv4 table master4 {sorted 1;};\n" \
                      "ipv6 table master6 {sorted 1;};\n" \
                      "protocol device {\n" \
@@ -163,8 +164,9 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
 #  "\tdebug all;\n" \
     bird_conf_str += "template bgp basic {\n"
     bird_conf_str += f"\tlocal as {node['as']};\n"
-    bird_conf_str += "\tlong lived graceful restart on;\n" \
-                     "\tenable extended messages;\n" \
+    bird_conf_str += "\tlong lived graceful restart on;\n"
+    # bird_conf_str += "\tdebug all;\n"
+    bird_conf_str += "\tenable extended messages;\n" \
                      "};\n" \
                      "template bgp basic4 from basic {\n" \
                      "\tipv4 {\n" \
@@ -502,9 +504,9 @@ def resign_keys(out_folder, node, key_f, base_cfg_folder):
 
 
 def script_builder(host_dir, savop_dir, json_content, out_folder, skip_bird=False, skip_img=False):
-    if skip_bird:
+    if not skip_bird:
         recompile_bird(os.path.join(host_dir, "sav-reference-router"))
-    if skip_img:
+    if not skip_img:
         rebuild_img(host_dir)
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
     selected_nodes = None
