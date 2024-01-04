@@ -7,14 +7,13 @@
 4. regenerate keys
 5. regenerate compose.yml and topo.sh for the given node and links
 """
-
-
 import os
 import subprocess
 import json
 import netaddr
 import copy
 import platform
+from sav_control_common import SAV_ROOT_DIR
 
 
 def tell_prefix_version(prefix):
@@ -66,7 +65,10 @@ def recompile_bird(path=r'{host_dir}/sav-reference-router'):
     run_cmd("make")
 
 
-def rebuild_img(path=r'{host_dir}', file="docker_file_update_bird_bin", tag="savop_bird_base"):
+def rebuild_img(
+        path=r'{host_dir}',
+        file="docker_file_update_bird_bin",
+        tag="savop_bird_base"):
     """
     build docker image
     rebuild docker image without any tag
@@ -80,9 +82,9 @@ def rebuild_img(path=r'{host_dir}', file="docker_file_update_bird_bin", tag="sav
 
 def get_bird_cfg_relation_str(my_as, peer_as, as_relations):
     for provider, customer in as_relations["provider-customer"]:
-        if not my_as in [provider, customer]:
+        if my_as not in [provider, customer]:
             continue
-        if not peer_as in [provider, customer]:
+        if peer_as not in [provider, customer]:
             continue
         if my_as == provider:
             return f"\tlocal role provider;\n"
@@ -155,9 +157,9 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
         # self.logger.warning(f"forcing version to {v}")
     bird_conf_str += "protocol static {\n"
     bird_conf_str += f"\tipv{v} {{\n" \
-                     "\t\texport all;\n" \
-                     "\t\timport all;\n" \
-                     "\t};\n"
+        "\t\texport all;\n" \
+        "\t\timport all;\n" \
+        "\t};\n"
     for prefix in node["prefixes"]:
         bird_conf_str += f"\troute {prefix} {mode};\n"
     bird_conf_str += "};\n"
@@ -193,7 +195,7 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
     bird_conf_str += "};\n"
     link_map = {}
     for src_id, dst_id, link_type, src_ip, dst_ip in base["links"]:
-        if not dev_id in [src_id, dst_id]:
+        if dev_id not in [src_id, dst_id]:
             continue
         if dev_id == src_id:
             peer_id = dst_id
@@ -244,7 +246,14 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
     return delay, bird_conf_str, link_map
 
 
-def gen_sa_config(auto_ip_version, node, link_map, as_scope, app_list, active_app, fib_threshold=5):
+def gen_sa_config(
+        auto_ip_version,
+        node,
+        link_map,
+        as_scope,
+        app_list,
+        active_app,
+        fib_threshold=5):
     as_scope = as_scope[node["as"]]
     sa_config = {
         "apps": app_list,
@@ -278,7 +287,7 @@ def refresh_folder(src, dst):
 
 def ready_input_json(json_content, selected_nodes):
     base = json_content
-    if not "fib_threshold" in base:
+    if "fib_threshold" not in base:
         print("fib_threshold not found, using default value 60")
         base["fib_threshold"] = 300
     if selected_nodes:
@@ -345,10 +354,10 @@ def build_as_scope(as_scope, link, base_device):
     for dev_id in [src_dev_id, dst_dev_id]:
         dev_ip = src_ip if dev_id == src_dev_id else dst_ip
         dev_as = base_device[dev_id]["as"]
-        if not dev_as in as_scope:
+        if dev_as not in as_scope:
             as_scope[dev_as] = {dev_id: [dev_ip]}
         else:
-            if not dev_id in as_scope[dev_as]:
+            if dev_id not in as_scope[dev_as]:
                 as_scope[dev_as][dev_id] = [dev_ip]
             else:
                 as_scope[dev_as][dev_id].append(dev_ip)
@@ -356,7 +365,13 @@ def build_as_scope(as_scope, link, base_device):
     return as_scope
 
 
-def regenerate_config(savop_dir, host_dir, input_json, base_config_dir, selected_nodes,  out_folder):
+def regenerate_config(
+        savop_dir,
+        host_dir,
+        input_json,
+        base_config_dir,
+        selected_nodes,
+        out_folder):
     if os.path.exists(out_folder):
         run_cmd(f"rm -r {out_folder}")
     os.makedirs(out_folder)
@@ -365,7 +380,7 @@ def regenerate_config(savop_dir, host_dir, input_json, base_config_dir, selected
 
     # compose
     for f in ["sign_key.sh", "topo.sh"]:
-        cp_cmd = f"cp {os.path.join(base_config_dir, f)} {os.path.join(out_folder, f)}"
+        cp_cmd = f"cp {os.path.join(base_config_dir,f)} {os.path.join(out_folder,f)}"
         run_cmd(cp_cmd)
     refresh_folder(os.path.join(base_config_dir, "ca"),
                    os.path.join(out_folder, "ca"))
@@ -400,9 +415,14 @@ def regenerate_config(savop_dir, host_dir, input_json, base_config_dir, selected
             f.write(bird_config_str)
         ret = run_cmd(command=f"chmod 666 {node_folder}/bird.conf")
 
-        sa_config = gen_sa_config(base["auto_ip_version"],
-                                  nodes, link_map, base["as_scope"], base["sav_apps"],
-                                  base["active_sav_app"], fib_threshold=base["fib_threshold"])
+        sa_config = gen_sa_config(
+            base["auto_ip_version"],
+            nodes,
+            link_map,
+            base["as_scope"],
+            base["sav_apps"],
+            base["active_sav_app"],
+            fib_threshold=base["fib_threshold"])
         with open(os.path.join(node_folder, "sa.json"), 'w') as f:
             json.dump(sa_config, f, indent=4)
         # resign keys
@@ -475,11 +495,9 @@ def regenerate_config(savop_dir, host_dir, input_json, base_config_dir, selected
         if not src_ip.version == dst_ip.version:
             raise NotImplementedError
         if src_ip.version == 6:
-            topo_f.write(
-                f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
+            topo_f.write(f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
         elif src_ip.version == 4:
-            topo_f.write(
-                f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
+            topo_f.write(f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
 
     topo_f.close()
 
@@ -493,7 +511,7 @@ def regenerate_config(savop_dir, host_dir, input_json, base_config_dir, selected
 
 def resign_keys(out_folder, node, key_f, base_cfg_folder):
     run_cmd(
-        f"cp {os.path.join(base_cfg_folder, 'req.conf')} {os.path.join(out_folder, node)}")
+        f"cp {os.path.join(base_cfg_folder,'req.conf')} {os.path.join(out_folder, node)}")
     with open(os.path.join(out_folder, node, "sign.ext"), 'w') as f:
         sign_content = "authorityKeyIdentifier=keyid,issuer\n" \
                        "basicConstraints=CA:FALSE\n" \
@@ -505,11 +523,15 @@ def resign_keys(out_folder, node, key_f, base_cfg_folder):
 
 def script_builder(host_dir, savop_dir, json_content, out_folder, skip_bird=False, skip_img=False):
     if not skip_bird:
-        recompile_bird(os.path.join(host_dir, "sav-reference-router"))
-    if not skip_img:
-        rebuild_img(host_dir)
+        recompile_bird(os.path.join(SAV_ROOT_DIR, "sav-reference-router"))
+        # rebuild_img(f"{savop_dir}/../")
     base_cfg_folder = os.path.join(savop_dir, "base_configs")
     selected_nodes = None
     device_number = regenerate_config(
-        savop_dir, host_dir, json_content, base_cfg_folder, selected_nodes, out_folder)
+        savop_dir,
+        host_dir,
+        json_content,
+        base_cfg_folder,
+        selected_nodes,
+        out_folder)
     return device_number

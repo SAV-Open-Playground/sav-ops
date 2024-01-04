@@ -145,7 +145,7 @@ class RunEmulation():
                 else:
                     os.remove(file_path)
 
-    def _ready_base(self, force_restart=False):
+    def _ready_base(self, force_restart=False, build_image=False):
         """
         start base ,starting  containers and links
         """
@@ -154,11 +154,11 @@ class RunEmulation():
             return
         self.logger.info(f"init base with {self.base_compose_path}")
         t = time.time()
-        subprocess_cmd(
-            f"docker compose -f {self.base_compose_path} down", None)
+        subprocess_cmd(f"docker compose -f {self.base_compose_path} down", None)
         self.logger.info("container stopped")
-        cmd = f"docker build --build-arg root_dir=./ -f {self.root_dir}/savop/dockerfiles/reference_router {self.root_dir} -t savop_bird_base"
-        run_cmd(cmd)
+        if build_image:
+            cmd = f"docker build --build-arg root_dir=./ -f {self.root_dir}/savop/dockerfiles/reference_router {self.root_dir} -t savop_bird_base"
+            run_cmd(cmd)
         # self.clear_logs()
         t = time.time()
         run_cmd(f"docker compose -f {self.base_compose_path} up -d")
@@ -442,7 +442,7 @@ class RunEmulation():
         """
         start the containers
         """
-        self._ready_base(force_restart=True)
+        self._ready_base(force_restart=True, build_image=True)
 
     def _remove_top_n_links(self, n):
         """

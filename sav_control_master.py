@@ -26,11 +26,7 @@ import shutil
 import os
 
 # change the dirs here
-SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
-SAV_ROOT_DIR = os.path.dirname(SAV_OP_DIR)
-SAV_AGENT_DIR = os.path.join(SAV_ROOT_DIR, "sav-agent")
-SAV_ROUTER_DIR = os.path.join(SAV_ROOT_DIR, "sav-reference-router")
-OUT_DIR = os.path.join(SAV_OP_DIR, "this_config")
+
 SELF_HOST_ID = "localhost"
 
 os.chdir(SAV_OP_DIR)
@@ -64,8 +60,7 @@ class MasterController:
             path2json = os.path.join(SAV_OP_DIR, f"base_configs", input_json)
             json_content = json_r(path2json)
             generated_config_dir = os.path.join(OUT_DIR, host_id)
-            ret[host_id] = script_builder(
-                host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir)
+            ret[host_id] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir)
             self.host_node[host_id]["cfg_src_dir"] = generated_config_dir
         return ret
 
@@ -124,6 +119,9 @@ class MasterController:
                     print("compress config files fail!")
                 result = conn.put(
                     local=f"{SAV_OP_DIR}/this_config/{node_id}.tar.gz", remote=f"{node['root_dir']}/savop_run/")
+                result = conn.put(local=f"{SAV_ROUTER_DIR}/bird", remote=f"{node['root_dir']}/sav-reference-router/")
+                result = conn.put(local=f"{SAV_ROUTER_DIR}/birdc", remote=f"{node['root_dir']}/sav-reference-router/")
+                result = conn.put(local=f"{SAV_ROUTER_DIR}/birdcl", remote=f"{node['root_dir']}/sav-reference-router/")
                 transfer_config = conn.run(
                     command=f"ls -al {node['root_dir']}/savop_run/{node_id}.tar.gz")
                 if transfer_config.return_code == 0:
@@ -219,6 +217,22 @@ class SavExperiment:
         return {"before_run": json.loads(before_performance), "during_run": {"container": run_status, "host": json.loads(run_performance)},
                 "after_run": json.loads(after_performance)}
 
+    def experiment_testing_v6_inter(self):
+        self.controller.config_file_generate(input_json="testing_v6_inter.json")
+        self.controller.config_file_distribute()
+        before_performance = self.controller.mode_performance().stdout
+        t1 = ThreadWithReturnValue(target=self.controller.mode_start)
+        t2 = ThreadWithReturnValue(target=self.controller.mode_performance)
+        t1.start()
+        t2.start()
+        run_status = t1.join()
+        run_performance_obj = t2.join()
+        run_performance = run_performance_obj.stdout
+        after_performance = self.controller.mode_performance().stdout
+        return {"before_run": json.loads(before_performance), "during_run": {"container": run_status, "host": json.loads(run_performance)},
+                "after_run": json.loads(after_performance)}
+
+
     def _bgp_exp_result_parser(self, result):
         """
         parse bgp experiment result,return a json object
@@ -296,6 +310,8 @@ def run(args):
         match experiment:
             case "testing_v4_inter":
                 return sav_exp.experiment_testing_v4_inter()
+            case "testing_v6_inter":
+                return sav_exp.experiment_testing_v6_inter()
             case "dons":
                 return sav_exp.bgp_performance()
     # generate config files
@@ -357,7 +373,7 @@ if __name__ == "__main__":
                                                                "restart the simulation and record experimental process "
                                                                "data.")
     experiment_group.add_argument(
-        "-e", "--experiment", choices=["testing_v4_inter", "dons"], help="initiate a new experiment cycle")
+        "-e", "--experiment", choices=["testing_v4_inter","testing_v6_inter" ,"dons"], help="initiate a new experiment cycle")
     args = parser.parse_args()
     result = run(args=args)
     print(f"run over, show: \n{result}")

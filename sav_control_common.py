@@ -14,6 +14,12 @@ import time
 from logging.handlers import RotatingFileHandler
 import sys
 
+SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
+SAV_ROOT_DIR = os.path.dirname(SAV_OP_DIR)
+SAV_AGENT_DIR = os.path.join(SAV_ROOT_DIR, "sav-agent")
+SAV_ROUTER_DIR = os.path.join(SAV_ROOT_DIR, "sav-reference-router")
+OUT_DIR = os.path.join(SAV_OP_DIR, "this_config")
+
 
 def json_r(path, encoding='utf-8'):
     with open(path, 'r', encoding=encoding) as f:
