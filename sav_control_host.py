@@ -66,7 +66,7 @@ class RunEmulation():
         self._id = whoami()
         if not self._id:
             raise ValueError("get id error")
-        self.logger = get_logger(f"host_{self._id}")
+        self.logger = get_logger(self._id)
         self.root_dir = root_dir
         self.host_signal_path = host_signal_path
         self.base_compose_path = base_compose
@@ -163,20 +163,12 @@ class RunEmulation():
         t = time.time()
         run_cmd(f"docker compose -f {self.base_compose_path} up -d")
         t1 = time.time()
-        container_start_time = t1-t
-
-        log_str = f"{self.base_node_num} container started in {container_start_time:.4f} seconds"
+        log_str = f"container started in {t1-t:.4f} seconds"
         print(log_str)
         self.logger.info(log_str)
         run_cmd(f"bash {self.base_topo}")
-        link_add_time = time.time()-t1
-        count = -2
-        with open(self.base_topo, 'r') as f:
-            lines = f.readlines()
-            for l in lines:
-                if l.startswith("funCreate"):
-                    count += 1
-        log_str = f"{count} link added in {link_add_time:.4f} seconds"
+        t2 = time.time()
+        log_str = f"link started in {t2-t1:.4f} seconds"
         print(log_str)
         self.logger.info(log_str)
 
@@ -187,7 +179,6 @@ class RunEmulation():
         else:
             self.logger.error("base start failed")
             sys.exit(1)
-        return container_start_time, link_add_time, count
 
     def update_configs(self, nodes, proto):
         """
@@ -344,17 +335,15 @@ class RunEmulation():
             ret["container_metric"]["data"] = f.read()
         return ret
 
-    def _wait_for_initial_fib_stable(self, initial_wait, check_interval=5, containers_to_go=None):
+    def _wait_for_initial_fib_stable(self, check_interval=5, containers_to_go=None):
         """
         will block until all nodes's fib is stable
         collect metric output and return a dict of results
         """
-
-        t0 = time.time()
         ret = {}
+        t0 = time.time()
         if containers_to_go is None:
             containers_to_go = list(self.active_containers)
-        time.sleep(initial_wait)
         while len(containers_to_go) > 0:
             time.sleep(check_interval)
             self.logger.debug(
@@ -378,7 +367,7 @@ class RunEmulation():
         if exec_result["status"] == "error":
             return None
 
-    def _get_container_metric(self, container_id, extra_str, timeout=30):
+    def _get_container_metric(self, container_id, extra_str, timeout=10):
         """
         return None if error
         return agent of metric if success
@@ -404,7 +393,6 @@ class RunEmulation():
         if containers_to_go is None:
             containers_to_go = list(self.active_containers)
         while len(containers_to_go) > 0:
-            time.sleep(check_interval)
             self.logger.debug(
                 f"{len(containers_to_go)} containers to go: {containers_to_go}")
             new_containers_to_go = []
@@ -416,13 +404,11 @@ class RunEmulation():
                     continue
                 if out["is_fib_stable"]:
                     if out["initial_fib_stable_dt"] != out["last_fib_stable_dt"]:
-                        second_stable_time = out["last_fib_stable_dt"] - t0
-                        if second_stable_time:
-                            ret[container_id] = second_stable_time
+                        ret[container_id] = out["last_fib_stable_dt"] - t0
                 else:
                     new_containers_to_go.append(container_id)
             containers_to_go = new_containers_to_go
-
+            time.sleep(check_interval)
         return ret
 
     def _get_kernel_fib(self):
@@ -441,6 +427,7 @@ class RunEmulation():
     def start(self, monitor_overlap_sec=10):
         """
         start the containers
+
         """
         self._ready_base(force_restart=True, build_image=True)
 
@@ -478,31 +465,6 @@ class RunEmulation():
                     if count == n:
                         return removed_links
 
-    def _exec_cmd_routers(self, cmd):
-        """
-        execute cmd in all router containers
-        """
-        ret = {}
-        for continer in self.docker_client.containers.list():
-            if continer.name.startswith("r"):
-                ret[continer.name] = continer.exec_run(cmd)
-        return ret
-
-    def sav_exp(self):
-        """
-        start sav_experiment
-        """
-        self.logger.debug(dir(self.docker_client.services))
-        self._ready_base(force_restart=True)
-        self.send_start_signal()
-        time.sleep(60)
-        self.logger.debug(self._exec_cmd_routers(
-            "curl http://localhost:8888/sav_table/ --connect-timeout 2 -m 5"))
-        self.send_stop_signal()
-
-        subprocess_cmd(
-            f"docker compose -f {self.base_compose_path} down", None)
-        return
     def start_dons(self, monitor_overlap_sec=10):
         """
         will monitor the host and containers during the exp
@@ -515,18 +477,15 @@ class RunEmulation():
         self._stop_metric_monitor()
         self._start_metric_monitor()
         time.sleep(monitor_overlap_sec)
-        c_t, l_t, l_n = self._ready_base(force_restart=True)
+        self._ready_base(force_restart=True)
         start_dt = time.time()
-        input("press to send start signal")
         self.send_start_signal()
         # wait for all fib stable
         check_interval = 30
-        initial_fib_stable = self._wait_for_initial_fib_stable(
-            initial_wait=300, check_interval=check_interval)
+        initial_fib_stable = self._wait_for_initial_fib_stable(check_interval)
         # randomly remove 10 links
         self._remove_top_n_links(10)
-        fib_stable = self._wait_for_fib_stable(
-            initial_wait=300, check_interval=check_interval)
+        fib_stable = self._wait_for_fib_stable(check_interval)
         fib_table_data = self._get_kernel_fib()
         self.send_stop_signal()
         subprocess_cmd(
@@ -538,10 +497,6 @@ class RunEmulation():
         ret["initial_fib_stable_data"] = initial_fib_stable
         ret["fib_stable_data"] = fib_stable
         ret["start_signal_dt"] = start_dt
-        ret["container_start_time"] = c_t
-        ret["link_start_time"] = l_t
-        ret["container_number"] = self.base_node_num
-        ret["link_number"] = l_n
         return ret
 
 
@@ -610,6 +565,8 @@ class Monitor:
         performance = DevicePerformance()
         performance_dict = []
         returncode, stderr, stdout = performance.get_docker_container_performance()
+        if len(stdout) == 0:
+            return performance_dict
         for item in stdout.strip().split("\n"):
             performance_dict.append(json.loads(item))
         return performance_dict
@@ -640,8 +597,6 @@ def run(args):
                 result = "SAVOP restart"
             case 'start_dons':
                 result = json.dumps(run_emulation.start_dons())
-            case 'sav_exp':
-                result = json.dumps(run_emulation.sav_exp())
 
     if performance is not None:
         match performance:
@@ -662,7 +617,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="this scripts control SAVOP")
     operate_group = parser.add_argument_group("operate control the operation of SAVOP",
                                               "control SAVOP execution, only support three values: start, stop and restart")
-    operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart", "start_dons", "sav_exp"],
+    operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart", "start_dons"],
                                help="control SAVOP execution, only support three values: start, stop, restart and start_dons")
     monitor_group = parser.add_argument_group(
         "monitor", "Monitor the operational status of SAVOP")
