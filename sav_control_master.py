@@ -49,7 +49,7 @@ class MasterController:
         json_content = json_r(path2json)
         generated_config_dir = os.path.join(OUT_DIR, SELF_HOST_ID)
         ret[SELF_HOST_ID] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content,
-                                           out_folder=generated_config_dir)
+                                           out_folder=generated_config_dir, logger=self.logger)
         self.host_node[SELF_HOST_ID]["cfg_src_dir"] = generated_config_dir
         return ret
 
@@ -150,22 +150,44 @@ class MasterController:
             path2hostpy = os.path.join(
                 node["root_dir"], "savop", "sav_control_host.py")
             cmd = f"python3 {path2hostpy} -a start"
+            self.logger.debug(cmd)
             node_result = self._remote_run(node_id, node, cmd)
+            self.logger.debug(node_result)
             if node_id in result:
                 self.logger.error("keys conflict")
-            if node_result["cmd_result"].return_code == 0:
-                node_result["cmd_result"] = "ok"
+            # if node_result["cmd_result"].return_code == 0:
+                # node_result["cmd_result"] = "ok"
             result[node_id] = node_result
         return result
 
-    def mode_dons(self):
+    def sav_exp_start(self):
+        """
+        sav experiment start
+        """
         result = {}
         # TODO we should calculate the container number on each node,but here we just use a fixed number
-        for node_id, node_num in self.distribution_d.items():
+        for node_id, _ in self.config["host_node"].items():
             node = self.host_node[node_id]
             path2hostpy = os.path.join(
                 node["root_dir"], "savop", "sav_control_host.py")
-            cmd = f"python3 {path2hostpy} -a start_dons"
+            cmd = f"python3 {path2hostpy} -a sav_exp"
+            node_result = self._remote_run(node_id, node, cmd)
+            self.logger.debug(node_result)
+            if node_id in result:
+                self.logger.error("keys conflict")
+            result[node_id] = node_result
+        return result
+
+    def original_bird_test(self):
+        """
+        using original bird to test error, for debugging
+        """
+        result = {}
+        for node_id, node_num in self.distribution_d.items():
+            node = self.host_node[node_id]
+            host_py_path = os.path.join(
+                node["root_dir"], "savop", "sav_control_host.py")
+            cmd = f"python3 {host_py_path} -a start_original_bird"
             node_result = self._remote_run(node_id, node, cmd)
             if node_id in result:
                 self.logger.error("keys conflict")
@@ -201,21 +223,6 @@ class SavExperiment:
     logger = get_logger("SAVExp")
     controller = MasterController("sav_control_master_config.json", logger)
 
-    def experiment_testing_v4_inter(self):
-        self.controller.config_file_generate(
-            input_json="testing_v4_inter.json")
-        self.controller.config_file_distribute()
-        before_performance = self.controller.mode_performance().stdout
-        t1 = ThreadWithReturnValue(target=self.controller.mode_start)
-        t2 = ThreadWithReturnValue(target=self.controller.mode_performance)
-        t1.start()
-        t2.start()
-        run_status = t1.join()
-        run_performance_obj = t2.join()
-        run_performance = run_performance_obj.stdout
-        after_performance = self.controller.mode_performance().stdout
-        return {"before_run": json.loads(before_performance), "during_run": {"container": run_status, "host": json.loads(run_performance)},
-                "after_run": json.loads(after_performance)}
 
     def experiment_testing_v6_inter(self):
         self.controller.config_file_generate(input_json="testing_v6_inter.json")
@@ -261,41 +268,40 @@ class SavExperiment:
         return result
 
         # currently we just need the host data
+    def general_exp(self, base_cfg_name):
+        # 1. generate config files
+        self.controller.config_file_generate(
+            input_json=base_cfg_name)
+        # 2. distribute config files
+        self.controller.config_file_distribute()
+        self.controller.sav_exp_start()
 
-    def bgp_performance(self):
+    def original_bird(self):
         """
         test the time consumption for bgp to stable
         """
-        full_list = ['246_5_50_50_12_nodes_inter_v4.json',  '246_10_50_50_24_nodes_inter_v4.json', '246_15_50_50_36_nodes_inter_v4.json',
-                     '246_15_50_50_36_nodes_inter_v4.json', '246_20_50_50_49_nodes_inter_v4.json', '246_25_50_50_61_nodes_inter_v4.json',
-                     '246_30_50_50_73_nodes_inter_v4.json', '246_35_50_50_86_nodes_inter_v4.json', '246_40_50_50_98_nodes_inter_v4.json',
-                     '246_45_50_50_110_nodes_inter_v4.json', '246_50_50_50_123_nodes_inter_v4.json', '246_55_50_50_135_nodes_inter_v4.json',
-                     '246_60_50_50_147_nodes_inter_v4.json', '246_65_50_50_159_nodes_inter_v4.json', '246_70_50_50_172_nodes_inter_v4.json',
-                     '246_75_50_50_184_nodes_inter_v4.json', '246_80_50_50_196_nodes_inter_v4.json', '246_85_50_50_209_nodes_inter_v4.json',
-                     '246_90_50_50_221_nodes_inter_v4.json', '246_95_50_50_233_nodes_inter_v4.json', '246_100_50_50_246_nodes_inter_v4.json']
+        full_list = [
+            '246_100_50_50_246_nodes_inter_v4_original_bird.json'
+            ]
         for topo in full_list:
-            print(f"start {topo}")
+            self.logger.debug(f"starting {topo}")
+            # add original bird key here
             self.controller.config_file_generate(topo)
             self.controller.config_file_distribute()
-            ret = self.controller.mode_dons()
+            ret = self.controller.original_bird_test()
             for node, result in ret.items():
                 std_out = result["cmd_result"]["stdout"]
                 std_err = result["cmd_result"]["stderr"]
                 ret_code = result["cmd_result"]["returncode"]
-                if ret_code != 0:
-                    continue
-                time_usage = result["cmd_end_dt"] - result["cmd_start_dt"]
-                self.logger.debug(f"{node} finished in {time_usage}")
-                raw_result = std_out
-                raw_result_file_name = topo.replace(".json", "_raw_result.txt")
-                with open(raw_result_file_name, "w") as f:
-                    f.write(raw_result)
-                print(f"raw_result saved to {raw_result_file_name}")
-                input()
-                # parsed_std_out = self._bgp_exp_result_parser(std_out)
-                # result_file_name = topo.replace(".json", "_result.json")
-                # json_w(result_file_name, parsed_std_out)
-                # print(f"parsed_std_out saved to {result_file_name}")
+                if ret_code == 0:
+                    time_usage = result["cmd_end_dt"] - result["cmd_start_dt"]
+                    self.logger.debug(f"{node} finished in {time_usage}")
+                    raw_result = std_out
+                    raw_result_file_name = topo.replace(
+                        ".json", "_raw_result.txt")
+                    with open(raw_result_file_name, "w") as f:
+                        f.write(raw_result)
+                    print(f"raw_result saved to {raw_result_file_name}")
 
 
 def run(args):
@@ -308,12 +314,10 @@ def run(args):
     if experiment is not None:
         sav_exp = SavExperiment()
         match experiment:
-            case "testing_v4_inter":
-                return sav_exp.experiment_testing_v4_inter()
-            case "testing_v6_inter":
-                return sav_exp.experiment_testing_v6_inter()
-            case "dons":
-                return sav_exp.bgp_performance()
+            case "original_bird":
+                return sav_exp.original_bird()
+            case _:
+                return sav_exp.general_exp(experiment)
     # generate config files
     if config is not None and topo_json is not None:
         master_controller = MasterController("sav_control_master_config.json")
@@ -373,7 +377,7 @@ if __name__ == "__main__":
                                                                "restart the simulation and record experimental process "
                                                                "data.")
     experiment_group.add_argument(
-        "-e", "--experiment", choices=["testing_v4_inter","testing_v6_inter" ,"dons"], help="initiate a new experiment cycle")
+        "-e", "--experiment", choices=["testing_v4_inter", "testing_v6_inter", "dons", "original_bird"], help="initiate a new experiment cycle")
     args = parser.parse_args()
     result = run(args=args)
     print(f"run over, show: \n{result}")

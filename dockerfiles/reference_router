@@ -1,5 +1,5 @@
 FROM savop_base
-ARG root_dir=/root/test
+ARG root_dir=./
 ENV root_dir=$root_dir
 
 RUN mkdir -p /root/savop/
@@ -8,10 +8,9 @@ RUN touch /root/savop/logs/access.log
 RUN touch /root/savop/logs/error.log
 RUN mkdir -p /usr/local/var/run
 
-COPY $root_dir/sav-reference-router/bird /usr/local/sbin/
-COPY $root_dir/sav-reference-router/birdc /usr/local/sbin/
-COPY $root_dir/sav-reference-router/birdcl /usr/local/sbin/
-COPY $root_dir/sav-agent/ /root/savop/sav-agent/
-COPY $root_dir/savop/reference_and_agent/router_kill_and_start.sh /root/savop/router_kill_and_start.sh
+COPY $root_dir/sav-reference-router/bird-original /usr/local/sbin/
+COPY $root_dir/sav-reference-router/birdc-original /usr/local/sbin/
+COPY $root_dir/sav-reference-router/birdcl-original /usr/local/sbin/
+
 
 WORKDIR /root/savop/

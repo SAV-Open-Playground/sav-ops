@@ -12,6 +12,7 @@ import logging
 import os
 import time
 from logging.handlers import RotatingFileHandler
+import docker
 import sys
 
 SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -19,8 +20,7 @@ SAV_ROOT_DIR = os.path.dirname(SAV_OP_DIR)
 SAV_AGENT_DIR = os.path.join(SAV_ROOT_DIR, "sav-agent")
 SAV_ROUTER_DIR = os.path.join(SAV_ROOT_DIR, "sav-reference-router")
 OUT_DIR = os.path.join(SAV_OP_DIR, "this_config")
-
-
+SAV_REF_IMG_TAG = "savop_bird_base"
 def json_r(path, encoding='utf-8'):
     with open(path, 'r', encoding=encoding) as f:
         return json.load(f)
@@ -91,8 +91,6 @@ def get_logger(_id_="", level=logging.INFO):
     logger = logging.getLogger(__name__)
     logger.setLevel(level)
     path = os.path.dirname(os.path.abspath(__file__))+f"/{_id_}_{__name__}.log"
-    if not os.path.exists(path):
-        os.system(f"touch {path}")
     with open(path, "w") as f:
         pass
     handler = RotatingFileHandler(
@@ -159,5 +157,5 @@ def get_container_node_num(root_dir):
     cmd = f'grep "container_name" {root_dir}/docker-compose.yml |wc -l'
     returncode, stdout, stderr = run_cmd(cmd)
     if returncode != 0:
-        raise
+        raise Exception(f"get_container_node_num failed, {stderr}")
     return int(stdout)

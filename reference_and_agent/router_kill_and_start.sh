@@ -3,6 +3,7 @@
 FOLDER=$(cd "$(dirname "$0")";pwd)
 ACCESS_LOGFILE=${FOLDER}/logs/access.log
 ERROR_LOGFILE=${FOLDER}/logs/error.log
+BIRD_LOGFILE=${FOLDER}/logs/bird.log
 CDDIR=${FOLDER}/sav-agent/
 GUNICORN_COUNT=`ps aux|grep gunicorn|grep -v grep|wc -l`
 BIRD_COUNT=`ps aux|grep bird|grep -v grep|wc -l`
@@ -26,7 +27,7 @@ fi
 
 rm -rf ${ACCESS_LOGFILE}
 rm -rf ${ERROR_LOGFILE}
-rm -rf ${FOLDER}/logs/bird.log
+rm -rf ${BIRD_LOGFILE}
 rm -rf ${FOLDER}/logs/server.log
 
 #nohup python3 ${CDDIR}quic_server.py &
@@ -41,4 +42,4 @@ do
     eval ${START_GUNICORN_COMMAND} 
 done
 sleep 3
-bird -D ${FOLDER}/logs/bird.log
+bird -D ${BIRD_LOGFILE}

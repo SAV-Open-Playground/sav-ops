@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 -------------------------------------------------
-   File Name：     UDP_server
+   File Name:     UDP_server
    Description :
    Author :       ustb_
-   date：          2023/7/13
+   date:          2023/7/13
 -------------------------------------------------
    Change Activity:
                    2023/7/13:

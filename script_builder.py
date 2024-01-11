@@ -13,7 +13,7 @@ import json
 import netaddr
 import copy
 import platform
-from sav_control_common import SAV_ROOT_DIR
+from sav_control_common import SAV_ROOT_DIR, docker
 
 
 def tell_prefix_version(prefix):
@@ -58,21 +58,30 @@ def run_cmd(command):
     return process.stdout.encode("utf-8")
 
 
-def recompile_bird(path=r'{host_dir}/sav-reference-router'):
+def recompile_bird(path=r'{host_dir}/sav-reference-router', logger=None):
     os.chdir(path)
     run_cmd("autoreconf")
     run_cmd("./configure")
     run_cmd("make")
+    if logger:
+        logger.info("recompile bird")
+    else:
+        print("recompile bird")
 
 
 def rebuild_img(
         path=r'{host_dir}',
         file="docker_file_update_bird_bin",
-        tag="savop_bird_base"):
+        tag="savop_bird_base",
+        logger=None):
     """
     build docker image
     rebuild docker image without any tag
     """
+    if logger:
+        logger.info("rebuild docker image")
+    else:
+        print("rebuild docker image")
     os.chdir(path)
     cmd = f"docker build -f {file} . -t {tag} --no-cache"
     run_cmd(cmd)
@@ -286,10 +295,22 @@ def refresh_folder(src, dst):
 
 
 def ready_input_json(json_content, selected_nodes):
+    DEFAULT_FIB_THRESHOLD = 300
+    DEFAULT_ORIGINAL_BIRD = False
     base = json_content
     if "fib_threshold" not in base:
-        print("fib_threshold not found, using default value 60")
-        base["fib_threshold"] = 300
+        print(f"fib_threshold not found, using default value {DEFAULT_FIB_THRESHOLD}")
+        base["fib_threshold"] = DEFAULT_FIB_THRESHOLD
+    if "original_bird" not in base:
+        print(
+            f"original_bird not found, using default value {DEFAULT_ORIGINAL_BIRD}")
+        base["original_bird"] = DEFAULT_ORIGINAL_BIRD
+    if base["original_bird"]:
+        print("original_bird is enabled")
+        if not "keep_time" in base:
+            base["keep_time"] = 600
+            print(
+                f"keep_time not found, using default value {base['keep_time']}")
     if selected_nodes:
         temp_node = {}
         temp_links = []
@@ -365,6 +386,12 @@ def build_as_scope(as_scope, link, base_device):
     return as_scope
 
 
+def get_cpu_id(cur_id, max_id=103):
+    new_id = cur_id+1
+    if new_id > max_id:
+        new_id = 0
+    return new_id
+
 def regenerate_config(
         savop_dir,
         host_dir,
@@ -399,7 +426,7 @@ def regenerate_config(
         compose_f.write(docker_network_content)
     compose_f.write("\nservices:\n")
     ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
-
+    cpu_id = 0
     for node in base["devices"]:
         cur_delay = 0
         nodes = base["devices"][node]
@@ -431,10 +458,9 @@ def regenerate_config(
         tag = f"{node}"
         while host_dir.endswith("/"):
             host_dir = host_dir[:-1]
-        # TODO resource limit
-        resource_limit = False
 
-        docker_compose_content = f"  r{tag}:\n" \
+
+        compose_str = f"  r{tag}:\n" \
             f"    sysctls:\n" \
             f"      - net.ipv6.conf.all.disable_ipv6=0\n" \
             f"    image: savop_bird_base\n" \
@@ -443,12 +469,17 @@ def regenerate_config(
             f"    cap_add:\n" \
             f"      - NET_ADMIN\n" \
             f"    deploy:\n"
+        # TODO resource limit
+        compose_str += f"      resources:\n"
+        resource_limit = False
         if resource_limit:
-            docker_compose_content += f"      resources:\n" \
-                f"        limits:\n" \
+            compose_str += f"        limits:\n" \
                 f"          cpus: '0.3'\n" \
                 f"          memory: 512M\n"
-        docker_compose_content += f"    volumes:\n" \
+        compose_str += f"        reservations:\n"
+        compose_str += f"          cpus: '{cpu_id}'\n"
+        cpu_id = get_cpu_id(cpu_id)
+        compose_str += f"    volumes:\n" \
             f"      - type: bind\n" \
             f"        source: {host_dir}/savop_run/{node}/bird.conf\n" \
             f"        target: /usr/local/etc/bird.conf\n" \
@@ -457,23 +488,33 @@ def regenerate_config(
             f"        target: /root/savop/SavAgent_config.json\n" \
             f"      - {host_dir}/savop_run/{node}/log/:/root/savop/logs/\n" \
             f"      - {host_dir}/savop_run/{node}/log/data:/root/savop/sav-agent/data/\n" \
-            f"      - type: bind\n" \
+            f"      - {host_dir}/sav-agent/:/root/savop/sav-agent/\n"\
+            f"      - {host_dir}/savop/reference_and_agent/router_kill_and_start.sh:"\
+            "/root/savop/router_kill_and_start.sh\n"\
+            f"      - {host_dir}/sav-reference-router/bird:/usr/local/sbin/bird\n"\
+            f"      - {host_dir}/sav-reference-router/birdc:/usr/local/sbin/birdc\n"\
+            f"      - {host_dir}/sav-reference-router/birdcl:/usr/local/sbin/birdcl\n"
+        compose_str += f"      - type: bind\n" \
             f"        source: {host_dir}/savop_run/active_signal.json\n" \
             f"        target: /root/savop/signal.json\n" \
             f"      - /etc/localtime:/etc/localtime\n"
+
         if base["enable_rpki"]:
-            docker_compose_content += f"      - {host_dir}/savop_run/{node}/cert.pem:/root/savop/cert.pem\n"
-            docker_compose_content += f"      - {host_dir}/savop_run/{node}/key.pem:/root/savop/key.pem\n"
-            docker_compose_content += f"      - {host_dir}/savop_run/ca/cert.pem:/root/savop/ca_cert.pem\n"
-        docker_compose_content += f"    command:\n" \
-            f"        python3 /root/savop/sav-agent/sav_control_container.py\n" \
-            f"    privileged: true\n"
-        compose_f.write(docker_compose_content)
+            compose_str += f"      - {host_dir}/savop_run/{node}/cert.pem:/root/savop/cert.pem\n"
+            compose_str += f"      - {host_dir}/savop_run/{node}/key.pem:/root/savop/key.pem\n"
+            compose_str += f"      - {host_dir}/savop_run/ca/cert.pem:/root/savop/ca_cert.pem\n"
+        compose_str += f"    command:\n"
+        if base["original_bird"]:
+            compose_str += "        bird-original -D /root/savop/logs/bird-original.log -f\n"
+        else:
+            compose_str += f"        python3 /root/savop/sav-agent/sav_control_container.py\n"
+        compose_str += f"    privileged: true\n"
+        compose_f.write(compose_str)
         if base["enable_rpki"]:
-            docker_compose_content = "    networks:\n" \
+            compose_str = "    networks:\n" \
                                      "      savop-dev_ca_net:\n" \
                                      "        ipv4_address: {str(ca_ip)}\n"
-            compose_f.write(docker_compose_content)
+            compose_f.write(compose_str)
         else:
             compose_f.write("    network_mode: none\n")
 
@@ -521,17 +562,33 @@ def resign_keys(out_folder, node, key_f, base_cfg_folder):
     key_f.write(f"\rfunCGenPrivateKeyAndSign ./{node} ./ca")
 
 
-def script_builder(host_dir, savop_dir, json_content, out_folder, skip_bird=False, skip_img=False):
-    if not skip_bird:
-        recompile_bird(os.path.join(SAV_ROOT_DIR, "sav-reference-router"))
-        # rebuild_img(f"{savop_dir}/../")
-    base_cfg_folder = os.path.join(savop_dir, "base_configs")
-    selected_nodes = None
-    device_number = regenerate_config(
-        savop_dir,
-        host_dir,
-        json_content,
-        base_cfg_folder,
-        selected_nodes,
-        out_folder)
-    return device_number
+def script_builder(host_dir, savop_dir, json_content, out_folder, skip_bird=False, skip_rebuild=False, logger=None):
+    """
+    build config for birds, rpki, sav-agent and recompile bird if needed
+    """
+    try:
+        if json_content["original_bird"]:
+            skip_bird = True
+            skip_rebuild = True
+        if not skip_bird:
+            recompile_bird(os.path.join(
+                SAV_ROOT_DIR, "sav-reference-router"), logger)
+        if not skip_rebuild:
+            rebuild_img(
+                f"{host_dir}/", file=f"{SAV_ROOT_DIR}/savop/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
+        base_cfg_folder = os.path.join(savop_dir, "base_configs")
+        selected_nodes = None
+        device_number = regenerate_config(
+            savop_dir,
+            host_dir,
+            json_content,
+            base_cfg_folder,
+            selected_nodes,
+            out_folder)
+        return device_number
+    except Exception as e:
+        if logger:
+            logger.exception(f"script_builder failed: {e}")
+        else:
+            print(f"script_builder failed: {e}")
+        return 0
