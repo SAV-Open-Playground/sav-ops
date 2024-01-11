@@ -524,7 +524,7 @@ class RunEmulation():
         items = os.listdir(SAV_RUN_DIR)
         items = [i for i in items if os.path.isdir(
             os.path.join(SAV_RUN_DIR, i))]
-        items = [i for i in items if i.startswith("r")]
+        items = [i for i in items if i.isdigit()]
         results = {}
         count = 0
         for router_folder in items:
@@ -533,9 +533,8 @@ class RunEmulation():
             if not os.path.exists(bird_log):
                 bird_log = bird_log.replace("bird.log", "bird-original.log")
             with open(bird_log, "r") as f:
-                lines = f.read()
-                results[router_folder] = lines.count(
-                    "Neighbor graceful restart detected")
+                d = f.read()
+                results[router_folder] = d.count("graceful restart detected")
                 count += results[router_folder]
         if count/self.base_node_num > 3:
             self.logger.warning(
@@ -543,10 +542,10 @@ class RunEmulation():
                 consider increace the graceful restart shreshold")
         return count
 
-    def original_bird_error(self, keep_time=600):
+    def original_bird_error(self, keep_time=60):
         """
         keep the containers for keep_time and check the errors
-        """
+        # """
         self._stop_metric_monitor()
         self._ready_base(force_restart=True)
         start_dt = time.time()
