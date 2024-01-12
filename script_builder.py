@@ -13,7 +13,7 @@ import json
 import netaddr
 import copy
 import platform
-from sav_control_common import SAV_ROOT_DIR, docker
+from sav_control_common import SAV_OP_DIR, SAV_ROOT_DIR, docker
 
 
 def tell_prefix_version(prefix):
@@ -573,9 +573,9 @@ def script_builder(host_dir, savop_dir, json_content, out_folder, skip_bird=Fals
         if not skip_bird:
             recompile_bird(os.path.join(
                 SAV_ROOT_DIR, "sav-reference-router"), logger)
-        if not skip_rebuild:
-            rebuild_img(
-                f"{host_dir}/", file=f"{SAV_ROOT_DIR}/savop/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
+        # if False:
+        #     rebuild_img(
+        #         f"{host_dir}/", file=f"{SAV_OP_DIR}/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
         base_cfg_folder = os.path.join(savop_dir, "base_configs")
         selected_nodes = None
         device_number = regenerate_config(

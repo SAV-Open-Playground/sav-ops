@@ -65,5 +65,6 @@
         "rpdp_app"
     ],
     "active_sav_app": "rpdp_app",
-    "fib_threshold": 5
+    "fib_threshold": 5,
+    "original_bird": false
 }

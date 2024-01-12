@@ -53,18 +53,18 @@ class MasterController:
         self.host_node[SELF_HOST_ID]["cfg_src_dir"] = generated_config_dir
         return ret
 
-    def _not_self_host(self, input_json):
+    def _not_self_host(self, input_json, skip_compile=True):
         ret = {}
         for host_id in list(self.host_node.keys()):
             host_node = self.host_node[host_id]
             path2json = os.path.join(SAV_OP_DIR, f"base_configs", input_json)
             json_content = json_r(path2json)
             generated_config_dir = os.path.join(OUT_DIR, host_id)
-            ret[host_id] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir)
+            ret[host_id] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir, skip_bird=skip_compile)
             self.host_node[host_id]["cfg_src_dir"] = generated_config_dir
         return ret
 
-    def config_file_generate(self, input_json):
+    def config_file_generate(self, input_json, skip_compile=True):
         """
         add load balancing here
         Currently, we just put all containers on the first node.
@@ -74,7 +74,7 @@ class MasterController:
         if len(list(self.host_node.keys())) and list(self.host_node.keys())[0] == "localhost":
             ret = self._self_host(input_json)
         else:
-            ret = self._not_self_host(input_json=input_json)
+            ret = self._not_self_host(input_json=input_json, skip_compile=skip_compile)
         self.distribution_d = ret
         return ret
 
@@ -93,7 +93,7 @@ class MasterController:
                 ret["cmd_end_dt"] = time.time()
         return ret
 
-    def config_file_distribute(self):
+    def config_file_distribute(self, skip_compile=False):
         for node_id, node in self.host_node.items():
             # use my self as a host
             cfg_src_dir = node["cfg_src_dir"]
@@ -119,9 +119,10 @@ class MasterController:
                     print("compress config files fail!")
                 result = conn.put(
                     local=f"{SAV_OP_DIR}/this_config/{node_id}.tar.gz", remote=f"{node['root_dir']}/savop_run/")
-                result = conn.put(local=f"{SAV_ROUTER_DIR}/bird", remote=f"{node['root_dir']}/sav-reference-router/")
-                result = conn.put(local=f"{SAV_ROUTER_DIR}/birdc", remote=f"{node['root_dir']}/sav-reference-router/")
-                result = conn.put(local=f"{SAV_ROUTER_DIR}/birdcl", remote=f"{node['root_dir']}/sav-reference-router/")
+                if not skip_compile:
+                    result = conn.put(local=f"{SAV_ROUTER_DIR}/bird", remote=f"{node['root_dir']}/sav-reference-router/")
+                    result = conn.put(local=f"{SAV_ROUTER_DIR}/birdc", remote=f"{node['root_dir']}/sav-reference-router/")
+                    result = conn.put(local=f"{SAV_ROUTER_DIR}/birdcl", remote=f"{node['root_dir']}/sav-reference-router/")
                 transfer_config = conn.run(
                     command=f"ls -al {node['root_dir']}/savop_run/{node_id}.tar.gz")
                 if transfer_config.return_code == 0:
@@ -170,7 +171,7 @@ class MasterController:
             node = self.host_node[node_id]
             path2hostpy = os.path.join(
                 node["root_dir"], "savop", "sav_control_host.py")
-            cmd = f"python3 {path2hostpy} -a sav_exp"
+            cmd = f"python3 {path2hostpy} -a start"
             node_result = self._remote_run(node_id, node, cmd)
             self.logger.debug(node_result)
             if node_id in result:
@@ -268,12 +269,11 @@ class SavExperiment:
         return result
 
         # currently we just need the host data
-    def general_exp(self, base_cfg_name):
+    def general_exp(self, base_cfg_name, skip_compile=True):
         # 1. generate config files
-        self.controller.config_file_generate(
-            input_json=base_cfg_name)
+        self.controller.config_file_generate(input_json=base_cfg_name, skip_compile=skip_compile)
         # 2. distribute config files
-        self.controller.config_file_distribute()
+        self.controller.config_file_distribute(skip_compile=skip_compile)
         self.controller.sav_exp_start()
 
     def original_bird(self):
@@ -311,13 +311,14 @@ def run(args):
     action = args.action
     performance = args.performance
     experiment = args.experiment
+    skip_compile= args.skip_compile
     if experiment is not None:
         sav_exp = SavExperiment()
         match experiment:
             case "original_bird":
                 return sav_exp.original_bird()
             case _:
-                return sav_exp.general_exp(experiment)
+                return sav_exp.general_exp(experiment+".json", skip_compile=skip_compile)
     # generate config files
     if config is not None and topo_json is not None:
         master_controller = MasterController("sav_control_master_config.json")
@@ -356,6 +357,8 @@ if __name__ == "__main__":
                     "3 Monitor the operational status of SAVOP. ")
     parser.add_argument("-t", "--topo_json",
                         help="Json file for arbitrary topology.")
+    parser.add_argument("-s", "--skip_compile", action="store_true",
+                        help="skip compile bird, default value is false")
     config_group = parser.add_argument_group("config", "Control the generation and distribution of SAVOP "
                                                        "configuration files.")
     config_group.add_argument(
