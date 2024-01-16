@@ -102,9 +102,12 @@ class RunEmulation():
             try:
                 run_cmd(cmd+c, 0)
             except Exception as e:
+                self.logger.exception(e)
                 pass
 
-
+    def _run_cmd_in_container(self, container_id, cmd, timeout=60):
+        container = self.docker_client.containers.get(container_id)
+        return container.exec_run(cmd, timeout=timeout)
     def if_base_started(self):
         """
         tell if base started
@@ -280,7 +283,7 @@ class RunEmulation():
             else:
                 sa_cfg["link_map"] = {}
             sa_cfg["enabled_sav_app"] = self.active_app
-            sa_cfg["apps"] = [self.active_app]
+            self.logger.debug(sa_cfg)
             json_w(f"{self.dst_cfg_path}/{n}.json", sa_cfg)
             # self.logger.info(f"active_app:{self.active_app} config updated")
         # waits the configs to be updated in containers
@@ -314,7 +317,7 @@ class RunEmulation():
             signal["stable_threshold"] = len(signal['command_scope'])*3
         elif mode == "grpc":
             signal["stable_threshold"] = len(signal['command_scope'])
-        elif mode in ["passport"]:
+        elif mode in ["Passport"]:
             signal["stable_threshold"] = 10
         self.logger.info(
             f"active nodes: {signal['command_scope']}\n stable_threshold: {signal['stable_threshold']}")
@@ -482,6 +485,7 @@ class RunEmulation():
 
         """
         self._ready_base(force_restart=True, build_image=True)
+        self.send_start_signal()
 
     def _remove_top_n_links(self, n):
         """
@@ -545,7 +549,7 @@ class RunEmulation():
     def original_bird_error(self, keep_time=60):
         """
         keep the containers for keep_time and check the errors
-        # """
+        """
         self._stop_metric_monitor()
         self._ready_base(force_restart=True)
         start_dt = time.time()
@@ -556,9 +560,38 @@ class RunEmulation():
         ret['keep_time'] = keep_time
         ret["start_signal_dt"] = start_dt
         return ret
-
+    
+    def restart_agent_in_container(self, container_id=None):
+        """
+        restart agent in container
+        if container_id is None, restart agent in all containers
+        """
+        if container_id is None:
+            containers_to_go = self.docker_client.containers.list()
+        else:
+            containers_to_go = [self.docker_client.containers.get(container_id)]
+        for container in containers_to_go:
+            if container.status != "running":
+                self.logger.warning(f"{container_id} not running")
+                continue
+            cmd = f"bash /root/savop/router_kill_and_start.sh stop"
+            container.exec_run(cmd)
+            cmd = f"bash /root/savop/router_kill_and_start.sh start"
+            container.exec_run(cmd)
+            self.logger.debug(f"{container} restarted")
         
-    def start_dons(self, monitor_overlap_sec=10, if_monitor=False):
+    def dev_test(self):
+        """
+        dev test
+        """
+        self.logger.debug("dev test")
+        self.send_start_signal()
+        time.sleep(10)
+        self.logger.debug("r1 started")
+        time.sleep(10)
+        self._compose_down()
+        
+    def fib_stable(self, monitor_overlap_sec=10, if_monitor=False):
         """
         will monitor the host and containers during the exp if if_monitor is True
         1. wait for all fib stable
@@ -593,7 +626,6 @@ class RunEmulation():
         ret["initial_fib_stable"] = initial_fib_stable
         ret['max_initial_fib_stable'] = max(initial_fib_stable.values())
         return ret
-
 
 class DevicePerformance():
     __cpucommand = "dstat -c --nocolor 1 2 --nocolor| sed -e '1,3d'"
@@ -689,11 +721,14 @@ def run(args):
             case 'stop':
                 result = "SAVOP stop"
             case 'restart':
+                run_emulation.restart_agent_in_container()
                 result = "SAVOP restart"
-            case 'start_dons':
-                result = json.dumps(run_emulation.start_dons())
+            case 'fib_stable':
+                result = json.dumps(run_emulation.fib_stable())
             case 'start_original_bird':
                 result = json.dumps(run_emulation.original_bird_error())
+            case 'dev_test':
+                result = json.dumps(run_emulation.dev_test())
 
     if performance is not None:
         match performance:
@@ -714,8 +749,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="this scripts control SAVOP")
     operate_group = parser.add_argument_group("operate control the operation of SAVOP",
                                               "control SAVOP execution, only support three values: start, stop and restart")
-    operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart", "start_original_bird", "start_dons"],
-                               help="control SAVOP execution, only support three values: start, stop, restart ,start_dons and start_original_bird")
+    operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart", "start_original_bird", "fib_stable", "dev_test"],
+                               help="control SAVOP execution, only support three values: start, stop, restart ,fib_stable and start_original_bird")
     monitor_group = parser.add_argument_group(
         "monitor", "Monitor the operational status of SAVOP")
     monitor_group.add_argument("-p", "--performance", choices=["host", "container", "all"],
