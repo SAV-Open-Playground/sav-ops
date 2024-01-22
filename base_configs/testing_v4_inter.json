@@ -62,9 +62,9 @@
     "prefix_method": "blackhole",
     "auto_ip_version": 4,
     "sav_apps": [
-        "rpdp_app"
+        "RPDP"
+        ,"Strict-uRPF"
     ],
-    "active_sav_app": "rpdp_app",
-    "fib_threshold": 5,
-    "original_bird": false
+    "active_sav_app": "RPDP",
+    "fib_threshold": 5
 }

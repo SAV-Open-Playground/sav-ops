@@ -49,7 +49,8 @@ class MasterController:
         json_content = json_r(path2json)
         generated_config_dir = os.path.join(OUT_DIR, SELF_HOST_ID)
         ret[SELF_HOST_ID] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content,
-                                           out_folder=generated_config_dir, logger=self.logger)
+                                           out_folder=generated_config_dir,
+                                           logger=self.logger, skip_bird=True, skip_rebuild=True)
         self.host_node[SELF_HOST_ID]["cfg_src_dir"] = generated_config_dir
         return ret
 
@@ -60,7 +61,8 @@ class MasterController:
             path2json = os.path.join(SAV_OP_DIR, f"base_configs", input_json)
             json_content = json_r(path2json)
             generated_config_dir = os.path.join(OUT_DIR, host_id)
-            ret[host_id] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir, skip_bird=skip_compile)
+            ret[host_id] = script_builder(
+                host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir, logger=self.logger)
             self.host_node[host_id]["cfg_src_dir"] = generated_config_dir
         return ret
 
@@ -74,7 +76,8 @@ class MasterController:
         if len(list(self.host_node.keys())) and list(self.host_node.keys())[0] == "localhost":
             ret = self._self_host(input_json)
         else:
-            ret = self._not_self_host(input_json=input_json, skip_compile=skip_compile)
+            ret = self._not_self_host(
+                input_json=input_json, skip_compile=skip_compile)
         self.distribution_d = ret
         return ret
 
@@ -102,7 +105,7 @@ class MasterController:
                 if os.path.exists(cfg_dst_dir):
                     shutil.rmtree(cfg_dst_dir)
                 shutil.copytree(cfg_src_dir, cfg_dst_dir)
-                print(f"config file copied to: {cfg_dst_dir}")
+                self.logger.info(f"config file copied to: {cfg_dst_dir}")
                 continue
             with Connection(host=node_id, user=node["user"], connect_kwargs={"password": node["password"]}) as conn:
                 clear_config = conn.run(
@@ -120,9 +123,12 @@ class MasterController:
                 result = conn.put(
                     local=f"{SAV_OP_DIR}/this_config/{node_id}.tar.gz", remote=f"{node['root_dir']}/savop_run/")
                 if not skip_compile:
-                    result = conn.put(local=f"{SAV_ROUTER_DIR}/bird", remote=f"{node['root_dir']}/sav-reference-router/")
-                    result = conn.put(local=f"{SAV_ROUTER_DIR}/birdc", remote=f"{node['root_dir']}/sav-reference-router/")
-                    result = conn.put(local=f"{SAV_ROUTER_DIR}/birdcl", remote=f"{node['root_dir']}/sav-reference-router/")
+                    result = conn.put(
+                        local=f"{SAV_ROUTER_DIR}/bird", remote=f"{node['root_dir']}/sav-reference-router/")
+                    result = conn.put(
+                        local=f"{SAV_ROUTER_DIR}/birdc", remote=f"{node['root_dir']}/sav-reference-router/")
+                    result = conn.put(
+                        local=f"{SAV_ROUTER_DIR}/birdcl", remote=f"{node['root_dir']}/sav-reference-router/")
                 transfer_config = conn.run(
                     command=f"ls -al {node['root_dir']}/savop_run/{node_id}.tar.gz")
                 if transfer_config.return_code == 0:
@@ -161,6 +167,14 @@ class MasterController:
             result[node_id] = node_result
         return result
 
+    def dev_test(self):
+        for node_id, node_num in self.config["host_node"].items():
+            node = self.host_node[node_id]
+            path2hostpy = os.path.join(
+                node["root_dir"], "savop", "sav_control_host.py")
+            cmd = f"python3 {path2hostpy} -a dev_test"
+            node_result = self._remote_run(node_id, node, cmd)
+        return result
     def sav_exp_start(self):
         """
         sav experiment start
@@ -182,6 +196,22 @@ class MasterController:
     def original_bird_test(self):
         """
         using original bird to test error, for debugging
+        """
+        result = {}
+        for node_id, node_num in self.distribution_d.items():
+            node = self.host_node[node_id]
+            host_py_path = os.path.join(
+                node["root_dir"], "savop", "sav_control_host.py")
+            cmd = f"python3 {host_py_path} -a start_original_bird"
+            node_result = self._remote_run(node_id, node, cmd)
+            if node_id in result:
+                self.logger.error("keys conflict")
+            result[node_id] = node_result
+        return result
+
+    def fib_stable_test(self):
+        """
+        using sav_agent to test fib stable time
         """
         result = {}
         for node_id, node_num in self.distribution_d.items():
@@ -226,7 +256,8 @@ class SavExperiment:
 
 
     def experiment_testing_v6_inter(self):
-        self.controller.config_file_generate(input_json="testing_v6_inter.json")
+        self.controller.config_file_generate(
+            input_json="testing_v6_inter.json")
         self.controller.config_file_distribute()
         before_performance = self.controller.mode_performance().stdout
         t1 = ThreadWithReturnValue(target=self.controller.mode_start)
@@ -271,18 +302,28 @@ class SavExperiment:
         # currently we just need the host data
     def general_exp(self, base_cfg_name, skip_compile=True):
         # 1. generate config files
-        self.controller.config_file_generate(input_json=base_cfg_name, skip_compile=skip_compile)
+        self.controller.config_file_generate(
+            input_json=base_cfg_name, skip_compile=skip_compile)
         # 2. distribute config files
         self.controller.config_file_distribute(skip_compile=skip_compile)
         self.controller.sav_exp_start()
 
+    def dev_test(self, base_cfg_name):
+        """
+        for development
+        """
+        self.controller.config_file_generate(
+            input_json=base_cfg_name)
+        # 2. distribute config files
+        self.controller.config_file_distribute()
+        self.controller.mode_start()
     def original_bird(self):
         """
         test the time consumption for bgp to stable
         """
         full_list = [
             '246_100_50_50_246_nodes_inter_v4_original_bird.json'
-            ]
+        ]
         for topo in full_list:
             self.logger.debug(f"starting {topo}")
             # add original bird key here
@@ -303,7 +344,35 @@ class SavExperiment:
                         f.write(raw_result)
                     print(f"raw_result saved to {raw_result_file_name}")
 
-
+    def fib_stable(self):
+        """
+        using sav_agent to monitor the fib stable time
+        """
+        configs = [
+            '246_20_50_50_49_nodes_inter_v4.json', '246_40_50_50_98_nodes_inter_v4.json',
+            '246_60_50_50_147_nodes_inter_v4.json', '246_80_50_50_196_nodes_inter_v4.json',
+            '246_100_50_50_246_nodes_inter_v4.json']
+        for config in configs:
+            self.logger.debug(f"starting {config}")
+            # add original bird key here
+            self.controller.config_file_generate(config)
+            self.controller.config_file_distribute()
+            ret = self.controller.fib_stable_test()
+            input(ret)
+            for node, result in ret.items():
+                std_out = result["cmd_result"]["stdout"]
+                std_err = result["cmd_result"]["stderr"]
+                ret_code = result["cmd_result"]["returncode"]
+                if ret_code == 0:
+                    time_usage = result["cmd_end_dt"] - result["cmd_start_dt"]
+                    self.logger.debug(f"{node} finished in {time_usage}")
+                    raw_result = std_out
+                    raw_result_file_name = config.replace(
+                        ".json", "_raw_result.txt")
+                    with open(raw_result_file_name, "w") as f:
+                        f.write(raw_result)
+                    self.logger.debug(
+                        f"raw_result saved to {raw_result_file_name}")
 def run(args):
     topo_json = args.topo_json
     config = args.config
@@ -311,14 +380,18 @@ def run(args):
     action = args.action
     performance = args.performance
     experiment = args.experiment
-    skip_compile= args.skip_compile
+        
     if experiment is not None:
         sav_exp = SavExperiment()
         match experiment:
+            case "fib_stable":
+                return sav_exp.fib_stable()
             case "original_bird":
                 return sav_exp.original_bird()
+            case "dev_test":
+                return sav_exp.dev_test("testing_v4_intra.json")
             case _:
-                return sav_exp.general_exp(experiment+".json", skip_compile=skip_compile)
+                return sav_exp.general_exp(experiment+'.json')
     # generate config files
     if config is not None and topo_json is not None:
         master_controller = MasterController("sav_control_master_config.json")
@@ -357,8 +430,6 @@ if __name__ == "__main__":
                     "3 Monitor the operational status of SAVOP. ")
     parser.add_argument("-t", "--topo_json",
                         help="Json file for arbitrary topology.")
-    parser.add_argument("-s", "--skip_compile", action="store_true",
-                        help="skip compile bird, default value is false")
     config_group = parser.add_argument_group("config", "Control the generation and distribution of SAVOP "
                                                        "configuration files.")
     config_group.add_argument(
@@ -380,16 +451,7 @@ if __name__ == "__main__":
                                                                "restart the simulation and record experimental process "
                                                                "data.")
     experiment_group.add_argument(
-        "-e", "--experiment", choices=["6_node3_v4_inter","testing_v4_inter", "testing_v6_inter", "dons", "original_bird"], help="initiate a new experiment cycle")
+        "-e", "--experiment", help="initiate a new experiment cycle, add then json file name here (without extension or dir), it should exist in base_configs dir.")
     args = parser.parse_args()
     result = run(args=args)
     print(f"run over, show: \n{result}")
-    # topo_json = "3_nodes_v4.json"
-    # os.chdir(SAV_OP_DIR)
-    # out_folder = os.path.join(SAV_OP_DIR, "this_config")
-    # base_node_num = refresh(SAV_ROOT_DIR, SAV_OP_DIR, input_json=topo_json, out_folder=out_folder)
-    # master_controller = MasterController()
-    # base_node_num = master_controller.config_file_generate()
-    # master_controller.config_file_distribute()
-    # master_controller.mode_start()
-    # print("config regenerated")

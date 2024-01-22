@@ -8,6 +8,7 @@
 5. regenerate compose.yml and topo.sh for the given node and links
 """
 import os
+import time
 import subprocess
 import json
 import netaddr
@@ -121,7 +122,7 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
                          "roa6 table r6 { sorted 1; };\n" \
                          "protocol rpki rpki1\n"\
                          "{\n"
-        # bird_conf_str += "\tdebug all;\n"
+        bird_conf_str += "\tdebug all;\n"
         bird_conf_str += "\troa4 {\n" \
                          "\t\ttable r4;\n" \
                          "\t\t};\n" \
@@ -172,11 +173,10 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
     for prefix in node["prefixes"]:
         bird_conf_str += f"\troute {prefix} {mode};\n"
     bird_conf_str += "};\n"
-#  "\tdebug all;\n" \
     bird_conf_str += "template bgp basic {\n"
     bird_conf_str += f"\tlocal as {node['as']};\n"
     bird_conf_str += "\tlong lived graceful restart on;\n"
-    # bird_conf_str += "\tdebug all;\n"
+    bird_conf_str += "\tdebug all;\n"
     bird_conf_str += "\tenable extended messages;\n" \
                      "};\n" \
                      "template bgp basic4 from basic {\n" \
@@ -431,7 +431,7 @@ def regenerate_config(
         cur_delay = 0
         nodes = base["devices"][node]
         nodes["device_id"] = node
-        rpdp_enable = "rpdp_app" in base["sav_apps"]
+        rpdp_enable = "RPDP" in base["sav_apps"]
         # generate bird conf
         cur_delay, bird_config_str, link_map = gen_bird_conf(
             nodes, cur_delay, "blackhole", base, rpdp_enable)
@@ -562,11 +562,14 @@ def resign_keys(out_folder, node, key_f, base_cfg_folder):
     key_f.write(f"\rfunCGenPrivateKeyAndSign ./{node} ./ca")
 
 
-def script_builder(host_dir, savop_dir, json_content, out_folder, skip_bird=False, skip_rebuild=False, logger=None):
+def script_builder(host_dir, savop_dir, json_content, out_folder, logger, skip_bird=False, skip_rebuild=False):
     """
     build config for birds, rpki, sav-agent and recompile bird if needed
     """
     try:
+        t0 = time.time()
+        if not "original_bird" in json_content:
+            json_content["original_bird"] = False
         if json_content["original_bird"]:
             skip_bird = True
             skip_rebuild = True
@@ -578,17 +581,18 @@ def script_builder(host_dir, savop_dir, json_content, out_folder, skip_bird=Fals
         #         f"{host_dir}/", file=f"{SAV_OP_DIR}/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
         base_cfg_folder = os.path.join(savop_dir, "base_configs")
         selected_nodes = None
-        device_number = regenerate_config(
+        container_num = regenerate_config(
             savop_dir,
             host_dir,
             json_content,
             base_cfg_folder,
             selected_nodes,
             out_folder)
-        return device_number
+        t = time.time() - t0
+        logger.info(
+            f"script_builder finished, container_num: {container_num} in {t:.4f} seconds")
+
+        return container_num
     except Exception as e:
-        if logger:
-            logger.exception(f"script_builder failed: {e}")
-        else:
-            print(f"script_builder failed: {e}")
+        logger.exception(f"script_builder failed: {e}")
         return 0
