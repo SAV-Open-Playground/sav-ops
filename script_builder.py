@@ -685,9 +685,6 @@ def script_builder(host_dir, savop_dir, json_content, out_dir, logger, skip_bird
         if not skip_bird:
             recompile_bird(os.path.join(
                 SAV_ROOT_DIR, "sav-reference-router"), logger)
-        if not skip_rebuild:
-            rebuild_img(
-                f"{host_dir}/", file=f"{SAV_OP_DIR}/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
         base_cfg_folder = os.path.join(savop_dir, "base_configs")
         selected_nodes = None
         container_num = regenerate_config(
