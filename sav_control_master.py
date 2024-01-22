@@ -48,9 +48,16 @@ class MasterController:
         path2json = os.path.join(SAV_OP_DIR, "base_configs", input_json)
         json_content = json_r(path2json)
         generated_config_dir = os.path.join(OUT_DIR, SELF_HOST_ID)
+
         ret[SELF_HOST_ID] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content,
-                                           out_folder=generated_config_dir,
+                                           out_dir=generated_config_dir,
                                            logger=self.logger, skip_bird=True, skip_rebuild=True)
+        if json_content["enable_rpki"]:
+            rpki_dir = os.path.join(SAV_OP_DIR, "rpki")
+            files = ["krill.conf", "rsyncd.conf"]
+            for f in files:
+                shutil.copy(os.path.join(rpki_dir, f),
+                            generated_config_dir+'/')
         self.host_node[SELF_HOST_ID]["cfg_src_dir"] = generated_config_dir
         return ret
 
@@ -62,7 +69,7 @@ class MasterController:
             json_content = json_r(path2json)
             generated_config_dir = os.path.join(OUT_DIR, host_id)
             ret[host_id] = script_builder(
-                host_node["root_dir"], SAV_OP_DIR, json_content, out_folder=generated_config_dir, logger=self.logger)
+                host_node["root_dir"], SAV_OP_DIR, json_content, out_dir=generated_config_dir, logger=self.logger)
             self.host_node[host_id]["cfg_src_dir"] = generated_config_dir
         return ret
 
@@ -174,7 +181,8 @@ class MasterController:
                 node["root_dir"], "savop", "sav_control_host.py")
             cmd = f"python3 {path2hostpy} -a dev_test"
             node_result = self._remote_run(node_id, node, cmd)
-        return result
+            self.logger.debug(node_result)
+        return
     def sav_exp_start(self):
         """
         sav experiment start
@@ -316,7 +324,7 @@ class SavExperiment:
             input_json=base_cfg_name)
         # 2. distribute config files
         self.controller.config_file_distribute()
-        self.controller.mode_start()
+        self.controller.dev_test()
     def original_bird(self):
         """
         test the time consumption for bgp to stable
@@ -380,7 +388,7 @@ def run(args):
     action = args.action
     performance = args.performance
     experiment = args.experiment
-        
+    skip_compile= args.skip_compile
     if experiment is not None:
         sav_exp = SavExperiment()
         match experiment:
@@ -391,7 +399,7 @@ def run(args):
             case "dev_test":
                 return sav_exp.dev_test("testing_v4_intra.json")
             case _:
-                return sav_exp.general_exp(experiment+'.json')
+                return sav_exp.general_exp(experiment+'.json',skip_compile=skip_compile)
     # generate config files
     if config is not None and topo_json is not None:
         master_controller = MasterController("sav_control_master_config.json")
@@ -436,7 +444,8 @@ if __name__ == "__main__":
         "-c", "--config", choices=["refresh"], help="generate the configuration files")
     config_group.add_argument(
         "-d", "--distribute", choices=["all"], help="distribute the configuration files")
-
+    parser.add_argument("-s", "--skip_compile", action="store_true",
+                        help="skip compile bird, default value is false")
     operate_group = parser.add_argument_group(
         "operate", "control the operation of SAVOP.")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart"],

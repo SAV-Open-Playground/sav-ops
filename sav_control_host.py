@@ -68,7 +68,11 @@ class RunEmulation():
         self.logger = get_logger(self._id)
         self.root_dir = root_dir
         self.host_signal_path = host_signal_path
+        self.logger.debug(base_compose)
         self.base_compose_path = base_compose
+        self.rpki_compose_path = os.path.dirname(self.base_compose_path)
+        self.rpki_compose_path = os.path.join(
+            self.rpki_compose_path,RPKI_COMPOSE_FILE)
         self.base_topo = base_topo
         self.base_node_num = base_node_num
         self.active_app = None
@@ -177,19 +181,54 @@ class RunEmulation():
                     os.system("rm -rf " + file_path)
                 else:
                     os.remove(file_path)
-    def _compose_down(self):
-        subprocess_cmd(f"docker compose -f {self.base_compose_path} down", None)
+
+    def _stop_base(self):
+        """
+        stop the base (node compose and rpki compose)
+        """
+        t0 = time.time()
+        subprocess_cmd(
+            f"docker compose -f {self.base_compose_path} down", None)
+        t1 = time.time()
+        self.logger.info(
+            f"{self.base_compose_path} stopped in {t1-t0:.4f} seconds")
+        self.logger.debug(self.rpki_compose_path)
+        if os.path.exists(self.rpki_compose_path):
+            subprocess_cmd(
+                f"docker compose -f {self.rpki_compose_path} down", None)
+            t2 = time.time()
+            self.logger.info(
+                f"{self.base_compose_path} stopped in {t2-t1:.4f} seconds")
+
+    def _start_base(self):
+        """
+        start the base (node compose and rpki compose)
+        """
+        t0 = time.time()
+        if os.path.exists(self.rpki_compose_path):
+            run_cmd(f"docker compose -f {self.rpki_compose_path} up -d")
+            t1 = time.time()
+            self.logger.info(
+                f"{self.rpki_compose_path} started in {t1-t0:.4f} seconds")
+        t1 = time.time()
+        subprocess_cmd(
+            f"docker compose -f {self.base_compose_path} up -d", None)
+        t2 = time.time()
+        self.logger.info(
+            f"{self.base_compose_path} started in {t2-t1:.4f} seconds")
     def _ready_base(self, force_restart=False, build_image=False):
         """
-        start base ,starting  containers and links
+        1. stop containers
+        2. rebuild/recompile if needed
+        3. start containers
+        4. add links
         """
         if self.if_base_started() and not force_restart:
             self.logger.info("base already started")
             return
         self.logger.info(f"init base with {self.base_compose_path}")
         t = time.time()
-        self._compose_down()
-        self.logger.info("container stopped")
+        self._stop_base()
 
         # if build_image:
         # TODO not working
@@ -211,12 +250,8 @@ class RunEmulation():
         #         self.logger.exception(e)
         #         sys.exit(1)
         # self.clear_logs()
-        t = time.time()
-        run_cmd(f"docker compose -f {self.base_compose_path} up -d")
+        self._start_base()
         t1 = time.time()
-        log_str = f"container started in {t1-t:.4f} seconds"
-        print(log_str)
-        self.logger.info(log_str)
         run_cmd(f"bash {self.base_topo}")
         t2 = time.time()
         log_str = f"link started in {t2-t1:.4f} seconds"
@@ -555,12 +590,12 @@ class RunEmulation():
         start_dt = time.time()
         self.send_start_signal()
         time.sleep(keep_time)
-        self._compose_down()
+        self._stop_base()
         ret = self._get_result()
         ret['keep_time'] = keep_time
         ret["start_signal_dt"] = start_dt
         return ret
-    
+
     def restart_agent_in_container(self, container_id=None):
         """
         restart agent in container
@@ -569,28 +604,36 @@ class RunEmulation():
         if container_id is None:
             containers_to_go = self.docker_client.containers.list()
         else:
-            containers_to_go = [self.docker_client.containers.get(container_id)]
+            containers_to_go = [
+                self.docker_client.containers.get(container_id)]
         for container in containers_to_go:
             if container.status != "running":
                 self.logger.warning(f"{container_id} not running")
                 continue
-            cmd = f"bash /root/savop/router_kill_and_start.sh stop"
-            container.exec_run(cmd)
+            t1 = time.time()
+            self.logger.debug(f" restarting {container}")
             cmd = f"bash /root/savop/router_kill_and_start.sh start"
             container.exec_run(cmd)
+            t2 = time.time()
+            self.logger.debug(f"{container} started in {t2-t1:.4f} seconds")
             self.logger.debug(f"{container} restarted")
-        
+
+    def _log_sav_table(self):
+
+        for c in self.docker_client.containers.list():
+            c.exec_run("curl http://localhost:8888/save_sav_table/")
+
     def dev_test(self):
         """
         dev test
         """
         self.logger.debug("dev test")
+        self._ready_base(force_restart=True, build_image=True)
         self.send_start_signal()
-        time.sleep(10)
-        self.logger.debug("r1 started")
-        time.sleep(10)
-        self._compose_down()
-        
+        time.sleep(30)
+        self._log_sav_table()
+        self._stop_base()
+
     def fib_stable(self, monitor_overlap_sec=10, if_monitor=False):
         """
         will monitor the host and containers during the exp if if_monitor is True
@@ -708,7 +751,8 @@ def run(args):
         host_root_dir = os.path.join(SAV_ROOT_DIR)
         cfg_root_dir = os.path.join(host_root_dir, "savop_run")
         host_signal_path = os.path.join(cfg_root_dir, "active_signal.json")
-        base_compose = os.path.join(cfg_root_dir, "docker-compose.yml")
+        base_compose = os.path.join(cfg_root_dir, DEVICE_COMPOSE_FILE)
+        
         base_topo = os.path.join(cfg_root_dir, "topo.sh")
         run_emulation = RunEmulation(root_dir=host_root_dir,
                                      host_signal_path=host_signal_path,

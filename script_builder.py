@@ -14,7 +14,7 @@ import json
 import netaddr
 import copy
 import platform
-from sav_control_common import SAV_OP_DIR, SAV_ROOT_DIR, docker
+from sav_control_common import *
 
 
 def tell_prefix_version(prefix):
@@ -27,22 +27,40 @@ def tell_prefix_version(prefix):
         return 6
     raise ValueError(f"invalid prefix :prefix")
 
-
 class IPGenerator():
     def __init__(self, base_ip):
         self.set_ip(base_ip)
+        self.first_ip = copy.deepcopy(self.ip)
+        self.last_ip = self.ip
 
     def get_new_ip_pair(self):
         src = copy.deepcopy(self.ip)
         dst = src + 1
         if self.ip.version == 4:
             self.ip += 256
+            self.last_ip = self.ip
         elif self.ip.version == 6:
             self.ip += 65536
+            self.last_ip = self.ip
         return src, dst
 
     def set_ip(self, ip):
         self.ip = netaddr.IPAddress(ip)
+        self.last_ip = self.ip
+
+    def get_range(self):
+        ip_version = self.ip.version
+        if ip_version == 4:
+            prefix_len = 32
+        elif ip_version == 6:
+            prefix_len = 128
+        ip_network = netaddr.IPNetwork(f"{self.first_ip}/{prefix_len}")
+
+    # Expand the IPNetwork to cover the last IP address
+        while not self.last_ip in ip_network:
+            prefix_len -= 1
+            ip_network = netaddr.IPNetwork(f"{self.first_ip}/{prefix_len}")
+        return ip_network
 
 
 def subprocess_cmd(command):
@@ -101,7 +119,6 @@ def get_bird_cfg_relation_str(my_as, peer_as, as_relations):
         if my_as == customer:
             return f"\tlocal role customer;\n"
     return f"\tlocal role peer;\n"
-    return ""
 
 
 def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
@@ -232,6 +249,7 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
         bird_conf_str += f"\tsource address {my_ip};\n"
 
         bird_conf_str += f"\tneighbor {peer_ip} as {peer_as};\n"
+        bird_conf_str += f"\tinterface \"eth_{dst_id}\";\n"
         # interface "eth_3356";
         bird_conf_str += f"\tconnect delay time {int(delay)};\n"
         delay += 0.1
@@ -257,6 +275,8 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
 
 def gen_sa_config(
         auto_ip_version,
+        auto_nets,
+        use_ignore_nets,
         node,
         link_map,
         as_scope,
@@ -275,6 +295,8 @@ def gen_sa_config(
             "server_enabled": True
         },
         "auto_ip_version": auto_ip_version,
+        "ignore_nets": auto_nets,
+        "use_ignore_nets": use_ignore_nets,
         "link_map": link_map,
         "quic_config": {
             "server_enabled": True
@@ -361,6 +383,7 @@ def assign_ip(base):
             }
         as_scope[asn] = new_asn_data
     base["as_scope"] = as_scope
+    base["ip_range"] = str(a.get_range())
     return base
 
 
@@ -392,29 +415,99 @@ def get_cpu_id(cur_id, max_id=103):
         new_id = 0
     return new_id
 
+
+def build_rpki(base, out_dir):
+    """
+    build rpki compose 
+    """
+    s = "version: \"2\"\n"
+    s += "  networks:\n"
+    s += "    ca_net:\n"
+    s += "      external: false:\n"
+    s += "      ipma:\n"
+    s += "        driver: default\n"
+    s += "        config:\n"
+    if base["auto_ip_version"] == 4:
+        s += "          - subnet: \"10.10.0.0/16\"\n"
+    else:
+        raise NotImplementedError
+    s += "services:\n"
+    s += "  savopkrill.com:\n"
+    s += "    image: krill\n"
+    s += "    container_name: ca\n"
+    s += "    cap_add:\n"
+    s += "      - NET_ADMIN\n"
+    s += "    volumes:\n"
+    s += "      - ./logs/krill.log:/var/krill/logs/krill.log\n"
+    s += "      - ./logs/rsync.log:/var/krill/logs/rsync.log\n"
+    s += "      - ./krill.sh:/var/krill/start.sh\n"
+    s += "      - ./configs/krill/krill.conf:/var/krill/data/krill.conf\n"
+    s += "      - ./configs/krill/rsyncd.conf:/etc/rsyncd.conf\n"
+    s += "      - ./roas.json:/var/krill/roas.json\n"
+    s += "      - ./aspas.json:/var/krill/aspas.json\n"
+    s += "      - ./configs/krill/keys/web/cert.pem:/var/krill/data/ssl/cert.pem\n"
+    s += "      - ./configs/krill/keys/web/key.pem:/var/krill/data/ssl/key.pem\n"
+    s += "      - ./configs/krill/keys/ca/cert.pem:/usr/local/share/ca-certificates/extra/ca.crt\n"
+    s += "    networks:\n"
+    s += "      ca_net:\n"
+    if base["auto_ip_version"] == 4:
+        s += "        ipv4_address: 10.10.0.2\n"
+    else:
+        raise NotImplementedError
+    s += "    command: >\n"
+    s += "      bash /var/krill/start.sh\n"
+    s += "  roa:\n"
+    s += "    image: routinator\n"
+    s += "    container_name: roa\n"
+    s += "    cap_add:\n"
+    s += "      - NET_ADMIN\n"
+    s += "    networks:\n"
+    s += "      ca_net:\n"
+    if base["auto_ip_version"] == 4:
+        s += "        ipv4_address: 10.10.0.3\n"
+    else:
+        raise NotImplementedError
+    s += "    depends_on:\n"
+    s += "      - savopkrill.com\n"
+    s += "    volumes:\n"
+    s += "      - ./configs/routinator.conf:/etc/routinator/routinator.conf\n"
+    s += "      - ./logs/routinator.log:/var/routinator/logs/routinator.log\n"
+    s += "      - ./configs/krill/keys/ca/cert.pem:/usr/local/share/ca-certificates/extra/ca.crt\n"
+    s += "      - ./configs/krill/keys/web/cert.pem:/var/routinator/data/web.pem\n"
+    s += "      - ./configs/krill/keys/ca/cert.pem:/var/routinator/data/ca.pem\n"
+    s += "      - ./routinator.sh:/var/routinator/start_routinator.sh\n"
+    s += "    ports:\n"
+    s += "        - \"8323:8323\"\n"
+    s += "        - \"9556:9556\"\n"
+    s += "    command: >\n"
+    s += "      bash /var/routinator/start_routinator.sh\n"
+    rpki_compose_path = os.path.join(out_dir, RPKI_COMPOSE_FILE)
+    with open(rpki_compose_path, 'w') as f:
+        f.write(s)
+
 def regenerate_config(
         savop_dir,
         host_dir,
         input_json,
         base_config_dir,
         selected_nodes,
-        out_folder):
-    if os.path.exists(out_folder):
-        run_cmd(f"rm -r {out_folder}")
-    os.makedirs(out_folder)
+        out_dir):
+    if os.path.exists(out_dir):
+        run_cmd(f"rm -r {out_dir}")
+    os.makedirs(out_dir)
     base = ready_input_json(input_json, selected_nodes)
     base = assign_ip(base)
 
     # compose
     for f in ["sign_key.sh", "topo.sh"]:
-        cp_cmd = f"cp {os.path.join(base_config_dir,f)} {os.path.join(out_folder,f)}"
+        cp_cmd = f"cp {os.path.join(base_config_dir,f)} {os.path.join(out_dir,f)}"
         run_cmd(cp_cmd)
     refresh_folder(os.path.join(base_config_dir, "ca"),
-                   os.path.join(out_folder, "ca"))
+                   os.path.join(out_dir, "ca"))
     # build docker compose
-    compose_f = open(os.path.join(out_folder, "docker-compose.yml"), 'a')
+    compose_f = open(os.path.join(out_dir, DEVICE_COMPOSE_FILE), 'a')
     compose_f.write("version: \"2\"\n")
-    key_f = open(os.path.join(out_folder, 'sign_key.sh'), 'a')
+    key_f = open(os.path.join(out_dir, 'sign_key.sh'), 'a')
     if base["enable_rpki"]:
         docker_network_content = "networks:\n" \
                                  "  build_ca_net:\n" \
@@ -425,25 +518,35 @@ def regenerate_config(
                                  "        - subnet: \"10.10.0.0/16\"\n"
         compose_f.write(docker_network_content)
     compose_f.write("\nservices:\n")
-    ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
+    ignore_nets = []
+    if base["auto_ip_version"] == 4:
+        ca_ip = netaddr.IPAddress("10.10.0.3")
+        ignore_nets.append("10.10.0.0/16")
+    else:
+        input("ca_ip6 not ready")
+        ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
+        ignore_nets.append("10.10.0.0/16")
     cpu_id = 0
     for node in base["devices"]:
+        ca_ip += 1
         cur_delay = 0
         nodes = base["devices"][node]
         nodes["device_id"] = node
-        rpdp_enable = "RPDP" in base["sav_apps"]
+        rpdp_enable = RPDP_ID in base["sav_apps"]
         # generate bird conf
         cur_delay, bird_config_str, link_map = gen_bird_conf(
             nodes, cur_delay, "blackhole", base, rpdp_enable)
-        node_folder = os.path.join(out_folder, node)
+        node_folder = os.path.join(out_dir, node)
         if not os.path.exists(node_folder):
             os.makedirs(node_folder)
         with open(os.path.join(node_folder, "bird.conf"), 'w') as f:
             f.write(bird_config_str)
-        ret = run_cmd(command=f"chmod 666 {node_folder}/bird.conf")
-
+        run_cmd(command=f"chmod 666 {node_folder}/bird.conf")
+        ignore_nets.append(base["ip_range"])
         sa_config = gen_sa_config(
             base["auto_ip_version"],
+            ignore_nets,
+            base["ignore_irrelevant_nets"],
             nodes,
             link_map,
             base["as_scope"],
@@ -454,12 +557,12 @@ def regenerate_config(
             json.dump(sa_config, f, indent=4)
         # resign keys
         if base["enable_rpki"]:
-            resign_keys(out_folder, node, key_f, base_config_dir)
+            resign_keys(out_dir, node, key_f, base_config_dir)
         tag = f"{node}"
         while host_dir.endswith("/"):
             host_dir = host_dir[:-1]
 
-
+        run_dir = "savop_run"
         compose_str = f"  r{tag}:\n" \
             f"    sysctls:\n" \
             f"      - net.ipv6.conf.all.disable_ipv6=0\n" \
@@ -481,13 +584,12 @@ def regenerate_config(
         cpu_id = get_cpu_id(cpu_id)
         compose_str += f"    volumes:\n" \
             f"      - type: bind\n" \
-            f"        source: {host_dir}/savop_run/{node}/bird.conf\n" \
+            f"        source: {host_dir}/{run_dir}/{node}/bird.conf\n" \
             f"        target: /usr/local/etc/bird.conf\n" \
             f"      - type: bind\n" \
-            f"        source: {host_dir}/savop_run/{node}/sa.json\n" \
+            f"        source: {host_dir}/{run_dir}/{node}/sa.json\n" \
             f"        target: /root/savop/SavAgent_config.json\n" \
-            f"      - {host_dir}/savop_run/{node}/log/:/root/savop/logs/\n" \
-            f"      - {host_dir}/savop_run/{node}/log/data:/root/savop/sav-agent/data/\n" \
+            f"      - {host_dir}/{run_dir}/{node}/log/:/root/savop/logs/\n" \
             f"      - {host_dir}/sav-agent/:/root/savop/sav-agent/\n"\
             f"      - {host_dir}/savop/reference_and_agent/router_kill_and_start.sh:"\
             "/root/savop/router_kill_and_start.sh\n"\
@@ -495,14 +597,14 @@ def regenerate_config(
             f"      - {host_dir}/sav-reference-router/birdc:/usr/local/sbin/birdc\n"\
             f"      - {host_dir}/sav-reference-router/birdcl:/usr/local/sbin/birdcl\n"
         compose_str += f"      - type: bind\n" \
-            f"        source: {host_dir}/savop_run/active_signal.json\n" \
+            f"        source: {host_dir}/{run_dir}/active_signal.json\n" \
             f"        target: /root/savop/signal.json\n" \
             f"      - /etc/localtime:/etc/localtime\n"
 
         if base["enable_rpki"]:
-            compose_str += f"      - {host_dir}/savop_run/{node}/cert.pem:/root/savop/cert.pem\n"
-            compose_str += f"      - {host_dir}/savop_run/{node}/key.pem:/root/savop/key.pem\n"
-            compose_str += f"      - {host_dir}/savop_run/ca/cert.pem:/root/savop/ca_cert.pem\n"
+            compose_str += f"      - {host_dir}/{run_dir}/{node}/cert.pem:/root/savop/cert.pem\n"
+            compose_str += f"      - {host_dir}/{run_dir}/{node}/key.pem:/root/savop/key.pem\n"
+            compose_str += f"      - {host_dir}/{run_dir}/ca/cert.pem:/root/savop/ca_cert.pem\n"
         compose_str += f"    command:\n"
         if base["original_bird"]:
             compose_str += "        bird-original -D /root/savop/logs/bird-original.log -f\n"
@@ -512,9 +614,11 @@ def regenerate_config(
         compose_f.write(compose_str)
         if base["enable_rpki"]:
             compose_str = "    networks:\n" \
-                                     "      savop-dev_ca_net:\n" \
-                                     "        ipv4_address: {str(ca_ip)}\n"
+                f"      {run_dir}_ca_net:\n" \
+                f"        ipv4_address: {str(ca_ip)}\n"
             compose_f.write(compose_str)
+            # add roas.json and aspa.json
+            roas = []
         else:
             compose_f.write("    network_mode: none\n")
 
@@ -526,11 +630,11 @@ def regenerate_config(
         "command_scope": list(base["devices"].keys()),
         "stable_threshold": base["fib_threshold"]
     }
-    with open(os.path.join(out_folder, "active_signal.json"), 'w') as f:
+    with open(os.path.join(out_dir, "active_signal.json"), 'w') as f:
         json.dump(active_signal, f, indent=4)
-    ret = run_cmd(command=f"chmod 666 {out_folder}/active_signal.json")
+    ret = run_cmd(command=f"chmod 666 {out_dir}/active_signal.json")
 
-    topo_f = open(os.path.join(out_folder, "topo.sh"), 'a')
+    topo_f = open(os.path.join(out_dir, "topo.sh"), 'a')
     for src, dst, link_type, src_ip, dst_ip in base["links"]:
         topo_f.write(f'\necho "adding edge r{src}-r{dst}"')
         if not src_ip.version == dst_ip.version:
@@ -545,24 +649,29 @@ def regenerate_config(
     os.chdir(f"{savop_dir}/")
     if platform.system() == "Windows":
         run_cmd("python3 change_eol.py")
-    # os.chdir(out_folder)
-    # run_cmd("bash sign_key.sh")
+    if base["enable_rpki"]:
+        build_rpki(base, out_dir)
+        cur_dir = os.getcwd()
+        os.chdir(out_dir)
+        run_cmd("bash ./sign_key.sh")
+        os.chdir(cur_dir)
+        
     return len(base["devices"])
 
 
-def resign_keys(out_folder, node, key_f, base_cfg_folder):
+def resign_keys(out_dir, node, key_f, base_cfg_folder):
     run_cmd(
-        f"cp {os.path.join(base_cfg_folder,'req.conf')} {os.path.join(out_folder, node)}")
-    with open(os.path.join(out_folder, node, "sign.ext"), 'w') as f:
+        f"cp {os.path.join(base_cfg_folder,'req.conf')} {os.path.join(out_dir, node)}")
+    with open(os.path.join(out_dir, node, "sign.ext"), 'w') as f:
         sign_content = "authorityKeyIdentifier=keyid,issuer\n" \
                        "basicConstraints=CA:FALSE\n" \
                        "keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment\n" \
                        f"subjectAltName = DNS:{node}, DNS:localhost"
         f.write(sign_content)
-    key_f.write(f"\rfunCGenPrivateKeyAndSign ./{node} ./ca")
+    key_f.write(f"\nfunCGenPrivateKeyAndSign ./{node} ./ca")
+    
 
-
-def script_builder(host_dir, savop_dir, json_content, out_folder, logger, skip_bird=False, skip_rebuild=False):
+def script_builder(host_dir, savop_dir, json_content, out_dir, logger, skip_bird=False, skip_rebuild=False):
     """
     build config for birds, rpki, sav-agent and recompile bird if needed
     """
@@ -576,9 +685,9 @@ def script_builder(host_dir, savop_dir, json_content, out_folder, logger, skip_b
         if not skip_bird:
             recompile_bird(os.path.join(
                 SAV_ROOT_DIR, "sav-reference-router"), logger)
-        # if False:
-        #     rebuild_img(
-        #         f"{host_dir}/", file=f"{SAV_OP_DIR}/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
+        if not skip_rebuild:
+            rebuild_img(
+                f"{host_dir}/", file=f"{SAV_OP_DIR}/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
         base_cfg_folder = os.path.join(savop_dir, "base_configs")
         selected_nodes = None
         container_num = regenerate_config(
@@ -587,7 +696,7 @@ def script_builder(host_dir, savop_dir, json_content, out_folder, logger, skip_b
             json_content,
             base_cfg_folder,
             selected_nodes,
-            out_folder)
+            out_dir)
         t = time.time() - t0
         logger.info(
             f"script_builder finished, container_num: {container_num} in {t:.4f} seconds")
