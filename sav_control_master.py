@@ -380,7 +380,7 @@ if __name__ == "__main__":
                                                                "restart the simulation and record experimental process "
                                                                "data.")
     experiment_group.add_argument(
-        "-e", "--experiment", choices=["testing_v4_inter", "testing_v6_inter", "dons", "original_bird"], help="initiate a new experiment cycle")
+        "-e", "--experiment", choices=["6_node3_v4_inter","testing_v4_inter", "testing_v6_inter", "dons", "original_bird"], help="initiate a new experiment cycle")
     args = parser.parse_args()
     result = run(args=args)
     print(f"run over, show: \n{result}")
