@@ -64,7 +64,7 @@ class IPGenerator():
 
 
 def subprocess_cmd(command):
-    print(f"执行命令: {command}")
+    print(f"execute command: {command}")
     process = subprocess.run(command, shell=True, encoding='utf-8')
     return process
 
