@@ -52,12 +52,6 @@ class MasterController:
         ret[SELF_HOST_ID] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content,
                                            out_dir=generated_config_dir,
                                            logger=self.logger, skip_bird=True, skip_rebuild=True)
-        if json_content["enable_rpki"]:
-            rpki_dir = os.path.join(SAV_OP_DIR, "rpki")
-            files = ["krill.conf", "rsyncd.conf"]
-            for f in files:
-                shutil.copy(os.path.join(rpki_dir, f),
-                            generated_config_dir+'/')
         self.host_node[SELF_HOST_ID]["cfg_src_dir"] = generated_config_dir
         return ret
 
@@ -397,7 +391,7 @@ def run(args):
             case "original_bird":
                 return sav_exp.original_bird()
             case "dev_test":
-                return sav_exp.dev_test("testing_v4_intra.json")
+                return sav_exp.dev_test("testing_v4_inter.json")
             case _:
                 return sav_exp.general_exp(experiment+'.json',skip_compile=skip_compile)
     # generate config files

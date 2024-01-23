@@ -70,9 +70,9 @@ class RunEmulation():
         self.host_signal_path = host_signal_path
         self.logger.debug(base_compose)
         self.base_compose_path = base_compose
-        self.rpki_compose_path = os.path.dirname(self.base_compose_path)
-        self.rpki_compose_path = os.path.join(
-            self.rpki_compose_path,RPKI_COMPOSE_FILE)
+        self.ca_compose_path = os.path.dirname(self.base_compose_path)
+        self.ca_compose_path = os.path.join(
+            self.ca_compose_path, CA_COMPOSE_FILE)
         self.base_topo = base_topo
         self.base_node_num = base_node_num
         self.active_app = None
@@ -112,14 +112,15 @@ class RunEmulation():
     def _run_cmd_in_container(self, container_id, cmd, timeout=60):
         container = self.docker_client.containers.get(container_id)
         return container.exec_run(cmd, timeout=timeout)
+
     def if_base_started(self):
         """
         tell if base started
         """
-        bird_count = 0
+        dev_count = 0
         krill_count = 0
-        routinator_count = 0
         self.active_containers = set()
+        self.device_containers = []
         containers = self.docker_client.containers.list()
 
         for container in containers:
@@ -128,23 +129,20 @@ class RunEmulation():
                 continue
             tag = tag[0]
             if "savop_bird_base" in tag:
-                bird_count += 1
+                dev_count += 1
                 self.active_containers.add(container.name)
-                continue
-            if "routinator" in tag:
-                routinator_count += 1
-                self.active_containers.add(container.name)
+                self.device_containers.append(container)
                 continue
             if "krill" in tag:
                 krill_count += 1
                 self.active_containers.add(container.name)
-        if bird_count != self.base_node_num:
+        if dev_count != self.base_node_num:
             self.logger.info(
-                f"bird count error, should be {self.base_node_num}, but {bird_count}")
+                f"node count error, should be {self.base_node_num}, but {dev_count}")
             return False
         rpki = False
         if rpki:
-            return routinator_count == 1 and krill_count == 1
+            return krill_count == 1
         else:
             return True
 
@@ -184,38 +182,48 @@ class RunEmulation():
 
     def _stop_base(self):
         """
-        stop the base (node compose and rpki compose)
+        stop and remove all containers
         """
         t0 = time.time()
-        subprocess_cmd(
-            f"docker compose -f {self.base_compose_path} down", None)
+        # stop all containers' image is savop_bird_base
+        count = 0
+        for container in self.docker_client.containers.list():
+            tag = container.image.tags
+            if not len(tag) == 1:
+                continue
+            tag = tag[0]
+            if container.status == "running":
+                container.stop()
+            container.remove()
+            count += 1
         t1 = time.time()
         self.logger.info(
-            f"{self.base_compose_path} stopped in {t1-t0:.4f} seconds")
-        self.logger.debug(self.rpki_compose_path)
-        if os.path.exists(self.rpki_compose_path):
-            subprocess_cmd(
-                f"docker compose -f {self.rpki_compose_path} down", None)
-            t2 = time.time()
-            self.logger.info(
-                f"{self.base_compose_path} stopped in {t2-t1:.4f} seconds")
+            f"{count} containers removed in {t1-t0:.4f} seconds")
 
     def _start_base(self):
         """
         start the base (node compose and rpki compose)
         """
         t0 = time.time()
-        if os.path.exists(self.rpki_compose_path):
-            run_cmd(f"docker compose -f {self.rpki_compose_path} up -d")
+        if os.path.exists(self.ca_compose_path):
+            run_cmd(f"docker compose -f {self.ca_compose_path} up -d")
+            ca_ready = False
+            while not ca_ready:
+                time.sleep(1)
+                ret_code,ret,b  = run_cmd(f"docker exec -it ca cat /root/still_adding", 0)
+                if "done" in ret:
+                    ca_ready = True
+            # time.sleep(1)
+            # run_cmd(f"docker compose -f {self.roa_compose_path} up -d")
             t1 = time.time()
-            self.logger.info(
-                f"{self.rpki_compose_path} started in {t1-t0:.4f} seconds")
+            self.logger.info(f"rpki started in {t1-t0:.4f} seconds")
         t1 = time.time()
         subprocess_cmd(
             f"docker compose -f {self.base_compose_path} up -d", None)
         t2 = time.time()
         self.logger.info(
             f"{self.base_compose_path} started in {t2-t1:.4f} seconds")
+
     def _ready_base(self, force_restart=False, build_image=False):
         """
         1. stop containers
@@ -233,7 +241,7 @@ class RunEmulation():
         # if build_image:
         # TODO not working
         # self.logger.debug("build image")
-            # rebuild_img(f"{savop_dir}/../")
+        # rebuild_img(f"{savop_dir}/../")
         # tag = SAV_REF_IMG_TAG
         # for img in self.docker_client.images.list():
         #     if tag in img.tags:
@@ -255,7 +263,6 @@ class RunEmulation():
         run_cmd(f"bash {self.base_topo}")
         t2 = time.time()
         log_str = f"link started in {t2-t1:.4f} seconds"
-        print(log_str)
         self.logger.info(log_str)
 
         t = time.time() - t
@@ -318,7 +325,7 @@ class RunEmulation():
             else:
                 sa_cfg["link_map"] = {}
             sa_cfg["enabled_sav_app"] = self.active_app
-            self.logger.debug(sa_cfg)
+            self.logger.debug(self.dst_cfg_path)
             json_w(f"{self.dst_cfg_path}/{n}.json", sa_cfg)
             # self.logger.info(f"active_app:{self.active_app} config updated")
         # waits the configs to be updated in containers
@@ -456,6 +463,34 @@ class RunEmulation():
         exec_result = json_r(f"{SAV_RUN_DIR}/{container_id}/exec_result.json")
         if exec_result["status"] == "error":
             return None
+
+    def _container_curl(self, container, url_path, connect_timeout=2, transfer_timeout=5,raw=False):
+        """
+        execute f"docker exec -it {container.id} curl http://localhost:8888/{url_path} 
+        --connect-timeout {connect_timeout} -m {transfer_timeout}"
+        and return the json response
+        """
+        default = {}
+        if raw:
+            default = "{}"
+        if container.status != "running":
+            self.logger.warning(f"{container.id} not running")
+            return default
+        cmd = f"docker exec -it {container.id} "
+        cmd += f"curl http://localhost:8888/{url_path} "
+        cmd += f"--connect-timeout {connect_timeout} -m {transfer_timeout}"
+        ret_code, ret_str, ret_err = run_cmd(cmd)
+        try:
+            if raw:
+                return ret_str
+            return json.loads(ret_str)
+        except Exception as e:
+            # self.logger.debug(cmd)
+            # self.logger.debug(ret_code)
+            # self.logger.debug(ret_str)
+            # self.logger.debug(ret_err)
+            # self.logger.exception(e)
+            return default
 
     def _get_container_metric(self, container_id, extra_str, timeout=10):
         """
@@ -618,10 +653,23 @@ class RunEmulation():
             self.logger.debug(f"{container} started in {t2-t1:.4f} seconds")
             self.logger.debug(f"{container} restarted")
 
-    def _log_sav_table(self):
-
-        for c in self.docker_client.containers.list():
-            c.exec_run("curl http://localhost:8888/save_sav_table/")
+    def _wait_valid_sav_table(self, check_interval=5):
+        containers_to_go = self.device_containers
+        while len(containers_to_go) > 0:
+            temp = []
+            for c in containers_to_go:
+                if c.status != "running":
+                    continue
+                ret = self._container_curl(c, "sav_table/",raw = True)
+                if not (ret.startswith("{") and ret.endswith("}") and len(ret)>2):
+                    temp.append(c)
+                else:
+                    self.logger.debug(f"{c.name} sav table ready {ret}")
+            containers_to_go = temp
+            time.sleep(check_interval)
+        for c in self.device_containers:
+            self._container_curl(c, "save_sav_table/",raw = True)
+            self.logger.debug(f"{c.name} sav table saved")
 
     def dev_test(self):
         """
@@ -630,9 +678,8 @@ class RunEmulation():
         self.logger.debug("dev test")
         self._ready_base(force_restart=True, build_image=True)
         self.send_start_signal()
-        time.sleep(30)
-        self._log_sav_table()
-        self._stop_base()
+        self._wait_valid_sav_table()
+        # self._stop_base()
 
     def fib_stable(self, monitor_overlap_sec=10, if_monitor=False):
         """
@@ -669,6 +716,7 @@ class RunEmulation():
         ret["initial_fib_stable"] = initial_fib_stable
         ret['max_initial_fib_stable'] = max(initial_fib_stable.values())
         return ret
+
 
 class DevicePerformance():
     __cpucommand = "dstat -c --nocolor 1 2 --nocolor| sed -e '1,3d'"
@@ -752,7 +800,7 @@ def run(args):
         cfg_root_dir = os.path.join(host_root_dir, "savop_run")
         host_signal_path = os.path.join(cfg_root_dir, "active_signal.json")
         base_compose = os.path.join(cfg_root_dir, DEVICE_COMPOSE_FILE)
-        
+
         base_topo = os.path.join(cfg_root_dir, "topo.sh")
         run_emulation = RunEmulation(root_dir=host_root_dir,
                                      host_signal_path=host_signal_path,
@@ -799,7 +847,6 @@ if __name__ == "__main__":
         "monitor", "Monitor the operational status of SAVOP")
     monitor_group.add_argument("-p", "--performance", choices=["host", "container", "all"],
                                help="monitor the performance of machines or containers")
-
 
     args = parser.parse_args()
     print(run(args=args))

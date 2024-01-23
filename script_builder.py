@@ -107,21 +107,8 @@ def rebuild_img(
     cmd = "docker images| grep 'none' | awk '{print $3}' | xargs docker rmi"
     run_cmd(cmd)
 
-
-def get_bird_cfg_relation_str(my_as, peer_as, as_relations):
-    for provider, customer in as_relations["provider-customer"]:
-        if my_as not in [provider, customer]:
-            continue
-        if peer_as not in [provider, customer]:
-            continue
-        if my_as == provider:
-            return f"\tlocal role provider;\n"
-        if my_as == customer:
-            return f"\tlocal role customer;\n"
-    return f"\tlocal role peer;\n"
-
-
-def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
+def gen_bird_conf(node, delay, mode, base, 
+                  enable_rpdp, roa_json, aspa_json):
     """
     add everything but actual bgp links
     """
@@ -134,92 +121,101 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
     router_id = base["as_scope"][dev_as][dev_id]["router_id"]
     enable_rpki = base["enable_rpki"]
     bird_conf_str = f"router id {str(netaddr.IPAddress(router_id))};"
-    if enable_rpki:
-        bird_conf_str += "\nroa4 table r4 {	sorted 1; };\n"\
-                         "roa6 table r6 { sorted 1; };\n" \
-                         "protocol rpki rpki1\n"\
-                         "{\n"
-        bird_conf_str += "\tdebug all;\n"
-        bird_conf_str += "\troa4 {\n" \
-                         "\t\ttable r4;\n" \
-                         "\t\t};\n" \
-                         "\troa6 {\n" \
-                         "\t\ttable r6;\n" \
-                         "\t\t};\n" \
-                         "\tremote 10.10.0.3 port 3323;\n" \
-                         "\tretry 1;\n" \
-                         "}\n"
-
+    
+    # if enable_rpki:
+    #     if auto_ip_version == 4:
+    #         bird_conf_str += "\nroa4 table r4 {	sorted 1; };\n"
+    #     elif auto_ip_version == 6:
+    #         bird_conf_str +=  "roa6 table r6 { sorted 1; };\n"
+    #     bird_conf_str += "protocol rpki rpki1\n"\
+    #                      "{\n" \
+    #                      "  debug all;\n"
+    #     if auto_ip_version == 4:
+    #         bird_conf_str += "  roa4 {\n" \
+    #                      "    table r4;\n" \
+    #                      "    };\n"
+    #     elif auto_ip_version == 6:
+    #         bird_conf_str += "  roa6 {\n" \
+    #                      "    table r6;\n" \
+    #                      "    };\n"
+    #     bird_conf_str +=f"  remote {ROA_IP4} port {ROA_PORT};\n" \
+    #                      "  retry keep 5;\n" \
+    #                      "  refresh keep 86400;\n" \
+    #                      "}\n"
+        
     bird_conf_str += "\nipv4 table master4 {sorted 1;};\n" \
                      "ipv6 table master6 {sorted 1;};\n" \
                      "protocol device {\n" \
-                     "\tscan time 60;\n" \
-                     "\tinterface \"eth_*\";\n" \
+                     "  scan time 60;\n" \
+                     "  interface \"eth_*\";\n" \
                      "};\n" \
                      "protocol kernel {\n" \
-                     "\tscan time 60;\n" \
-                     "\tipv4 {\n" \
-                     "\t\texport all;\n" \
-                     "\t\timport all;\n" \
-                     "\t};\n" \
-                     "\tlearn;\n" \
+                     "  scan time 60;\n" \
+                     "  ipv4 {\n" \
+                     "    export all;\n" \
+                     "    import all;\n" \
+                     "  };\n" \
+                     "  learn;\n" \
                      "};\n" \
                      "protocol kernel {\n" \
-                     "\tscan time 60;\n" \
-                     "\tipv6 {\n" \
-                     "\t\texport all;\n" \
-                     "\t\timport all;\n" \
-                     "\t};\n" \
-                     "\tlearn;\n" \
+                     "  scan time 60;\n" \
+                     "  ipv6 {\n" \
+                     "    export all;\n" \
+                     "    import all;\n" \
+                     "  };\n" \
+                     "  learn;\n" \
                      "};\n" \
                      "protocol direct {\n" \
-                     "\tipv4;\n" \
-                     "\tipv6;\n" \
-                     "\tinterface \"eth_*\";\n" \
+                     "  ipv4;\n" \
+                     "  ipv6;\n" \
+                     "  interface \"eth_*\";\n" \
                      "};\n"
     try:
         v = tell_prefix_version(list(node["prefixes"].keys())[0])
     except IndexError:
         v = 4
-        # self.logger.warning(f"forcing version to {v}")
+        print(f"forcing version to {v}")
     bird_conf_str += "protocol static {\n"
-    bird_conf_str += f"\tipv{v} {{\n" \
-        "\t\texport all;\n" \
-        "\t\timport all;\n" \
-        "\t};\n"
+    bird_conf_str += f"  ipv{v} {{\n" \
+        "    export all;\n" \
+        "    import all;\n" \
+        "  };\n"
     for prefix in node["prefixes"]:
-        bird_conf_str += f"\troute {prefix} {mode};\n"
+        bird_conf_str += f"  route {prefix} {mode};\n"
+        roa_item = {"asn": int(dev_as), "prefix": prefix,"max_length": int(prefix.split("/")[1])}
+        roa_json["add"].append(roa_item)
     bird_conf_str += "};\n"
     bird_conf_str += "template bgp basic {\n"
-    bird_conf_str += f"\tlocal as {node['as']};\n"
-    bird_conf_str += "\tlong lived graceful restart on;\n"
-    bird_conf_str += "\tdebug all;\n"
-    bird_conf_str += "\tenable extended messages;\n" \
+    bird_conf_str += f"  local as {node['as']};\n"
+    bird_conf_str += "  long lived graceful restart on;\n"
+    bird_conf_str += "  debug all;\n"
+    bird_conf_str += "  enable extended messages;\n" \
                      "};\n" \
                      "template bgp basic4 from basic {\n" \
-                     "\tipv4 {\n" \
-                     "\t\texport all;\n" \
-                     "\t\timport all;\n" \
-                     "\t\timport table on;\n" \
-                     "\t};\n" \
+                     "  ipv4 {\n" \
+                     "    export all;\n" \
+                     "    import all;\n" \
+                     "    import table on;\n" \
+                     "  };\n" \
                      "};\n" \
                      "template bgp basic6 from basic {\n" \
-                     "\tipv6 {\n" \
-                     "\t\texport all;\n" \
-                     "\t\timport all;\n" \
-                     "\t\timport table on;\n" \
-                     "\t};\n" \
+                     "  ipv6 {\n" \
+                     "    export all;\n" \
+                     "    import all;\n" \
+                     "    import table on;\n" \
+                     "  };\n" \
                      "};\n"
     bird_conf_str += f"template bgp sav_inter from basic{v} "
     bird_conf_str += "{\n"
     if enable_rpdp:
-        bird_conf_str += f"\trpdp{v} "
+        bird_conf_str += f"  rpdp{v} "
         bird_conf_str += "{\n" \
-            "\timport all;\n" \
-            "\texport all;\n" \
-            "\t};\n"
+            "  import all;\n" \
+            "  export all;\n" \
+            "  };\n"
     bird_conf_str += "};\n"
     link_map = {}
+    aspa_item = {"customer": int(dev_as), "providers": []}
     for src_id, dst_id, link_type, src_ip, dst_ip in base["links"]:
         if dev_id not in [src_id, dst_id]:
             continue
@@ -240,20 +236,33 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
             bird_conf_str += f"protocol bgp savbgp_{dev_id}_{peer_id} from basic\n"
 
         bird_conf_str += "{\n"
-        bird_conf_str += f"\tdescription \"modified BGP between {dev_id} and {peer_id}\";\n"
+        bird_conf_str += f"  description \"modified BGP between {dev_id} and {peer_id}\";\n"
+        
         if dev_as != peer_as:
-            bird_conf_str += get_bird_cfg_relation_str(
-                dev_as, peer_as, base["as_relations"])
-            # local role peer;
+            found = False
+            for provider, customer in base["as_relations"]["provider-customer"]:
+                if dev_as not in [provider, customer]:
+                    continue
+                if peer_as not in [provider, customer]:
+                    continue
+                if dev_as == provider:
+                    bird_conf_str += f"  local role provider;\n"
+                    found = True
+                elif dev_as == customer:
+                    bird_conf_str += f"  local role customer;\n"
+                    aspa_item["providers"].append(f"AS{peer_as}(v4)")
+                    found = True
+            if not found:
+                bird_conf_str += f"  local role peer;\n"
         # get ip
-        bird_conf_str += f"\tsource address {my_ip};\n"
+        bird_conf_str += f"  source address {my_ip};\n"
 
-        bird_conf_str += f"\tneighbor {peer_ip} as {peer_as};\n"
-        bird_conf_str += f"\tinterface \"eth_{dst_id}\";\n"
+        bird_conf_str += f"  neighbor {peer_ip} as {peer_as};\n"
+        # bird_conf_str += f"  interface \"eth_{dst_id}\";\n"
         # interface "eth_3356";
-        bird_conf_str += f"\tconnect delay time {int(delay)};\n"
+        bird_conf_str += f"  connect delay time {int(delay)};\n"
         delay += 0.1
-        bird_conf_str += "\tdirect;\n};\n"
+        bird_conf_str += "  direct;\n};\n"
         link_map_value["link_data"] = {
             "peer_ip": {peer_ip},
             "peer_id": peer_id
@@ -269,7 +278,9 @@ def gen_bird_conf(node, delay, mode, base, enable_rpdp=True):
                 link_map[f"savbgp_{dev_id}_{peer_id}"] = link_map_value
             case _:
                 raise NotImplementedError
-
+    if enable_rpki:
+        aspa_json["add"].append(aspa_item)
+    
     return delay, bird_conf_str, link_map
 
 
@@ -282,14 +293,15 @@ def gen_sa_config(
         as_scope,
         app_list,
         active_app,
+        enable_rpki,
         fib_threshold=5):
     as_scope = as_scope[node["as"]]
     sa_config = {
         "apps": app_list,
         "enabled_sav_app": active_app,
         "fib_stable_threshold": fib_threshold,
-        "ca_host": "10.10.0.2",
-        "ca_port": 3000,
+        "ca_host": None,
+        "ca_port": None,
         "grpc_config": {
             "server_addr": "0.0.0.0:5000",
             "server_enabled": True
@@ -306,7 +318,14 @@ def gen_sa_config(
         "router_id": as_scope[node["device_id"]]["router_id"],
         "location": "edge_full",
         "as_scope": as_scope,
+        "enable_rpki": enable_rpki
     }
+    if enable_rpki:
+        if auto_ip_version == 4:
+            sa_config["ca_host"] = CA_IP4
+            sa_config["ca_port"] = CA_HTTP_PORT
+        elif auto_ip_version == 6:
+            raise NotImplementedError
     return sa_config
 
 
@@ -420,69 +439,53 @@ def build_rpki(base, out_dir):
     """
     build rpki compose 
     """
-    s = "version: \"2\"\n"
-    s += "  networks:\n"
-    s += "    ca_net:\n"
-    s += "      external: false:\n"
-    s += "      ipma:\n"
-    s += "        driver: default\n"
-    s += "        config:\n"
+    krill_dev_id = "ca"
+    s =  "version: \"2\"\n"
+    s += "networks:\n"
+    s += "  ca_net:\n"
+    s += "    external: false\n"
+    s += "    ipam:\n"
+    s += "      driver: default\n"
+    s += "      config:\n"
     if base["auto_ip_version"] == 4:
-        s += "          - subnet: \"10.10.0.0/16\"\n"
+        s += "        - subnet: \"10.10.0.0/16\"\n\n"
     else:
         raise NotImplementedError
     s += "services:\n"
     s += "  savopkrill.com:\n"
     s += "    image: krill\n"
     s += "    container_name: ca\n"
+    if base["auto_ip_version"] == 6:
+        s += "    sysctls:\n"    
+        s += "      - net.ipv6.conf.all.disable_ipv6=0\n"
     s += "    cap_add:\n"
     s += "      - NET_ADMIN\n"
+    s += "    environment:\n"
+    s += "      - KRILL_LOG_LEVEL=debug\n"
+    s += "      - RUST_BACKTRACE=1\n"
     s += "    volumes:\n"
-    s += "      - ./logs/krill.log:/var/krill/logs/krill.log\n"
-    s += "      - ./logs/rsync.log:/var/krill/logs/rsync.log\n"
-    s += "      - ./krill.sh:/var/krill/start.sh\n"
-    s += "      - ./configs/krill/krill.conf:/var/krill/data/krill.conf\n"
-    s += "      - ./configs/krill/rsyncd.conf:/etc/rsyncd.conf\n"
-    s += "      - ./roas.json:/var/krill/roas.json\n"
-    s += "      - ./aspas.json:/var/krill/aspas.json\n"
-    s += "      - ./configs/krill/keys/web/cert.pem:/var/krill/data/ssl/cert.pem\n"
-    s += "      - ./configs/krill/keys/web/key.pem:/var/krill/data/ssl/key.pem\n"
-    s += "      - ./configs/krill/keys/ca/cert.pem:/usr/local/share/ca-certificates/extra/ca.crt\n"
+    s += f"      - ./{krill_dev_id}/add_info.py:/var/krill/add_info.py\n"
+    s += f"      - ./{krill_dev_id}/log/krill.log:/var/krill/logs/krill.log\n"
+    s += f"      - ./{krill_dev_id}/log/rsync.log:/var/krill/logs/rsync.log\n"
+    s += f"      - ./{krill_dev_id}/krill.sh:/var/krill/start.sh\n"
+    s += f"      - ./{krill_dev_id}/krill.conf:/var/krill/data/krill.conf\n"
+    s += f"      - ./{krill_dev_id}/rsyncd.conf:/etc/rsyncd.conf\n"
+    s += f"      - ./{krill_dev_id}/roas.json:/var/krill/roas.json\n"
+    s += f"      - ./{krill_dev_id}/aspas.json:/var/krill/aspas.json\n"
+    s += f"      - ./{krill_dev_id}/web_cert.pem:/var/krill/data/ssl/cert.pem\n"
+    s += f"      - ./{krill_dev_id}/web_key.pem:/var/krill/data/ssl/key.pem\n"
+    s += f"      - ./{krill_dev_id}/cert.pem:/usr/local/share/ca-certificates/extra/ca.crt\n"
+    s += f"      - ./{krill_dev_id}/roa/:/var/krill/data/roa\n"
     s += "    networks:\n"
     s += "      ca_net:\n"
     if base["auto_ip_version"] == 4:
-        s += "        ipv4_address: 10.10.0.2\n"
+        s += f"        ipv4_address: {CA_IP4}\n"
     else:
         raise NotImplementedError
     s += "    command: >\n"
     s += "      bash /var/krill/start.sh\n"
-    s += "  roa:\n"
-    s += "    image: routinator\n"
-    s += "    container_name: roa\n"
-    s += "    cap_add:\n"
-    s += "      - NET_ADMIN\n"
-    s += "    networks:\n"
-    s += "      ca_net:\n"
-    if base["auto_ip_version"] == 4:
-        s += "        ipv4_address: 10.10.0.3\n"
-    else:
-        raise NotImplementedError
-    s += "    depends_on:\n"
-    s += "      - savopkrill.com\n"
-    s += "    volumes:\n"
-    s += "      - ./configs/routinator.conf:/etc/routinator/routinator.conf\n"
-    s += "      - ./logs/routinator.log:/var/routinator/logs/routinator.log\n"
-    s += "      - ./configs/krill/keys/ca/cert.pem:/usr/local/share/ca-certificates/extra/ca.crt\n"
-    s += "      - ./configs/krill/keys/web/cert.pem:/var/routinator/data/web.pem\n"
-    s += "      - ./configs/krill/keys/ca/cert.pem:/var/routinator/data/ca.pem\n"
-    s += "      - ./routinator.sh:/var/routinator/start_routinator.sh\n"
-    s += "    ports:\n"
-    s += "        - \"8323:8323\"\n"
-    s += "        - \"9556:9556\"\n"
-    s += "    command: >\n"
-    s += "      bash /var/routinator/start_routinator.sh\n"
-    rpki_compose_path = os.path.join(out_dir, RPKI_COMPOSE_FILE)
-    with open(rpki_compose_path, 'w') as f:
+    ca_compose_path = os.path.join(out_dir, CA_COMPOSE_FILE)
+    with open(ca_compose_path, 'w') as f:
         f.write(s)
 
 def regenerate_config(
@@ -497,20 +500,45 @@ def regenerate_config(
     os.makedirs(out_dir)
     base = ready_input_json(input_json, selected_nodes)
     base = assign_ip(base)
-
-    # compose
-    for f in ["sign_key.sh", "topo.sh"]:
-        cp_cmd = f"cp {os.path.join(base_config_dir,f)} {os.path.join(out_dir,f)}"
-        run_cmd(cp_cmd)
+    ca_dir = os.path.join(out_dir, "ca")
+    roa_dir = os.path.join(out_dir, "roa")
+    run_dir = "savop_run"
+    cp_cmd = f"cp {os.path.join(base_config_dir,'topo.sh')} {os.path.join(out_dir,'topo.sh')}"
+    run_cmd(cp_cmd)
     refresh_folder(os.path.join(base_config_dir, "ca"),
-                   os.path.join(out_dir, "ca"))
+                   os.path.join(ca_dir))
     # build docker compose
     compose_f = open(os.path.join(out_dir, DEVICE_COMPOSE_FILE), 'a')
     compose_f.write("version: \"2\"\n")
     key_f = open(os.path.join(out_dir, 'sign_key.sh'), 'a')
     if base["enable_rpki"]:
+        os.mkdir(os.path.join(ca_dir,"log"))
+        os.makedirs(os.path.join(roa_dir,"log"))
+        # touch log files
+        for f in [
+            os.path.join(ca_dir,"log","krill.log")
+            ,os.path.join(ca_dir,"log","rsync.log")
+        ]:
+            with open(f, 'w') as f:
+                pass
+        # copy key generation files
+        for f in [
+            "sign_key.sh"
+        ]:
+            cmd = f"cp {os.path.join(savop_dir,'rpki',f)} {os.path.join(out_dir, f)}"
+            run_cmd(cmd)
+        # copy ca files
+        for f in [
+            "add_info.py","krill.sh","krill.conf","rsyncd.conf"
+        ]:
+            cmd = f"cp {os.path.join(savop_dir,'rpki',f)} {os.path.join(ca_dir, f)}"
+            run_cmd(cmd)
+        run_cmd(f"cp {os.path.join(savop_dir,'rpki','web','cert.pem')} \
+            {os.path.join(ca_dir, 'web_cert.pem')}")
+        run_cmd(f"cp {os.path.join(savop_dir,'rpki','web','key.pem')} \
+            {os.path.join(ca_dir, 'web_key.pem')}")
         docker_network_content = "networks:\n" \
-                                 "  build_ca_net:\n" \
+                                 f"  {run_dir}_ca_net:\n" \
                                  "    external: true\n" \
                                  "    ipam:\n" \
                                  "      driver: default\n" \
@@ -520,28 +548,32 @@ def regenerate_config(
     compose_f.write("\nservices:\n")
     ignore_nets = []
     if base["auto_ip_version"] == 4:
-        ca_ip = netaddr.IPAddress("10.10.0.3")
+        ca_ip = netaddr.IPAddress(CA_IP4)
         ignore_nets.append("10.10.0.0/16")
     else:
         input("ca_ip6 not ready")
         ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
         ignore_nets.append("10.10.0.0/16")
     cpu_id = 0
+    roa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
+    aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
     for node in base["devices"]:
         ca_ip += 1
         cur_delay = 0
         nodes = base["devices"][node]
         nodes["device_id"] = node
         rpdp_enable = RPDP_ID in base["sav_apps"]
+        node_dir = os.path.join(out_dir, node)
+        os.makedirs(node_dir)
         # generate bird conf
         cur_delay, bird_config_str, link_map = gen_bird_conf(
-            nodes, cur_delay, "blackhole", base, rpdp_enable)
-        node_folder = os.path.join(out_dir, node)
-        if not os.path.exists(node_folder):
-            os.makedirs(node_folder)
-        with open(os.path.join(node_folder, "bird.conf"), 'w') as f:
+            nodes, cur_delay, "blackhole", base, rpdp_enable,
+            roa_json,aspa_json)
+        
+        
+        with open(os.path.join(node_dir, "bird.conf"), 'w') as f:
             f.write(bird_config_str)
-        run_cmd(command=f"chmod 666 {node_folder}/bird.conf")
+        run_cmd(command=f"chmod 666 {node_dir}/bird.conf")
         ignore_nets.append(base["ip_range"])
         sa_config = gen_sa_config(
             base["auto_ip_version"],
@@ -552,8 +584,9 @@ def regenerate_config(
             base["as_scope"],
             base["sav_apps"],
             base["active_sav_app"],
+            base["enable_rpki"],
             fib_threshold=base["fib_threshold"])
-        with open(os.path.join(node_folder, "sa.json"), 'w') as f:
+        with open(os.path.join(node_dir, "sa.json"), 'w') as f:
             json.dump(sa_config, f, indent=4)
         # resign keys
         if base["enable_rpki"]:
@@ -562,11 +595,12 @@ def regenerate_config(
         while host_dir.endswith("/"):
             host_dir = host_dir[:-1]
 
-        run_dir = "savop_run"
-        compose_str = f"  r{tag}:\n" \
-            f"    sysctls:\n" \
-            f"      - net.ipv6.conf.all.disable_ipv6=0\n" \
-            f"    image: savop_bird_base\n" \
+        
+        compose_str = f"  r{tag}:\n"
+        if base["auto_ip_version"] == 6:
+            compose_str +=f"    sysctls:\n"
+            compose_str +=f"      - net.ipv6.conf.all.disable_ipv6=0\n"
+        compose_str +=f"    image: savop_bird_base\n" \
             f"    init: true\n" \
             f"    container_name: \"r{tag}\"\n" \
             f"    cap_add:\n" \
@@ -617,8 +651,6 @@ def regenerate_config(
                 f"      {run_dir}_ca_net:\n" \
                 f"        ipv4_address: {str(ca_ip)}\n"
             compose_f.write(compose_str)
-            # add roas.json and aspa.json
-            roas = []
         else:
             compose_f.write("    network_mode: none\n")
 
@@ -632,7 +664,7 @@ def regenerate_config(
     }
     with open(os.path.join(out_dir, "active_signal.json"), 'w') as f:
         json.dump(active_signal, f, indent=4)
-    ret = run_cmd(command=f"chmod 666 {out_dir}/active_signal.json")
+    run_cmd(command=f"chmod 666 {out_dir}/active_signal.json")
 
     topo_f = open(os.path.join(out_dir, "topo.sh"), 'a')
     for src, dst, link_type, src_ip, dst_ip in base["links"]:
@@ -650,6 +682,8 @@ def regenerate_config(
     if platform.system() == "Windows":
         run_cmd("python3 change_eol.py")
     if base["enable_rpki"]:
+        json_w(os.path.join(ca_dir, "roas.json"), roa_json)
+        json_w(os.path.join(ca_dir, "aspas.json"), aspa_json)
         build_rpki(base, out_dir)
         cur_dir = os.getcwd()
         os.chdir(out_dir)
@@ -657,7 +691,6 @@ def regenerate_config(
         os.chdir(cur_dir)
         
     return len(base["devices"])
-
 
 def resign_keys(out_dir, node, key_f, base_cfg_folder):
     run_cmd(

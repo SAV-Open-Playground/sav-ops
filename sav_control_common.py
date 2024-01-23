@@ -21,7 +21,10 @@ SAV_ROUTER_DIR = os.path.join(SAV_ROOT_DIR, "sav-reference-router")
 OUT_DIR = os.path.join(SAV_OP_DIR, "this_config")
 SAV_REF_IMG_TAG = "savop_bird_base"
 DEVICE_COMPOSE_FILE = "devices.yml"
-RPKI_COMPOSE_FILE = "rpki.yml"
+CA_COMPOSE_FILE = "ca.yml"
+CA_IP4 = "10.10.0.2"
+CA_HTTP_PORT = 3000
+RUN_DIR = "savop_run"
 
 RPDP_ID = "rpdp"
 def json_r(path, encoding='utf-8'):
@@ -54,7 +57,8 @@ def whoami():
 
 
 def run_cmd(cmd, expected_return_code=0, timeout=None):
-    """print output if return code is not expected"""
+    """print output if return code is not expected
+    return returncode, stdout, stderr"""
     ret = subprocess_cmd(cmd, timeout)
     if ret.returncode != expected_return_code:
         print(ret)
