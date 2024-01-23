@@ -37,9 +37,8 @@ def json_w(path, data, encoding='utf-8', mode='w'):
         return json.dump(data, f, indent=2, sort_keys=True)
 
 
-def subprocess_cmd(cmd, timeout):
-    out = subprocess.run(cmd, shell=True, capture_output=True,
-                         encoding='utf-8', timeout=timeout)
+def subprocess_cmd(cmd, timeout, capture_output=False):
+    out = subprocess.run(cmd, shell=True, capture_output=capture_output, encoding='utf-8', timeout=timeout)
     return out
 
 
@@ -47,7 +46,7 @@ def whoami():
     """
     we use ip as the id of the node
     """
-    result = subprocess_cmd("ip -j -4 address", 30)
+    result = subprocess_cmd("ip -j -4 address", 30, capture_output=True)
     # print(result)
     results = json.loads(result.stdout)
     for i in results:
@@ -56,13 +55,18 @@ def whoami():
         return i["addr_info"][-1]["local"]
 
 
-def run_cmd(cmd, expected_return_code=0, timeout=None):
+def run_cmd(cmd, expected_return_code=0, capture_output=False, timeout=None):
     """print output if return code is not expected
     return returncode, stdout, stderr"""
-    ret = subprocess_cmd(cmd, timeout)
-    if ret.returncode != expected_return_code:
-        print(ret)
-    return ret.returncode, ret.stdout, ret.stderr
+    if capture_output is False:
+        ret = subprocess_cmd(cmd, timeout, capture_output=capture_output)
+        if ret.returncode != expected_return_code:
+            print(ret)
+        return ret.returncode
+    else:
+        ret = subprocess_cmd(cmd, timeout, capture_output=capture_output)
+        return ret.returncode, ret.stdout, ret.stderr
+
 
 
 def remove_bird_links(bird_cfg, nodes):
@@ -160,9 +164,9 @@ def extract_mem_and_cpu_stats_from_dstat(data_content_list):
     return cvs_content
 
 
-def get_container_node_num(root_dir):
+def get_container_node_num(root_dir, capture_output=True):
     cmd = f'grep "container_name" {root_dir}/{DEVICE_COMPOSE_FILE} |wc -l'
-    returncode, stdout, stderr = run_cmd(cmd)
+    returncode, stdout, stderr = run_cmd(cmd, capture_output=capture_output)
     if returncode != 0:
         raise Exception(f"get_container_node_num failed, {stderr}")
     return int(stdout)

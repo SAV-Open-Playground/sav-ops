@@ -64,8 +64,8 @@ class IPGenerator():
 
 
 def subprocess_cmd(command):
-    process = subprocess.run(
-        command, shell=True, capture_output=True, encoding='utf-8')
+    print(f"执行命令: {command}")
+    process = subprocess.run(command, shell=True, encoding='utf-8')
     return process
 
 
@@ -73,8 +73,8 @@ def run_cmd(command):
     process = subprocess_cmd(command)
     if not process.returncode == 0:
         print(f"run command {command} failed")
-        print(process.stderr.encode("utf-8"))
-    return process.stdout.encode("utf-8")
+        raise
+    return process.returncode
 
 
 def recompile_bird(path=r'{host_dir}/sav-reference-router', logger=None):
@@ -710,8 +710,7 @@ def script_builder(host_dir, savop_dir, json_content, out_dir, logger, skip_bird
         t = time.time() - t0
         logger.info(
             f"script_builder finished, container_num: {container_num} in {t:.4f} seconds")
-
         return container_num
     except Exception as e:
         logger.exception(f"script_builder failed: {e}")
-        return 0
+        raise

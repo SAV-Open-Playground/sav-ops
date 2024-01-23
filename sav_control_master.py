@@ -117,7 +117,7 @@ class MasterController:
                     print("clear old config fail!")
                 compress_config = run_cmd(
                     cmd=f"tar -czf this_config/{node_id}.tar.gz this_config/{node_id}")
-                if compress_config[0] == 0:
+                if compress_config == 0:
                     print("compress config files successfully.")
                 else:
                     print("compress config files fail!")
@@ -308,7 +308,9 @@ class SavExperiment:
             input_json=base_cfg_name, skip_compile=skip_compile)
         # 2. distribute config files
         self.controller.config_file_distribute(skip_compile=skip_compile)
-        self.controller.sav_exp_start()
+        result = self.controller.sav_exp_start()
+        return result
+
 
     def dev_test(self, base_cfg_name):
         """
