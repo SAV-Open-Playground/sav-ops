@@ -121,28 +121,6 @@ def gen_bird_conf(node, delay, mode, base,
     router_id = base["as_scope"][dev_as][dev_id]["router_id"]
     enable_rpki = base["enable_rpki"]
     bird_conf_str = f"router id {str(netaddr.IPAddress(router_id))};"
-    
-    # if enable_rpki:
-    #     if auto_ip_version == 4:
-    #         bird_conf_str += "\nroa4 table r4 {	sorted 1; };\n"
-    #     elif auto_ip_version == 6:
-    #         bird_conf_str +=  "roa6 table r6 { sorted 1; };\n"
-    #     bird_conf_str += "protocol rpki rpki1\n"\
-    #                      "{\n" \
-    #                      "  debug all;\n"
-    #     if auto_ip_version == 4:
-    #         bird_conf_str += "  roa4 {\n" \
-    #                      "    table r4;\n" \
-    #                      "    };\n"
-    #     elif auto_ip_version == 6:
-    #         bird_conf_str += "  roa6 {\n" \
-    #                      "    table r6;\n" \
-    #                      "    };\n"
-    #     bird_conf_str +=f"  remote {ROA_IP4} port {ROA_PORT};\n" \
-    #                      "  retry keep 5;\n" \
-    #                      "  refresh keep 86400;\n" \
-    #                      "}\n"
-        
     bird_conf_str += "\nipv4 table master4 {sorted 1;};\n" \
                      "ipv6 table master6 {sorted 1;};\n" \
                      "protocol device {\n" \
@@ -505,13 +483,15 @@ def regenerate_config(
     run_dir = "savop_run"
     cp_cmd = f"cp {os.path.join(base_config_dir,'topo.sh')} {os.path.join(out_dir,'topo.sh')}"
     run_cmd(cp_cmd)
-    refresh_folder(os.path.join(base_config_dir, "ca"),
-                   os.path.join(ca_dir))
+    
     # build docker compose
     compose_f = open(os.path.join(out_dir, DEVICE_COMPOSE_FILE), 'a')
     compose_f.write("version: \"2\"\n")
-    key_f = open(os.path.join(out_dir, 'sign_key.sh'), 'a')
+    
     if base["enable_rpki"]:
+        refresh_folder(os.path.join(base_config_dir, "ca"),
+                   os.path.join(ca_dir))
+        key_f = open(os.path.join(out_dir, 'sign_key.sh'), 'a')
         os.mkdir(os.path.join(ca_dir,"log"))
         os.makedirs(os.path.join(roa_dir,"log"))
         # touch log files
@@ -655,7 +635,6 @@ def regenerate_config(
             compose_f.write("    network_mode: none\n")
 
     compose_f.close()
-    key_f.close()
     active_signal = {
         "command": "stop",
         "source": base["active_sav_app"],
@@ -689,6 +668,7 @@ def regenerate_config(
         os.chdir(out_dir)
         run_cmd("bash ./sign_key.sh")
         os.chdir(cur_dir)
+        key_f.close()
         
     return len(base["devices"])
 
