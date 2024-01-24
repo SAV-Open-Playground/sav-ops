@@ -2,27 +2,27 @@
     "devices": {
         "1": {
             "as": 65501,
-            "prefixes": [
-                "::ffff:10.0.0.0/112"
-            ]
+            "prefixes": {
+                "::ffff:10.0.0.0/112":{}
+	    }
         },
         "2": {
             "as": 65501,
-            "prefixes": [
-                "::ffff:10.1.0.0/112"
-            ]
+            "prefixes":{ 
+                "::ffff:10.1.0.0/112":{}
+	    }
         },
         "3": {
             "as": 65501,
-            "prefixes": []
+            "prefixes": {}
         },
         "4": {
             "as": 65501,
-            "prefixes": []
+            "prefixes": {}
         },
         "5": {
             "as": 65501,
-            "prefixes": []
+            "prefixes": {}
         }
     },
     "links": [
@@ -49,5 +49,17 @@
     ],
     "enable_rpki": false,
     "prefix_method": "blackhole",
-    "ip_version": 6
+    "auto_ip_version": 6,
+    "sav_apps": [
+        "rpdp"
+        ,"strict_urpf"
+        ,"loose_urpf"
+        ,"fp_urpf"
+        ,"efp_urpf_a"
+        ,"efp_urpf_b"
+    ],
+    "active_sav_app": "rpdp",
+    "ignore_irrelevant_nets": true,
+    "fib_threshold": 5,
+    "original_bird": false
 }

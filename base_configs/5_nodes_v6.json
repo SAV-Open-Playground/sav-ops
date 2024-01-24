@@ -83,5 +83,17 @@
     ],
     "enable_rpki": false,
     "prefix_method": "blackhole",
-    "auto_ip_version": 6
+    "auto_ip_version": 6,
+    "sav_apps": [
+        "rpdp"
+        ,"strict_urpf"
+        ,"loose_urpf"
+        ,"fp_urpf"
+        ,"efp_urpf_a"
+        ,"efp_urpf_b"
+    ],
+    "active_sav_app": "rpdp",
+    "ignore_irrelevant_nets": true,
+    "fib_threshold": 5,
+    "original_bird": false
 }

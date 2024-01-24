@@ -110,7 +110,8 @@
     "sav_apps": [
         "rpdp_app"
     ],
-    "active_sav_app": "rpdp_app",
+    "active_sav_app": "rpdp",
+    "ignore_irrelevant_nets": true,
     "fib_threshold": 5,
     "original_bird": false
 }
