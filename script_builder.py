@@ -514,7 +514,6 @@ def regenerate_config(
     ignore_nets = []
     if base["enable_rpki"]:
         if base["auto_ip_version"] == 4:
-            
             ca_ip = netaddr.IPAddress(CA_IP4)
             ignore_nets.append("10.10.0.0/16")
         else:
@@ -525,7 +524,7 @@ def regenerate_config(
     roa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
     aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
     for node in base["devices"]:
-        ca_ip += 1
+
         cur_delay = 0
         nodes = base["devices"][node]
         nodes["device_id"] = node
@@ -614,6 +613,7 @@ def regenerate_config(
         compose_str += f"    privileged: true\n"
         compose_f.write(compose_str)
         if base["enable_rpki"]:
+            ca_ip += 1
             compose_str = "    networks:\n" \
                 f"      {run_dir}_ca_net:\n" \
                 f"        ipv4_address: {str(ca_ip)}\n"
