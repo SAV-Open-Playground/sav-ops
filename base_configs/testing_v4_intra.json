@@ -58,7 +58,7 @@
             ]
         ]
     },
-    "enable_rpki": true,
+    "enable_rpki": false,
     "prefix_method": "blackhole",
     "auto_ip_version": 4,
     "sav_apps": [

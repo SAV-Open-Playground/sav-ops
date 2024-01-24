@@ -512,13 +512,15 @@ def regenerate_config(
         compose_f.write(docker_network_content)
     compose_f.write("\nservices:\n")
     ignore_nets = []
-    if base["auto_ip_version"] == 4:
-        ca_ip = netaddr.IPAddress(CA_IP4)
-        ignore_nets.append("10.10.0.0/16")
-    else:
-        input("ca_ip6 not ready")
-        ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
-        ignore_nets.append("10.10.0.0/16")
+    if base["enable_rpki"]:
+        if base["auto_ip_version"] == 4:
+            
+            ca_ip = netaddr.IPAddress(CA_IP4)
+            ignore_nets.append("10.10.0.0/16")
+        else:
+            raise NotImplementedError("ca_ip6 not ready")
+            ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
+            ignore_nets.append("10.10.0.0/16")
     cpu_id = 0
     roa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
     aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
