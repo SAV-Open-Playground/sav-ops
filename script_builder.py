@@ -62,21 +62,6 @@ class IPGenerator():
             ip_network = netaddr.IPNetwork(f"{self.first_ip}/{prefix_len}")
         return ip_network
 
-
-def subprocess_cmd(command):
-    print(f"execute command: {command}")
-    process = subprocess.run(command, shell=True, encoding='utf-8')
-    return process
-
-
-def run_cmd(command):
-    process = subprocess_cmd(command)
-    if not process.returncode == 0:
-        print(f"run command {command} failed")
-        raise
-    return process.returncode
-
-
 def recompile_bird(path=r'{host_dir}/sav-reference-router', logger=None):
     os.chdir(path)
     run_cmd("autoreconf")
@@ -553,7 +538,7 @@ def regenerate_config(
         
         with open(os.path.join(node_dir, "bird.conf"), 'w') as f:
             f.write(bird_config_str)
-        run_cmd(command=f"chmod 666 {node_dir}/bird.conf")
+        run_cmd(f"chmod 666 {node_dir}/bird.conf")
         ignore_nets.append(base["ip_range"])
         sa_config = gen_sa_config(
             base["auto_ip_version"],
@@ -643,7 +628,7 @@ def regenerate_config(
     }
     with open(os.path.join(out_dir, "active_signal.json"), 'w') as f:
         json.dump(active_signal, f, indent=4)
-    run_cmd(command=f"chmod 666 {out_dir}/active_signal.json")
+    run_cmd(f"chmod 666 {out_dir}/active_signal.json")
 
     topo_f = open(os.path.join(out_dir, "topo.sh"), 'a')
     for src, dst, link_type, src_ip, dst_ip in base["links"]:

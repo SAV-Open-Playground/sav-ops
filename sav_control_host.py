@@ -68,7 +68,6 @@ class RunEmulation():
         self.logger = get_logger(self._id)
         self.root_dir = root_dir
         self.host_signal_path = host_signal_path
-        self.logger.debug(base_compose)
         self.base_compose_path = base_compose
         self.ca_compose_path = os.path.dirname(self.base_compose_path)
         self.ca_compose_path = os.path.join(
@@ -192,9 +191,7 @@ class RunEmulation():
             if not len(tag) == 1:
                 continue
             tag = tag[0]
-            if container.status == "running":
-                container.stop()
-            container.remove()
+            container.remove(force=True)
             count += 1
         t1 = time.time()
         self.logger.info(
@@ -239,25 +236,24 @@ class RunEmulation():
         self._stop_base()
 
         # if build_image:
-        # TODO not working
-        # self.logger.debug("build image")
-        # rebuild_img(f"{savop_dir}/../")
-        # tag = SAV_REF_IMG_TAG
-        # for img in self.docker_client.images.list():
-        #     if tag in img.tags:
-        #         self.docker_client.images.remove(img.id, force=True)
-        # docker_file_path = f"{self.root_dir}/savop/dockerfiles/reference_router"
-        # try:
-        #     os.chdir(SAV_ROOT_DIR)
-        #     cmd = f"docker build -f {docker_file_path} . -t {tag} --no-cache"
-        #     run_cmd(cmd)
-        # img, build_log = self.docker_client.images.build(path={self.root_dir},
-        #  fileobj=open(docker_file_path, "r"), tag=tag, nocache=True, buildargs={"root_dir": self.root_dir})
+        # # TODO not working
+        #     self.logger.debug("build image")
+        #     tag = SAV_REF_IMG_TAG
+        #     for img in self.docker_client.images.list():
+        #         if tag in img.tags:
+        #             self.docker_client.images.remove(img.id, force=True)
+        #     docker_file_path = f"{self.root_dir}/savop/dockerfiles/reference_router"
+        #     try:
+        #         os.chdir(SAV_ROOT_DIR)
+        #         cmd = f"docker build -f {docker_file_path} . -t {tag} --no-cache"
+        #         self.logger.debug
+        #         run_cmd(cmd)
+        #         # img, build_log = self.docker_client.images.build(path={self.root_dir},
+        #                 # fileobj=open(docker_file_path, "r"), tag=tag, nocache=True, buildargs={"root_dir": self.root_dir})
 
         #     except Exception as e:
         #         self.logger.exception(e)
         #         sys.exit(1)
-        # self.clear_logs()
         self._start_base()
         t1 = time.time()
         run_cmd(f"bash {self.base_topo}")
@@ -479,7 +475,7 @@ class RunEmulation():
         cmd = f"docker exec -it {container.id} "
         cmd += f"curl http://localhost:8888/{url_path} "
         cmd += f"--connect-timeout {connect_timeout} -m {transfer_timeout}"
-        ret_code, ret_str, ret_err = run_cmd(cmd)
+        ret_code, ret_str, ret_err = run_cmd(cmd,capture_output=True)
         try:
             if raw:
                 return ret_str
