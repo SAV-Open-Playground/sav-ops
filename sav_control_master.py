@@ -98,6 +98,7 @@ class MasterController:
         return ret
 
     def config_file_distribute(self, skip_compile=False):
+        print("step: distribute files")
         for node_id, node in self.host_node.items():
             # use my self as a host
             cfg_src_dir = node["cfg_src_dir"]
@@ -153,6 +154,7 @@ class MasterController:
     def mode_start(self):
         result = {}
         # TODO we should calculate the container number on each node,but here we just use a fixed number
+        print("step: run model")
         for node_id, node_num in self.config["host_node"].items():
             node = self.host_node[node_id]
             path2hostpy = os.path.join(
@@ -166,6 +168,7 @@ class MasterController:
             # if node_result["cmd_result"].return_code == 0:
                 # node_result["cmd_result"] = "ok"
             result[node_id] = node_result
+            print(f"run model in node_{node_id} successfully")
         return result
 
     def dev_test(self):
@@ -183,6 +186,7 @@ class MasterController:
         """
         result = {}
         # TODO we should calculate the container number on each node,but here we just use a fixed number
+        print("step: run model")
         for node_id, _ in self.config["host_node"].items():
             node = self.host_node[node_id]
             path2hostpy = os.path.join(
@@ -193,6 +197,7 @@ class MasterController:
             if node_id in result:
                 self.logger.error("keys conflict")
             result[node_id] = node_result
+            print(f"run model in node_{node_id} successfully")
         return result
 
     def original_bird_test(self):
@@ -459,4 +464,5 @@ if __name__ == "__main__":
         "-e", "--experiment", help="initiate a new experiment cycle, add then json file name here (without extension or dir), it should exist in base_configs dir.")
     args = parser.parse_args()
     result = run(args=args)
+    print("step: end")
     print(f"run over, show: \n{result}")

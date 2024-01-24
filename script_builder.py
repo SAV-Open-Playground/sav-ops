@@ -63,6 +63,7 @@ class IPGenerator():
         return ip_network
 
 def recompile_bird(path=r'{host_dir}/sav-reference-router', logger=None):
+    print("step: recompile bird")
     os.chdir(path)
     run_cmd("autoreconf")
     run_cmd("./configure")
@@ -460,6 +461,7 @@ def regenerate_config(
         out_dir):
     if os.path.exists(out_dir):
         run_cmd(f"rm -r {out_dir}")
+    print("step: genetate sav-agent, bird, docker_compose, sign_key files")
     os.makedirs(out_dir)
     base = ready_input_json(input_json, selected_nodes)
     base = assign_ip(base)
