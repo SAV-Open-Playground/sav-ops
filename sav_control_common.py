@@ -17,6 +17,11 @@ import sys
 SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
 SAV_ROOT_DIR = os.path.dirname(SAV_OP_DIR)
 SAV_AGENT_DIR = os.path.join(SAV_ROOT_DIR, "sav-agent")
+SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(SAV_AGENT_DIR)
+from common.sav_common import TIMEIT_THRESHOLD
+#print(sys.path)
+#print(TIMEIT_THRESHOLD)
 SAV_ROUTER_DIR = os.path.join(SAV_ROOT_DIR, "sav-reference-router")
 OUT_DIR = os.path.join(SAV_OP_DIR, "this_config")
 SAV_REF_IMG_TAG = "savop_bird_base"
