@@ -108,7 +108,7 @@
     "prefix_method": "blackhole",
     "auto_ip_version": 4,
     "sav_apps": [
-        "rpdp_app"
+        "rpdp"
     ],
     "active_sav_app": "rpdp",
     "ignore_irrelevant_nets": true,
