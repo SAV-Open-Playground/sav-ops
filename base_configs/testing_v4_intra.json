@@ -72,4 +72,5 @@
     "active_sav_app": "rpdp",
     "ignore_irrelevant_nets": true,
     "fib_threshold": 5
+    ,"ignore_private": true
 }

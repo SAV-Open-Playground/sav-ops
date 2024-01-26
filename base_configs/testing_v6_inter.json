@@ -73,4 +73,5 @@
     "ignore_irrelevant_nets": true,
     "fib_threshold": 5,
     "original_bird": false
+    ,"ignore_private": true
 }

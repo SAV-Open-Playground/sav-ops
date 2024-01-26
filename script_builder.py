@@ -55,7 +55,6 @@ class IPGenerator():
         elif ip_version == 6:
             prefix_len = 128
         ip_network = netaddr.IPNetwork(f"{self.first_ip}/{prefix_len}")
-
     # Expand the IPNetwork to cover the last IP address
         while not self.last_ip in ip_network:
             prefix_len -= 1
@@ -258,7 +257,8 @@ def gen_sa_config(
         app_list,
         active_app,
         enable_rpki,
-        fib_threshold=5):
+        fib_threshold=5,
+        ignore_private = True):
     as_scope = as_scope[node["as"]]
     sa_config = {
         "apps": app_list,
@@ -282,7 +282,8 @@ def gen_sa_config(
         "router_id": as_scope[node["device_id"]]["router_id"],
         "location": "edge_full",
         "as_scope": as_scope,
-        "enable_rpki": enable_rpki
+        "enable_rpki": enable_rpki,
+        "ignore_private":ignore_private
     }
     if enable_rpki:
         if auto_ip_version == 4:
@@ -525,6 +526,7 @@ def regenerate_config(
     cpu_id = 0
     roa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
     aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
+    ignore_nets.append(base["ip_range"])
     for node in base["devices"]:
 
         cur_delay = 0
@@ -542,7 +544,6 @@ def regenerate_config(
         with open(os.path.join(node_dir, "bird.conf"), 'w') as f:
             f.write(bird_config_str)
         run_cmd(f"chmod 666 {node_dir}/bird.conf")
-        ignore_nets.append(base["ip_range"])
         sa_config = gen_sa_config(
             base["auto_ip_version"],
             ignore_nets,
@@ -553,7 +554,8 @@ def regenerate_config(
             base["sav_apps"],
             base["active_sav_app"],
             base["enable_rpki"],
-            fib_threshold=base["fib_threshold"])
+            fib_threshold=base["fib_threshold"],
+            ignore_private=base["ignore_private"])
         with open(os.path.join(node_dir, "sa.json"), 'w') as f:
             json.dump(sa_config, f, indent=4)
         # resign keys
