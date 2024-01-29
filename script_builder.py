@@ -290,11 +290,11 @@ def gen_sa_config(
         "ignore_private": ignore_private
     }
     if enable_rpki:
-        if auto_ip_version == 4:
+        if auto_ip_version in [4,6]:
             sa_config["ca_host"] = CA_IP4
             sa_config["ca_port"] = CA_HTTP_PORT
-        elif auto_ip_version == 6:
-            raise NotImplementedError
+        # elif auto_ip_version == 6:
+            # raise NotImplementedError
     return sa_config
 
 
@@ -417,10 +417,10 @@ def build_rpki(base, out_dir):
     s += "    ipam:\n"
     s += "      driver: default\n"
     s += "      config:\n"
-    if base["auto_ip_version"] == 4:
+    if base["auto_ip_version"] in [4,6]:
         s += "        - subnet: \"10.10.0.0/16\"\n\n"
-    else:
-        raise NotImplementedError
+    # else:
+        # raise NotImplementedError
     s += "services:\n"
     s += "  savopkrill.com:\n"
     s += "    image: krill\n"
@@ -448,10 +448,10 @@ def build_rpki(base, out_dir):
     s += f"      - ./{krill_dev_id}/roa/:/var/krill/data/roa\n"
     s += "    networks:\n"
     s += "      ca_net:\n"
-    if base["auto_ip_version"] == 4:
+    if base["auto_ip_version"] == [4,6]:
         s += f"        ipv4_address: {CA_IP4}\n"
-    else:
-        raise NotImplementedError
+    # else:
+        # raise NotImplementedError
     s += "    command: >\n"
     s += "      bash /var/krill/start.sh\n"
     ca_compose_path = os.path.join(out_dir, CA_COMPOSE_FILE)
@@ -522,13 +522,13 @@ def regenerate_config(
     compose_f.write("\nservices:\n")
     ignore_nets = []
     if base["enable_rpki"]:
-        if base["auto_ip_version"] == 4:
+        if base["auto_ip_version"] in [4, 6]:
             ca_ip = netaddr.IPAddress(CA_IP4)
             ignore_nets.append("10.10.0.0/16")
-        else:
-            raise NotImplementedError("ca_ip6 not ready")
-            ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
-            ignore_nets.append("10.10.0.0/16")
+        # TODO: use proper ipv6 address
+            # raise NotImplementedError("ca_ip6 not ready")
+            # ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
+            # ignore_nets.append("10.10.0.0/16")
     cpu_id = 0
     roa_json = {"ip": "localhost", "port": CA_HTTP_PORT,
                 "token": "krill", "add": []}
