@@ -27,6 +27,7 @@ def tell_prefix_version(prefix):
         return 6
     raise ValueError(f"invalid prefix :prefix")
 
+
 class IPGenerator():
     def __init__(self, base_ip):
         self.set_ip(base_ip)
@@ -61,6 +62,7 @@ class IPGenerator():
             ip_network = netaddr.IPNetwork(f"{self.first_ip}/{prefix_len}")
         return ip_network
 
+
 def recompile_bird(path=r'{host_dir}/sav-reference-router', logger=None):
     print("step: recompile bird")
     os.chdir(path)
@@ -92,7 +94,8 @@ def rebuild_img(
     cmd = "docker images| grep 'none' | awk '{print $3}' | xargs docker rmi"
     run_cmd(cmd)
 
-def gen_bird_conf(node, delay, mode, base, 
+
+def gen_bird_conf(node, delay, mode, base,
                   enable_rpdp, roa_json, aspa_json):
     """
     add everything but actual bgp links
@@ -145,7 +148,8 @@ def gen_bird_conf(node, delay, mode, base,
         "  };\n"
     for prefix in node["prefixes"]:
         bird_conf_str += f"  route {prefix} {mode};\n"
-        roa_item = {"asn": int(dev_as), "prefix": prefix,"max_length": int(prefix.split("/")[1])}
+        roa_item = {"asn": int(dev_as), "prefix": prefix,
+                    "max_length": int(prefix.split("/")[1])}
         roa_json["add"].append(roa_item)
     bird_conf_str += "};\n"
     bird_conf_str += "template bgp basic {\n"
@@ -200,7 +204,7 @@ def gen_bird_conf(node, delay, mode, base,
 
         bird_conf_str += "{\n"
         bird_conf_str += f"  description \"modified BGP between {dev_id} and {peer_id}\";\n"
-        
+
         if dev_as != peer_as:
             found = False
             for provider, customer in base["as_relations"]["provider-customer"]:
@@ -243,7 +247,7 @@ def gen_bird_conf(node, delay, mode, base,
                 raise NotImplementedError
     if enable_rpki:
         aspa_json["add"].append(aspa_item)
-    
+
     return delay, bird_conf_str, link_map
 
 
@@ -258,7 +262,7 @@ def gen_sa_config(
         active_app,
         enable_rpki,
         fib_threshold=5,
-        ignore_private = True):
+        ignore_private=True):
     as_scope = as_scope[node["as"]]
     sa_config = {
         "apps": app_list,
@@ -283,7 +287,7 @@ def gen_sa_config(
         "location": "edge_full",
         "as_scope": as_scope,
         "enable_rpki": enable_rpki,
-        "ignore_private":ignore_private
+        "ignore_private": ignore_private
     }
     if enable_rpki:
         if auto_ip_version == 4:
@@ -305,7 +309,8 @@ def ready_input_json(json_content, selected_nodes):
     DEFAULT_ORIGINAL_BIRD = False
     base = json_content
     if "fib_threshold" not in base:
-        print(f"fib_threshold not found, using default value {DEFAULT_FIB_THRESHOLD}")
+        print(
+            f"fib_threshold not found, using default value {DEFAULT_FIB_THRESHOLD}")
         base["fib_threshold"] = DEFAULT_FIB_THRESHOLD
     if "original_bird" not in base:
         print(
@@ -405,7 +410,7 @@ def build_rpki(base, out_dir):
     build rpki compose 
     """
     krill_dev_id = "ca"
-    s =  "version: \"2\"\n"
+    s = "version: \"2\"\n"
     s += "networks:\n"
     s += "  ca_net:\n"
     s += "    external: false\n"
@@ -421,7 +426,7 @@ def build_rpki(base, out_dir):
     s += "    image: krill\n"
     s += "    container_name: ca\n"
     if base["auto_ip_version"] == 6:
-        s += "    sysctls:\n"    
+        s += "    sysctls:\n"
         s += "      - net.ipv6.conf.all.disable_ipv6=0\n"
     s += "    cap_add:\n"
     s += "      - NET_ADMIN\n"
@@ -453,6 +458,7 @@ def build_rpki(base, out_dir):
     with open(ca_compose_path, 'w') as f:
         f.write(s)
 
+
 def regenerate_config(
         savop_dir,
         host_dir,
@@ -471,21 +477,21 @@ def regenerate_config(
     run_dir = "savop_run"
     cp_cmd = f"cp {os.path.join(base_config_dir,'topo.sh')} {os.path.join(out_dir,'topo.sh')}"
     run_cmd(cp_cmd)
-    
+
     # build docker compose
     compose_f = open(os.path.join(out_dir, DEVICE_COMPOSE_FILE), 'a')
     compose_f.write("version: \"2\"\n")
-    
+
     if base["enable_rpki"]:
         refresh_folder(os.path.join(base_config_dir, "ca"),
-                   os.path.join(ca_dir))
+                       os.path.join(ca_dir))
         key_f = open(os.path.join(out_dir, 'sign_key.sh'), 'a')
-        os.mkdir(os.path.join(ca_dir,"log"))
-        os.makedirs(os.path.join(roa_dir,"log"))
+        os.mkdir(os.path.join(ca_dir, "log"))
+        os.makedirs(os.path.join(roa_dir, "log"))
         # touch log files
         for f in [
-            os.path.join(ca_dir,"log","krill.log")
-            ,os.path.join(ca_dir,"log","rsync.log")
+            os.path.join(ca_dir, "log", "krill.log"), os.path.join(
+                ca_dir, "log", "rsync.log")
         ]:
             with open(f, 'w') as f:
                 pass
@@ -497,7 +503,7 @@ def regenerate_config(
             run_cmd(cmd)
         # copy ca files
         for f in [
-            "add_info.py","krill.sh","krill.conf","rsyncd.conf"
+            "add_info.py", "krill.sh", "krill.conf", "rsyncd.conf"
         ]:
             cmd = f"cp {os.path.join(savop_dir,'rpki',f)} {os.path.join(ca_dir, f)}"
             run_cmd(cmd)
@@ -524,8 +530,10 @@ def regenerate_config(
             ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
             ignore_nets.append("10.10.0.0/16")
     cpu_id = 0
-    roa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
-    aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT, "token": "krill", "add": []}
+    roa_json = {"ip": "localhost", "port": CA_HTTP_PORT,
+                "token": "krill", "add": []}
+    aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT,
+                 "token": "krill", "add": []}
     ignore_nets.append(base["ip_range"])
     for node in base["devices"]:
 
@@ -538,9 +546,8 @@ def regenerate_config(
         # generate bird conf
         cur_delay, bird_config_str, link_map = gen_bird_conf(
             nodes, cur_delay, "blackhole", base, rpdp_enable,
-            roa_json,aspa_json)
-        
-        
+            roa_json, aspa_json)
+
         with open(os.path.join(node_dir, "bird.conf"), 'w') as f:
             f.write(bird_config_str)
         run_cmd(f"chmod 666 {node_dir}/bird.conf")
@@ -565,12 +572,11 @@ def regenerate_config(
         while host_dir.endswith("/"):
             host_dir = host_dir[:-1]
 
-        
         compose_str = f"  r{tag}:\n"
         if base["auto_ip_version"] == 6:
-            compose_str +=f"    sysctls:\n"
-            compose_str +=f"      - net.ipv6.conf.all.disable_ipv6=0\n"
-        compose_str +=f"    image: savop_bird_base\n" \
+            compose_str += f"    sysctls:\n"
+            compose_str += f"      - net.ipv6.conf.all.disable_ipv6=0\n"
+        compose_str += f"    image: savop_bird_base\n" \
             f"    init: true\n" \
             f"    container_name: \"r{tag}\"\n" \
             f"    cap_add:\n" \
@@ -642,9 +648,11 @@ def regenerate_config(
         if not src_ip.version == dst_ip.version:
             raise NotImplementedError
         if src_ip.version == 6:
-            topo_f.write(f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
+            topo_f.write(
+                f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/124' '{dst_ip}/124'")
         elif src_ip.version == 4:
-            topo_f.write(f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
+            topo_f.write(
+                f"\nfunCreateV{src_ip.version} 'r{src}' 'r{dst}' '{src_ip}/24' '{dst_ip}/24'")
 
     topo_f.close()
 
@@ -657,11 +665,12 @@ def regenerate_config(
         build_rpki(base, out_dir)
         cur_dir = os.getcwd()
         os.chdir(out_dir)
+        key_f.close()
         run_cmd("bash ./sign_key.sh")
         os.chdir(cur_dir)
-        key_f.close()
-        
+
     return len(base["devices"])
+
 
 def resign_keys(out_dir, node, key_f, base_cfg_folder):
     run_cmd(
@@ -673,7 +682,7 @@ def resign_keys(out_dir, node, key_f, base_cfg_folder):
                        f"subjectAltName = DNS:{node}, DNS:localhost"
         f.write(sign_content)
     key_f.write(f"\nfunCGenPrivateKeyAndSign ./{node} ./ca")
-    
+
 
 def script_builder(host_dir, savop_dir, json_content, out_dir, logger, skip_bird=False, skip_rebuild=False):
     """
