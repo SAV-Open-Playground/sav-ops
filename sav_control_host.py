@@ -10,6 +10,7 @@ from sav_control_common import *
 import argparse
 import threading
 import requests
+import os
 
 
 SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -714,6 +715,7 @@ class RunEmulation():
         return ret
 
 
+
 class DevicePerformance():
     __cpucommand = "dstat -c --nocolor 1 2 --nocolor| sed -e '1,3d'"
     __memorycommand = "dstat -m --nocolor 1 2 --nocolor| sed -e '1,3d'"
@@ -785,10 +787,25 @@ class Monitor:
             performance_dict.append(json.loads(item))
         return performance_dict
 
+    @staticmethod
+    def protocol_step():
+        step = {}
+        folders = [f for f in os.listdir(SAV_RUN_DIR) if os.path.isdir(os.path.join(SAV_RUN_DIR, f))]
+        for f in folders:
+            step.update({f: []})
+            f_log_path = os.path.join(f, "log")
+            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'"
+            returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
+            for i in stdout.replace("\'", "\"").split("\n"):
+                if len(i) < 10:
+                    continue
+                step[f].append(json.loads(i))
+        return json.dumps(step)
 
 def run(args):
     action = args.action
     performance = args.performance
+    step = args.step
     node_num = get_container_node_num(SAV_RUN_DIR)
     result = ""
     if action is not None:
@@ -830,6 +847,9 @@ def run(args):
                 result_["container_performance"] = Monitor.container_performance()
                 result = {int(time.time()): result_}
         return json.dumps(result, indent=4)
+
+    if step is not None:
+        result = Monitor.protocol_step()
     return result
 
 
@@ -839,10 +859,10 @@ if __name__ == "__main__":
                                               "control SAVOP execution, only support three values: start, stop and restart")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart", "start_original_bird", "fib_stable", "dev_test"],
                                help="control SAVOP execution, only support three values: start, stop, restart ,fib_stable and start_original_bird")
-    monitor_group = parser.add_argument_group(
-        "monitor", "Monitor the operational status of SAVOP")
+    monitor_group = parser.add_argument_group("monitor", "Monitor the operational status of SAVOP")
     monitor_group.add_argument("-p", "--performance", choices=["host", "container", "all"],
                                help="monitor the performance of machines or containers")
+    monitor_group.add_argument("--step", help="monitor the performance of machines or containers")
 
     args = parser.parse_args()
     print(run(args=args))

@@ -17,6 +17,8 @@
                     - sav_control_host.py
                     - sav_control_master_config.json
 """
+import json
+
 from sav_control_common import *
 from script_builder import script_builder
 from fabric2 import Connection
@@ -82,7 +84,7 @@ class MasterController:
         self.distribution_d = ret
         return ret
 
-    def _remote_run(self, node_id, node, cmd):
+    def _remote_run(self, node_id, node, cmd, capture_output=False):
         ret = {}
         if node_id == "localhost":
             ret["cmd_start_dt"] = time.time()
@@ -93,7 +95,7 @@ class MasterController:
         else:
             with Connection(host=node_id, user=node["user"], connect_kwargs={"password": node["password"]}) as conn:
                 ret["cmd_start_dt"] = time.time()
-                ret["cmd_result"] = conn.run(command=cmd)
+                ret["cmd_result"] = conn.run(command=cmd, hide=capture_output)
                 ret["cmd_end_dt"] = time.time()
         return ret
 
@@ -232,6 +234,28 @@ class MasterController:
             result[node_id] = node_result
         return result
 
+    def mode_protocol_step(self, mode_name):
+        result = {}
+        for node_id, node_num in self.config["host_node"].items():
+            node = self.host_node[node_id]
+            path2hostpy = os.path.join(
+                node["root_dir"], "savop", "sav_control_host.py")
+            cmd = f"python3 {path2hostpy} --step {mode_name}"
+            self.logger.debug(cmd)
+            node_result = self._remote_run(node_id, node, cmd, capture_output=True)
+            result[node_id] = node_result
+        # sort step
+        print("the protocol process of sending packets:")
+        all_step = []
+        for item in result.values():
+            for router, steps in json.loads(item["cmd_result"].stdout).items():
+                for each_step in steps:
+                    each_step.update({"router_name": f"r{router}"})
+                    all_step.append(each_step)
+        all_sort_step = sorted(all_step, key=lambda x: x["dt"])
+        for step in all_sort_step:
+            print(step)
+        return result
 
 class ThreadWithReturnValue(Thread):
     def __init__(self, target, args=()):
@@ -314,6 +338,7 @@ class SavExperiment:
         # 2. distribute config files
         self.controller.config_file_distribute(skip_compile=skip_compile)
         result = self.controller.sav_exp_start()
+        print("step: end")
         return result
 
 
@@ -382,6 +407,8 @@ class SavExperiment:
                         f.write(raw_result)
                     self.logger.debug(
                         f"raw_result saved to {raw_result_file_name}")
+
+
 def run(args):
     topo_json = args.topo_json
     config = args.config
@@ -390,6 +417,8 @@ def run(args):
     performance = args.performance
     experiment = args.experiment
     skip_compile= args.skip_compile
+    step = args.step
+
     if experiment is not None:
         sav_exp = SavExperiment()
         match experiment:
@@ -431,6 +460,11 @@ def run(args):
             case "all":
                 performance_content = master_controller.mode_performance()
 
+    if step:
+        master_controller = MasterController("sav_control_master_config.json")
+        step_content = master_controller.mode_protocol_step(mode_name=step)
+        return step_content
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -454,8 +488,8 @@ if __name__ == "__main__":
 
     monitor_group = parser.add_argument_group(
         "monitor", "Monitor the operational status of SAVOP.")
-    monitor_group.add_argument("-p", "--performance", choices=["all"],
-                               help="monitor the performance of machines and containers")
+    monitor_group.add_argument("-p", "--performance", choices=["all"], help="monitor the performance of machines and containers")
+    monitor_group.add_argument("--step", help="show the protocol process of sending packets")
 
     experiment_group = parser.add_argument_group("experiment", "refresh the SAVOP coniguration files, "
                                                                "restart the simulation and record experimental process "
@@ -464,5 +498,4 @@ if __name__ == "__main__":
         "-e", "--experiment", help="initiate a new experiment cycle, add then json file name here (without extension or dir), it should exist in base_configs dir.")
     args = parser.parse_args()
     result = run(args=args)
-    print("step: end")
     print(f"run over, show: \n{result}")
