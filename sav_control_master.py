@@ -254,7 +254,7 @@ class MasterController:
                     all_step.append(each_step)
         all_sort_step = sorted(all_step, key=lambda x: x["dt"])
         for step in all_sort_step:
-            print(step)
+            print(json.dumps(step))
         return result
 
 class ThreadWithReturnValue(Thread):
