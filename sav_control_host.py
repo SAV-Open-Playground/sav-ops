@@ -802,10 +802,22 @@ class Monitor:
                 step[f].append(json.loads(i))
         return json.dumps(step)
 
+    @staticmethod
+    def protocol_metric():
+        metric = []
+        cmd = "docker ps |grep -v NAMES|awk '{ print $NF }'"
+        returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
+        for container_name in stdout.split("\n")[:-1]:
+            cmd = f"docker exec -i {container_name} curl http://localhost:8888/metric/"
+            returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
+            metric.append({container_name: json.loads(stdout)})
+        return json.dumps(metric, indent=2)
+
 def run(args):
     action = args.action
     performance = args.performance
     step = args.step
+    metric = args.metric
     node_num = get_container_node_num(SAV_RUN_DIR)
     result = ""
     if action is not None:
@@ -850,6 +862,9 @@ def run(args):
 
     if step is not None:
         result = Monitor.protocol_step()
+
+    if metric is not None:
+        result = Monitor.protocol_metric()
     return result
 
 
@@ -862,7 +877,8 @@ if __name__ == "__main__":
     monitor_group = parser.add_argument_group("monitor", "Monitor the operational status of SAVOP")
     monitor_group.add_argument("-p", "--performance", choices=["host", "container", "all"],
                                help="monitor the performance of machines or containers")
-    monitor_group.add_argument("--step", help="monitor the performance of machines or containers")
+    monitor_group.add_argument("--step", help="the protocol process of sending packets")
+    monitor_group.add_argument("--metric", help="the protocol performance metrics")
 
     args = parser.parse_args()
     print(run(args=args))
