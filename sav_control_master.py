@@ -279,6 +279,28 @@ class MasterController:
             print(json.dumps(metric, indent=2))
         return result
 
+    def mode_protocol_table(self, mode_name):
+        result = {}
+        for node_id, node_num in self.config["host_node"].items():
+            node = self.host_node[node_id]
+            path2hostpy = os.path.join(
+                node["root_dir"], "savop", "sav_control_host.py")
+            cmd = f"python3 {path2hostpy} --table {mode_name}"
+            self.logger.debug(cmd)
+            node_result = self._remote_run(node_id, node, cmd, capture_output=True)
+            result[node_id] = node_result
+
+        # sort table
+        print("the protocol table:")
+        all_table = []
+        for item in result.values():
+            for metric in json.loads(item["cmd_result"].stdout):
+                all_table.append(metric)
+        all_sort_table = sorted(all_table, key=lambda x: int(list(x.keys())[0][1:]))
+        for table in all_sort_table:
+            print(json.dumps(table, indent=2))
+        return result
+
 class ThreadWithReturnValue(Thread):
     def __init__(self, target, args=()):
         super(ThreadWithReturnValue, self).__init__()
@@ -441,6 +463,7 @@ def run(args):
     skip_compile= args.skip_compile
     step = args.step
     metric = args.metric
+    table = args.table
 
     if experiment is not None:
         sav_exp = SavExperiment()
@@ -495,6 +518,11 @@ def run(args):
         metric_content = master_controller.mode_protocol_metric(mode_name=step)
         return metric_content
 
+    if table:
+        master_controller = MasterController("sav_control_master_config.json")
+        metric_content = master_controller.mode_protocol_table(mode_name=table)
+        return metric_content
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -521,6 +549,7 @@ if __name__ == "__main__":
     monitor_group.add_argument("-p", "--performance", choices=["all"], help="monitor the performance of machines and containers")
     monitor_group.add_argument("--step", help="show the protocol process of sending packets")
     monitor_group.add_argument("--metric", help="show the protocol metric")
+    monitor_group.add_argument("--table", help="show the protocol tables of all routers")
 
     experiment_group = parser.add_argument_group("experiment", "refresh the SAVOP coniguration files, "
                                                                "restart the simulation and record experimental process "
