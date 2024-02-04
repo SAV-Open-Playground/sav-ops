@@ -725,27 +725,27 @@ class DevicePerformance():
     __dockerStatscommand = "docker stats --no-stream --format json"
 
     def get_cpu_performance(self):
-        ret = subprocess_cmd(cmd=self.__cpucommand, timeout=None)
+        ret = subprocess_cmd(cmd=self.__cpucommand, timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_memory_performace(self):
-        ret = subprocess_cmd(cmd=self.__memorycommand, timeout=None)
+        ret = subprocess_cmd(cmd=self.__memorycommand, timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_disk_performance(self):
-        ret = subprocess_cmd(cmd=self.__diskcommand, timeout=None)
+        ret = subprocess_cmd(cmd=self.__diskcommand, timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_network_performance(self):
-        ret = subprocess_cmd(cmd=self.__networkcommand, timeout=None)
+        ret = subprocess_cmd(cmd=self.__networkcommand, timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_host_performance(self):
-        ret = subprocess_cmd(cmd=self.__hostCommand, timeout=None)
+        ret = subprocess_cmd(cmd=self.__hostCommand, timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_docker_container_performance(self):
-        ret = subprocess_cmd(cmd=self.__dockerStatscommand, timeout=None)
+        ret = subprocess_cmd(cmd=self.__dockerStatscommand, timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
 

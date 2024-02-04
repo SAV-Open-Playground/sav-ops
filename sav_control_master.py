@@ -103,7 +103,10 @@ class MasterController:
         print("step: distribute files")
         for node_id, node in self.host_node.items():
             # use my self as a host
-            cfg_src_dir = node["cfg_src_dir"]
+            if node.get("cfg_src_dir", None) is None:
+                cfg_src_dir =  generated_config_dir = os.path.join(OUT_DIR, node_id)
+            else:
+                cfg_src_dir = node["cfg_src_dir"]
             if node_id == "localhost":
                 cfg_dst_dir = os.path.join(node["root_dir"], "savop_run")
                 if os.path.exists(cfg_dst_dir):
@@ -118,8 +121,8 @@ class MasterController:
                     print("clear old config successfully.")
                 else:
                     print("clear old config fail!")
-                compress_config = run_cmd(
-                    cmd=f"tar -czf this_config/{node_id}.tar.gz this_config/{node_id}")
+                compress_config, stdout, stderr = run_cmd(
+                    cmd=f"tar -cvzf this_config/{node_id}.tar.gz this_config/{node_id}")
                 if compress_config == 0:
                     print("compress config files successfully.")
                 else:
@@ -276,7 +279,7 @@ class MasterController:
                 all_metric.append(metric)
         all_sort_metric = sorted(all_metric, key=lambda x: int(list(x.keys())[0][1:]))
         for metric in all_sort_metric:
-            print(json.dumps(metric))
+            print(json.dumps(metric, indent=2))
         return result
 
     def mode_protocol_table(self, mode_name):
@@ -298,7 +301,7 @@ class MasterController:
                 all_table.append(metric)
         all_sort_table = sorted(all_table, key=lambda x: int(list(x.keys())[0][1:]))
         for table in all_sort_table:
-            print(json.dumps(table))
+            print(json.dumps(table, indent=2))
         return result
 
 class ThreadWithReturnValue(Thread):
@@ -442,7 +445,7 @@ class SavExperiment:
                 std_err = result["cmd_result"]["stderr"]
                 ret_code = result["cmd_result"]["returncode"]
                 if ret_code == 0:
-                    time_usage = result["cmd_end_dt"] - result["cmd_start_dt"]
+                    time_usage = result["cmd_end_dt"] - result["cmd_s/art_dt"]
                     self.logger.debug(f"{node} finished in {time_usage}")
                     raw_result = std_out
                     raw_result_file_name = config.replace(
@@ -539,8 +542,7 @@ if __name__ == "__main__":
         "-d", "--distribute", choices=["all"], help="distribute the configuration files")
     parser.add_argument("-s", "--skip_compile", action="store_true",
                         help="skip compile bird, default value is false")
-    operate_group = parser.add_argument_group(
-        "operate", "control the operation of SAVOP.")
+    operate_group = parser.add_argument_group("operate", "control the operation of SAVOP.")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart"],
                                help="control SAVOP execution, only support three values: start, stop and restart")
 
