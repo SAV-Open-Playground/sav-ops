@@ -821,7 +821,7 @@ class Monitor:
         for container_name in stdout.split("\n")[:-1]:
             cmd = f"docker exec -i {container_name} curl http://localhost:8888/sav_table/"
             returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
-            table.append({container_name: json.loads(stdout.replace("IPNetwork(", "").replace(")", "").replace("\'", "\"").replace("True", "\"True\"").replace("False", "\"False\""))})
+            table.append({container_name: json.loads(stdout.replace("IPNetwork(", "").replace("IPAddress(","").replace(")", "").replace("\'", "\"").replace("True", "\"True\"").replace("False", "\"False\""))})
         return json.dumps(table)
 
 def run(args):
