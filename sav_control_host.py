@@ -801,7 +801,7 @@ class Monitor:
             for i in stdout.replace("\'", "\"").split("\n"):
                 if len(i) < 10:
                     continue
-                step[f].append(json.loads(i))
+                step[f].append(json.loads(i.replace("IPAddress(", "").replace(")", "")))
         return json.dumps(step)
 
     @staticmethod
