@@ -64,6 +64,7 @@ class IPGenerator():
 
 
 def recompile_bird(path=r'{host_dir}/sav-reference-router', logger=None):
+    # return
     print("step: recompile bird")
     os.chdir(path)
     run_cmd("autoreconf")
@@ -603,9 +604,9 @@ def regenerate_config(
             f"      - {host_dir}/sav-agent/:/root/savop/sav-agent/\n"\
             f"      - {host_dir}/savop/reference_and_agent/router_kill_and_start.sh:"\
             "/root/savop/router_kill_and_start.sh\n"\
-            f"      - {host_dir}/sav-reference-router/bird:/usr/local/sbin/bird\n"\
-            f"      - {host_dir}/sav-reference-router/birdc:/usr/local/sbin/birdc\n"\
-            f"      - {host_dir}/sav-reference-router/birdcl:/usr/local/sbin/birdcl\n"
+            f"      - {host_dir}/{run_dir}/bird:/usr/local/sbin/bird\n"\
+            f"      - {host_dir}/{run_dir}/birdc:/usr/local/sbin/birdc\n"\
+            f"      - {host_dir}/{run_dir}r/birdcl:/usr/local/sbin/birdcl\n"
         compose_str += f"      - type: bind\n" \
             f"        source: {host_dir}/{run_dir}/active_signal.json\n" \
             f"        target: /root/savop/signal.json\n" \

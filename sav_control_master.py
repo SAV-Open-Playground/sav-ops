@@ -131,11 +131,11 @@ class MasterController:
                     local=f"{SAV_OP_DIR}/this_config/{node_id}.tar.gz", remote=f"{node['root_dir']}/savop_run/")
                 if not skip_compile:
                     result = conn.put(
-                        local=f"{SAV_ROUTER_DIR}/bird", remote=f"{node['root_dir']}/sav-reference-router/")
+                        local=f"{SAV_ROUTER_DIR}/bird", remote=f"{node['root_dir']}/savop_run/")
                     result = conn.put(
-                        local=f"{SAV_ROUTER_DIR}/birdc", remote=f"{node['root_dir']}/sav-reference-router/")
+                        local=f"{SAV_ROUTER_DIR}/birdc", remote=f"{node['root_dir']}/savop_run/")
                     result = conn.put(
-                        local=f"{SAV_ROUTER_DIR}/birdcl", remote=f"{node['root_dir']}/sav-reference-router/")
+                        local=f"{SAV_ROUTER_DIR}/birdcl", remote=f"{node['root_dir']}/savop_run/")
                 transfer_config = conn.run(
                     command=f"ls -al {node['root_dir']}/savop_run/{node_id}.tar.gz")
                 if transfer_config.return_code == 0:
@@ -485,7 +485,7 @@ def run(args):
         match config:
             case "refresh":
                 base_node_num = master_controller.config_file_generate(
-                    input_json=topo_json)
+                    input_json=topo_json + '.json')
     # distribute config file
     if distribute:
         master_controller = MasterController("sav_control_master_config.json")
