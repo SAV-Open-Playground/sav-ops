@@ -606,7 +606,7 @@ def regenerate_config(
             "/root/savop/router_kill_and_start.sh\n"\
             f"      - {host_dir}/{run_dir}/bird:/usr/local/sbin/bird\n"\
             f"      - {host_dir}/{run_dir}/birdc:/usr/local/sbin/birdc\n"\
-            f"      - {host_dir}/{run_dir}r/birdcl:/usr/local/sbin/birdcl\n"
+            f"      - {host_dir}/{run_dir}/birdcl:/usr/local/sbin/birdcl\n"
         compose_str += f"      - type: bind\n" \
             f"        source: {host_dir}/{run_dir}/active_signal.json\n" \
             f"        target: /root/savop/signal.json\n" \
