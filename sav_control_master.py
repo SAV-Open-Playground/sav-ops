@@ -65,7 +65,7 @@ class MasterController:
             json_content = json_r(path2json)
             generated_config_dir = os.path.join(OUT_DIR, host_id)
             ret[host_id] = script_builder(
-                host_node["root_dir"], SAV_OP_DIR, json_content, out_dir=generated_config_dir, logger=self.logger)
+                host_node["root_dir"], SAV_OP_DIR, json_content, out_dir=generated_config_dir, logger=self.logger, skip_bird=skip_compile)
             self.host_node[host_id]["cfg_src_dir"] = generated_config_dir
         return ret
 
