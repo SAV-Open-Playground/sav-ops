@@ -304,6 +304,29 @@ class MasterController:
             print(json.dumps(table, indent=2))
         return result
 
+
+    def enable_sav_table(self, app_name):
+        result = {}
+        for node_id, node_num in self.config["host_node"].items():
+            node = self.host_node[node_id]
+            path2hostpy = os.path.join(
+                node["root_dir"], "savop", "sav_control_host.py")
+            cmd = f"python3 {path2hostpy} --enable {app_name}"
+            self.logger.debug(cmd)
+            node_result = self._remote_run(node_id, node, cmd, capture_output=True)
+            result[node_id] = node_result
+
+        # sort table
+        print("the enable sav_table's rules situation:")
+        all_situation = []
+        for item in result.values():
+            for s in json.loads(item["cmd_result"].stdout):
+                all_situation.append(s)
+        all_sort_situation = sorted(all_situation, key=lambda x: int(list(x.keys())[0][1:]))
+        for table in all_sort_situation:
+            print(json.dumps(table, indent=2))
+        return result
+
 class ThreadWithReturnValue(Thread):
     def __init__(self, target, args=()):
         super(ThreadWithReturnValue, self).__init__()
@@ -467,6 +490,7 @@ def run(args):
     step = args.step
     metric = args.metric
     table = args.table
+    enable = args.enable
 
     if experiment is not None:
         sav_exp = SavExperiment()
@@ -521,10 +545,17 @@ def run(args):
         metric_content = master_controller.mode_protocol_metric(mode_name=step)
         return metric_content
 
+    # show the protocol's sav-tables
     if table:
         master_controller = MasterController("sav_control_master_config.json")
         metric_content = master_controller.mode_protocol_table(mode_name=table)
         return metric_content
+
+    # enable sav_table rule
+    if enable:
+        master_controller = MasterController("sav_control_master_config.json")
+        enable_content = master_controller.enable_sav_table(app_name=enable)
+        return enable_content
 
 
 if __name__ == "__main__":
@@ -556,8 +587,13 @@ if __name__ == "__main__":
     experiment_group = parser.add_argument_group("experiment", "refresh the SAVOP coniguration files, "
                                                                "restart the simulation and record experimental process "
                                                                "data.")
-    experiment_group.add_argument(
-        "-e", "--experiment", help="initiate a new experiment cycle, add then json file name here (without extension or dir), it should exist in base_configs dir.")
+    experiment_group.add_argument("-e", "--experiment",
+                                  help="initiate a new experiment cycle, add then json file name here (without extension or dir), it should exist in base_configs dir.")
+
+    data_plane_control_group = parser.add_argument_group("data_plane_control",
+                                                         "Enable data plane control for the sav_table rule")
+    data_plane_control_group.add_argument("--enable",  choices=["strict_urpf", "rpdp", "loose_urpf", "efp_urpf_a", "efp_urpf_b", "fp_urpf"],
+                                          help="enable sav_table rule")
     args = parser.parse_args()
     result = run(args=args)
     print(f"run over, show: \n{result}")

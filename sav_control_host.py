@@ -6,6 +6,8 @@
 @Version :   0.1
 @Desc    :   The sav_control_host.py is responsible for the management of current host(slave).
 """
+import json
+
 from sav_control_common import *
 import argparse
 import threading
@@ -824,12 +826,25 @@ class Monitor:
             table.append({container_name: json.loads(stdout.replace("IPNetwork(", "").replace("IPAddress(","").replace(")", "").replace("\'", "\"").replace("True", "\"True\"").replace("False", "\"False\""))})
         return json.dumps(table)
 
+    @staticmethod
+    def enable_sav_table(protocol_name):
+        result = []
+        cmd = "docker ps |grep -v NAMES|awk '{ print $NF }'"
+        returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
+        for container_name in stdout.split("\n")[:-1]:
+            cmd = f"docker exec -i {container_name} curl http://localhost:8888/refresh_proto/{protocol_name}/"
+            returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
+            result.append({container_name:json.loads(stdout)})
+        return json.dumps(result)
+
+
 def run(args):
     action = args.action
     performance = args.performance
     step = args.step
     metric = args.metric
     table = args.table
+    enable = args.enable
     node_num = get_container_node_num(SAV_RUN_DIR)
     result = ""
     if action is not None:
@@ -880,6 +895,9 @@ def run(args):
 
     if table is not None:
         result = Monitor.protocol_table()
+
+    if enable is not None:
+        result = Monitor.enable_sav_table(protocol_name=enable)
     return result
 
 
@@ -895,6 +913,10 @@ if __name__ == "__main__":
     monitor_group.add_argument("--step", help="the protocol process of sending packets")
     monitor_group.add_argument("--metric", help="the protocol performance metrics")
     monitor_group.add_argument("--table", help="the protocol table")
-
+    data_plane_control_group = parser.add_argument_group("data_plane_control",
+                                                         "Enable data plane control for the sav_table rule")
+    data_plane_control_group.add_argument("--enable",
+                                          choices=["strict_urpf", "rpdp", "loose_urpf", "efp_urpf_a", "efp_urpf_b","fp_urpf"],
+                                          help="enable sav_table rule")
     args = parser.parse_args()
     print(run(args=args))
