@@ -279,7 +279,7 @@ class MasterController:
                 all_metric.append(metric)
         all_sort_metric = sorted(all_metric, key=lambda x: int(list(x.keys())[0][1:]))
         for metric in all_sort_metric:
-            print(json.dumps(metric, indent=2))
+            print(json.dumps(metric))
         return result
 
     def mode_protocol_table(self, mode_name):
@@ -301,7 +301,7 @@ class MasterController:
                 all_table.append(metric)
         all_sort_table = sorted(all_table, key=lambda x: int(list(x.keys())[0][1:]))
         for table in all_sort_table:
-            print(json.dumps(table, indent=2))
+            print(json.dumps(table))
         return result
 
 
@@ -324,7 +324,7 @@ class MasterController:
                 all_situation.append(s)
         all_sort_situation = sorted(all_situation, key=lambda x: int(list(x.keys())[0][1:]))
         for table in all_sort_situation:
-            print(json.dumps(table, indent=2))
+            print(json.dumps(table))
         return result
 
 class ThreadWithReturnValue(Thread):
