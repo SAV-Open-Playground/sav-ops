@@ -291,7 +291,7 @@ def gen_sa_config(
         "ignore_private": ignore_private
     }
     if enable_rpki:
-        if auto_ip_version in [4,6]:
+        if auto_ip_version in [4, 6]:
             sa_config["ca_host"] = CA_IP4
             sa_config["ca_port"] = CA_HTTP_PORT
         # elif auto_ip_version == 6:
@@ -418,7 +418,7 @@ def build_rpki(base, out_dir):
     s += "    ipam:\n"
     s += "      driver: default\n"
     s += "      config:\n"
-    if base["auto_ip_version"] in [4,6]:
+    if base["auto_ip_version"] in [4, 6]:
         s += "        - subnet: \"10.10.0.0/16\"\n\n"
     # else:
         # raise NotImplementedError
@@ -446,10 +446,9 @@ def build_rpki(base, out_dir):
     s += f"      - ./{krill_dev_id}/web_cert.pem:/var/krill/data/ssl/cert.pem\n"
     s += f"      - ./{krill_dev_id}/web_key.pem:/var/krill/data/ssl/key.pem\n"
     s += f"      - ./{krill_dev_id}/cert.pem:/usr/local/share/ca-certificates/extra/ca.crt\n"
-    s += f"      - ./{krill_dev_id}/roa/:/var/krill/data/roa\n"
     s += "    networks:\n"
     s += "      ca_net:\n"
-    if base["auto_ip_version"] == [4,6]:
+    if base["auto_ip_version"] == [4, 6]:
         s += f"        ipv4_address: {CA_IP4}\n"
     # else:
         # raise NotImplementedError
@@ -464,7 +463,6 @@ def regenerate_config(
         savop_dir,
         host_dir,
         input_json,
-        base_config_dir,
         selected_nodes,
         out_dir):
     if os.path.exists(out_dir):
@@ -474,9 +472,8 @@ def regenerate_config(
     base = ready_input_json(input_json, selected_nodes)
     base = assign_ip(base)
     ca_dir = os.path.join(out_dir, "ca")
-    roa_dir = os.path.join(out_dir, "roa")
     run_dir = "savop_run"
-    cp_cmd = f"cp {os.path.join(base_config_dir,'topo.sh')} {os.path.join(out_dir,'topo.sh')}"
+    cp_cmd = f"cp {os.path.join(savop_dir,'topo.sh')} {os.path.join(out_dir,'topo.sh')}"
     run_cmd(cp_cmd)
 
     # build docker compose
@@ -484,11 +481,12 @@ def regenerate_config(
     compose_f.write("version: \"2\"\n")
 
     if base["enable_rpki"]:
-        refresh_folder(os.path.join(base_config_dir, "ca"),
-                       os.path.join(ca_dir))
+        cp_cmd = f"cp {os.path.join(savop_dir,'rpki','sign_key.sh')} {os.path.join(out_dir,'sign_key.sh')}"
+        run_cmd(cp_cmd)
+        refresh_folder(os.path.join(savop_dir, "rpki", "ca"),
+                       os.path.join(out_dir, "ca"))
         key_f = open(os.path.join(out_dir, 'sign_key.sh'), 'a')
         os.mkdir(os.path.join(ca_dir, "log"))
-        os.makedirs(os.path.join(roa_dir, "log"))
         # touch log files
         for f in [
             os.path.join(ca_dir, "log", "krill.log"), os.path.join(
@@ -508,9 +506,9 @@ def regenerate_config(
         ]:
             cmd = f"cp {os.path.join(savop_dir,'rpki',f)} {os.path.join(ca_dir, f)}"
             run_cmd(cmd)
-        run_cmd(f"cp {os.path.join(savop_dir,'rpki','web','cert.pem')} \
+        run_cmd(f"cp {os.path.join(savop_dir,'rpki','ca','cert.pem')} \
             {os.path.join(ca_dir, 'web_cert.pem')}")
-        run_cmd(f"cp {os.path.join(savop_dir,'rpki','web','key.pem')} \
+        run_cmd(f"cp {os.path.join(savop_dir,'rpki','ca','key.pem')} \
             {os.path.join(ca_dir, 'web_key.pem')}")
         docker_network_content = "networks:\n" \
                                  f"  {run_dir}_ca_net:\n" \
@@ -536,8 +534,8 @@ def regenerate_config(
     aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT,
                  "token": "krill", "add": []}
     ignore_nets.append(base["ip_range"])
+    print(f"ignore_nets: {ignore_nets}")
     for node in base["devices"]:
-
         cur_delay = 0
         nodes = base["devices"][node]
         nodes["device_id"] = node
@@ -568,7 +566,7 @@ def regenerate_config(
             json.dump(sa_config, f, indent=4)
         # resign keys
         if base["enable_rpki"]:
-            resign_keys(out_dir, node, key_f, base_config_dir)
+            resign_keys(out_dir, node, key_f, os.path.join(savop_dir, 'rpki'))
         tag = f"{node}"
         while host_dir.endswith("/"):
             host_dir = host_dir[:-1]
@@ -641,7 +639,7 @@ def regenerate_config(
     }
     with open(os.path.join(out_dir, "active_signal.json"), 'w') as f:
         json.dump(active_signal, f, indent=4)
-    run_cmd(f"chmod 666 {out_dir}/active_signal.json")
+    ret = run_cmd(f"chmod 666 {out_dir}/active_signal.json")
 
     topo_f = open(os.path.join(out_dir, "topo.sh"), 'a')
     for src, dst, link_type, src_ip, dst_ip in base["links"]:
@@ -673,7 +671,7 @@ def regenerate_config(
     return len(base["devices"])
 
 
-def resign_keys(out_dir, node, key_f, base_cfg_folder):
+def resign_keys(out_dir, node, key_f, base_cfg_folder) -> None:
     run_cmd(
         f"cp {os.path.join(base_cfg_folder,'req.conf')} {os.path.join(out_dir, node)}")
     with open(os.path.join(out_dir, node, "sign.ext"), 'w') as f:
@@ -699,13 +697,14 @@ def script_builder(host_dir, savop_dir, json_content, out_dir, logger, skip_bird
         if not skip_bird:
             recompile_bird(os.path.join(
                 SAV_ROOT_DIR, "sav-reference-router"), logger)
-        base_cfg_folder = os.path.join(savop_dir, "base_configs")
+        if not skip_rebuild:
+            rebuild_img(
+                f"{host_dir}/", file=f"{SAV_OP_DIR}/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
         selected_nodes = None
         container_num = regenerate_config(
             savop_dir,
             host_dir,
             json_content,
-            base_cfg_folder,
             selected_nodes,
             out_dir)
         t = time.time() - t0

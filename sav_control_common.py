@@ -171,3 +171,31 @@ def get_container_node_num(root_dir, capture_output=True):
     if returncode != 0:
         raise Exception(f"get_container_node_num failed, {stderr}")
     return int(stdout)
+
+def sys_init():
+    """
+    ensure the system is ready to run the emulation
+    """
+    cmd = "sysctl -w "
+    # remove rp_filter
+    cmds = ["net.ipv4.conf.all.rp_filter=0",
+            "net.ipv4.conf.default.rp_filter=0"]
+    # set ip forward
+    cmds += ["net.ipv4.ip_forward=1", "net.ipv6.conf.all.forwarding=1"]
+    # fast closing tcp connection
+    cmds += ["net.ipv4.tcp_fin_timeout=1", "net.ipv4.tcp_tw_reuse=1"]
+    # increase max open files
+    cmds += ["fs.file-max=1000000"]
+    # increase max tcp connection
+    cmds += ["net.ipv4.tcp_max_syn_backlog=1000000",
+             "net.core.somaxconn=1000000",
+             "net.ipv4.tcp_max_tw_buckets=1000000",
+             "net.ipv4.tcp_max_orphans=1000000"
+             "net.ipv4.tcp_syncookies=1"
+             ]
+    for c in cmds:
+        try:
+            run_cmd(cmd+c, 0)
+        except Exception as e:
+            print(e)
+            pass

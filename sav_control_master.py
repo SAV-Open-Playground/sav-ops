@@ -35,7 +35,7 @@ os.chdir(SAV_OP_DIR)
 
 
 class MasterController:
-    def __init__(self, master_config_file, logger=None):
+    def __init__(self, master_config_file, logger=None) -> None:
         master_config_file = os.path.join(SAV_OP_DIR, master_config_file)
         self.config = json_r(master_config_file)
         self.host_node = self.config["host_node"]
@@ -50,7 +50,6 @@ class MasterController:
         path2json = os.path.join(SAV_OP_DIR, "base_configs", input_json)
         json_content = json_r(path2json)
         generated_config_dir = os.path.join(OUT_DIR, SELF_HOST_ID)
-
         ret[SELF_HOST_ID] = script_builder(host_node["root_dir"], SAV_OP_DIR, json_content,
                                            out_dir=generated_config_dir,
                                            logger=self.logger, skip_bird=True, skip_rebuild=True)
@@ -104,7 +103,8 @@ class MasterController:
         for node_id, node in self.host_node.items():
             # use my self as a host
             if node.get("cfg_src_dir", None) is None:
-                cfg_src_dir =  generated_config_dir = os.path.join(OUT_DIR, node_id)
+                cfg_src_dir = os.path.join(
+                    OUT_DIR, node_id)
             else:
                 cfg_src_dir = node["cfg_src_dir"]
             if node_id == "localhost":
@@ -112,6 +112,9 @@ class MasterController:
                 if os.path.exists(cfg_dst_dir):
                     shutil.rmtree(cfg_dst_dir)
                 shutil.copytree(cfg_src_dir, cfg_dst_dir)
+                run_cmd(f"cp {SAV_ROUTER_DIR}/bird {cfg_dst_dir}")
+                run_cmd(f"cp {SAV_ROUTER_DIR}/birdc {cfg_dst_dir}")
+                run_cmd(f"cp {SAV_ROUTER_DIR}/birdcl {cfg_dst_dir}")
                 self.logger.info(f"config file copied to: {cfg_dst_dir}")
                 continue
             with Connection(host=node_id, user=node["user"], connect_kwargs={"password": node["password"]}) as conn:
@@ -176,7 +179,7 @@ class MasterController:
             print(f"run model in node_{node_id} successfully")
         return result
 
-    def dev_test(self):
+    def dev_test(self) -> None:
         for node_id, node_num in self.config["host_node"].items():
             node = self.host_node[node_id]
             path2hostpy = os.path.join(
@@ -185,6 +188,7 @@ class MasterController:
             node_result = self._remote_run(node_id, node, cmd)
             self.logger.debug(node_result)
         return
+
     def sav_exp_start(self):
         """
         sav experiment start
@@ -245,7 +249,8 @@ class MasterController:
                 node["root_dir"], "savop", "sav_control_host.py")
             cmd = f"python3 {path2hostpy} --step {mode_name}"
             self.logger.debug(cmd)
-            node_result = self._remote_run(node_id, node, cmd, capture_output=True)
+            node_result = self._remote_run(
+                node_id, node, cmd, capture_output=True)
             result[node_id] = node_result
         # sort step
         print("the protocol process of sending packets:")
@@ -260,7 +265,6 @@ class MasterController:
             print(json.dumps(step))
         return result
 
-
     def mode_protocol_metric(self, mode_name):
         result = {}
         for node_id, node_num in self.config["host_node"].items():
@@ -269,7 +273,8 @@ class MasterController:
                 node["root_dir"], "savop", "sav_control_host.py")
             cmd = f"python3 {path2hostpy} --metric {mode_name}"
             self.logger.debug(cmd)
-            node_result = self._remote_run(node_id, node, cmd, capture_output=True)
+            node_result = self._remote_run(
+                node_id, node, cmd, capture_output=True)
             result[node_id] = node_result
         # sort metric
         print("the protocol performance metric:")
@@ -277,7 +282,8 @@ class MasterController:
         for item in result.values():
             for metric in json.loads(item["cmd_result"].stdout):
                 all_metric.append(metric)
-        all_sort_metric = sorted(all_metric, key=lambda x: int(list(x.keys())[0][1:]))
+        all_sort_metric = sorted(
+            all_metric, key=lambda x: int(list(x.keys())[0][1:]))
         for metric in all_sort_metric:
             print(json.dumps(metric))
         return result
@@ -290,7 +296,8 @@ class MasterController:
                 node["root_dir"], "savop", "sav_control_host.py")
             cmd = f"python3 {path2hostpy} --table {mode_name}"
             self.logger.debug(cmd)
-            node_result = self._remote_run(node_id, node, cmd, capture_output=True)
+            node_result = self._remote_run(
+                node_id, node, cmd, capture_output=True)
             result[node_id] = node_result
 
         # sort table
@@ -299,9 +306,10 @@ class MasterController:
         for item in result.values():
             for metric in json.loads(item["cmd_result"].stdout):
                 all_table.append(metric)
-        all_sort_table = sorted(all_table, key=lambda x: int(list(x.keys())[0][1:]))
+        all_sort_table = sorted(
+            all_table, key=lambda x: int(list(x.keys())[0][1:]))
         for table in all_sort_table:
-            print(json.dumps(table))
+            print(json.dumps(table, indent=2))
         return result
 
 
@@ -355,10 +363,9 @@ class SavExperiment:
     logger = get_logger("SAVExp")
     controller = MasterController("sav_control_master_config.json", logger)
 
-
     def experiment_testing_v6_inter(self):
         self.controller.config_file_generate(
-            input_json="testing_v6_inter.json")
+            input_json="testing_v4_inter.json")
         self.controller.config_file_distribute()
         before_performance = self.controller.mode_performance().stdout
         t1 = ThreadWithReturnValue(target=self.controller.mode_start)
@@ -371,7 +378,6 @@ class SavExperiment:
         after_performance = self.controller.mode_performance().stdout
         return {"before_run": json.loads(before_performance), "during_run": {"container": run_status, "host": json.loads(run_performance)},
                 "after_run": json.loads(after_performance)}
-
 
     def _bgp_exp_result_parser(self, result):
         """
@@ -411,7 +417,6 @@ class SavExperiment:
         print("step: end")
         return result
 
-
     def dev_test(self, base_cfg_name):
         """
         for development
@@ -421,7 +426,8 @@ class SavExperiment:
         # 2. distribute config files
         self.controller.config_file_distribute()
         self.controller.dev_test()
-    def original_bird(self):
+
+    def original_bird(self) -> None:
         """
         test the time consumption for bgp to stable
         """
@@ -462,13 +468,12 @@ class SavExperiment:
             self.controller.config_file_generate(config)
             self.controller.config_file_distribute()
             ret = self.controller.fib_stable_test()
-            input(ret)
             for node, result in ret.items():
                 std_out = result["cmd_result"]["stdout"]
                 std_err = result["cmd_result"]["stderr"]
                 ret_code = result["cmd_result"]["returncode"]
                 if ret_code == 0:
-                    time_usage = result["cmd_end_dt"] - result["cmd_s/art_dt"]
+                    time_usage = result["cmd_end_dt"] - result["cmd_start_dt"]
                     self.logger.debug(f"{node} finished in {time_usage}")
                     raw_result = std_out
                     raw_result_file_name = config.replace(
@@ -486,7 +491,7 @@ def run(args):
     action = args.action
     performance = args.performance
     experiment = args.experiment
-    skip_compile= args.skip_compile
+    skip_compile = args.skip_compile
     step = args.step
     metric = args.metric
     table = args.table
@@ -500,9 +505,9 @@ def run(args):
             case "original_bird":
                 return sav_exp.original_bird()
             case "dev_test":
-                return sav_exp.dev_test("testing_v4_inter.json")
+                return sav_exp.dev_test("testing_v4_mix.json")
             case _:
-                return sav_exp.general_exp(experiment+'.json',skip_compile=skip_compile)
+                return sav_exp.general_exp(experiment+'.json', skip_compile=skip_compile)
     # generate config files
     if config is not None and topo_json is not None:
         master_controller = MasterController("sav_control_master_config.json")
@@ -573,18 +578,22 @@ if __name__ == "__main__":
         "-d", "--distribute", choices=["all"], help="distribute the configuration files")
     parser.add_argument("-s", "--skip_compile", action="store_true",
                         help="skip compile bird, default value is false")
-    operate_group = parser.add_argument_group("operate", "control the operation of SAVOP.")
+    operate_group = parser.add_argument_group(
+        "operate", "control the operation of SAVOP.")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart"],
                                help="control SAVOP execution, only support three values: start, stop and restart")
 
     monitor_group = parser.add_argument_group(
         "monitor", "Monitor the operational status of SAVOP.")
-    monitor_group.add_argument("-p", "--performance", choices=["all"], help="monitor the performance of machines and containers")
-    monitor_group.add_argument("--step", help="show the protocol process of sending packets")
+    monitor_group.add_argument(
+        "-p", "--performance", choices=["all"], help="monitor the performance of machines and containers")
+    monitor_group.add_argument(
+        "--step", help="show the protocol process of sending packets")
     monitor_group.add_argument("--metric", help="show the protocol metric")
-    monitor_group.add_argument("--table", help="show the protocol tables of all routers")
+    monitor_group.add_argument(
+        "--table", help="show the protocol tables of all routers")
 
-    experiment_group = parser.add_argument_group("experiment", "refresh the SAVOP coniguration files, "
+    experiment_group = parser.add_argument_group("experiment", "refresh the SAVOP configuration files, "
                                                                "restart the simulation and record experimental process "
                                                                "data.")
     experiment_group.add_argument("-e", "--experiment",

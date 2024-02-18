@@ -6,8 +6,6 @@
 @Version :   0.1
 @Desc    :   The sav_control_host.py is responsible for the management of current host(slave).
 """
-import json
-
 from sav_control_common import *
 import argparse
 import threading
@@ -22,7 +20,7 @@ HOST_METRIC_PATH = "./host_metric.txt"
 CONTAINER_METRIC_PATH = "./containers_metric.json"
 
 
-def monitor_host(stat_out_file=HOST_METRIC_PATH):
+def monitor_host(stat_out_file=HOST_METRIC_PATH) -> None:
     """
     monitor resource usage of the host
     the default interval is one second
@@ -33,14 +31,14 @@ def monitor_host(stat_out_file=HOST_METRIC_PATH):
     run_cmd(cmd, 1)
 
 
-def monitor_containers(stat_out_file=CONTAINER_METRIC_PATH):
+def monitor_containers(stat_out_file=CONTAINER_METRIC_PATH) -> None:
     if os.path.exists(stat_out_file):
         os.unlink(stat_out_file)
     cmd = f"docker stats -a --format json>{stat_out_file}"
     run_cmd(cmd)
 
 
-def parse_dstat_file(file_path):
+def parse_dstat_file(file_path) -> None:
     """
     parse dstat file
     """
@@ -64,7 +62,7 @@ def parse_dstat_file(file_path):
 
 class RunEmulation():
     def __init__(self, root_dir, host_signal_path=r"./active_signal.json", base_compose="./docker_compose_50.yml",
-                 base_topo="./savop/topology/topo_50.sh", base_node_num=50):
+                 base_topo="./savop/topology/topo_50.sh", base_node_num=50) -> None:
         self._id = whoami()
         if not self._id:
             raise ValueError("get id error")
@@ -81,7 +79,7 @@ class RunEmulation():
         self.docker_client = docker.DockerClient.from_env()
         self._system_check()
 
-    def _system_check(self):
+    def _system_check(self) -> None:
         """
         ensure the system is ready to run the emulation
         """
@@ -148,16 +146,15 @@ class RunEmulation():
         else:
             return True
 
-    def send_stop_signal(self):
+    def send_stop_signal(self) -> None:
         """stop sav-agent and bird on all nodes"""
         data = json_r(self.host_signal_path)
         data["command"] = "stop"
         json_w(self.host_signal_path, data)
         self.logger.info("stop signal sent")
 
-    def send_start_signal(self):
+    def send_start_signal(self) -> None:
         """start sav-agent and bird on all nodes"""
-        self.logger.debug(self.host_signal_path)
         data = json_r(self.host_signal_path)
         data["command"] = "start"
         json_w(self.host_signal_path, data)
@@ -182,7 +179,7 @@ class RunEmulation():
                 else:
                     os.remove(file_path)
 
-    def _stop_base(self):
+    def _stop_base(self) -> None:
         """
         stop and remove all containers
         """
@@ -200,7 +197,7 @@ class RunEmulation():
         self.logger.info(
             f"{count} containers removed in {t1-t0:.4f} seconds")
 
-    def _start_base(self):
+    def _start_base(self) -> None:
         """
         start the base (node compose and rpki compose)
         """
@@ -210,11 +207,13 @@ class RunEmulation():
             ca_ready = False
             while not ca_ready:
                 time.sleep(1)
-                ret_code,ret,b  = run_cmd(f"docker exec -it ca cat /root/still_adding", 0)
-                if "done" in ret:
-                    ca_ready = True
-            # time.sleep(1)
-            # run_cmd(f"docker compose -f {self.roa_compose_path} up -d")
+                try:
+                    ret_code, std, err = run_cmd(
+                        f"docker exec -it ca cat /root/still_adding", 0, capture_output=True)
+                    if "done" in std:
+                        ca_ready = True
+                except Exception as e:
+                    time.sleep(1)
             t1 = time.time()
             self.logger.info(f"rpki started in {t1-t0:.4f} seconds")
         t1 = time.time()
@@ -224,7 +223,7 @@ class RunEmulation():
         self.logger.info(
             f"{self.base_compose_path} started in {t2-t1:.4f} seconds")
 
-    def _ready_base(self, force_restart=False, build_image=False):
+    def _ready_base(self, force_restart=False, build_image=False) -> None:
         """
         1. stop containers
         2. rebuild/recompile if needed
@@ -272,7 +271,7 @@ class RunEmulation():
             self.logger.error("base start failed")
             sys.exit(1)
 
-    def update_configs(self, nodes, proto):
+    def update_configs(self, nodes, proto) -> None:
         """
         update the bird and sav-agent configs
         """
@@ -463,7 +462,7 @@ class RunEmulation():
         if exec_result["status"] == "error":
             return None
 
-    def _container_curl(self, container, url_path, connect_timeout=2, transfer_timeout=5,raw=False):
+    def _container_curl(self, container, url_path, connect_timeout=2, transfer_timeout=5, raw=False):
         """
         execute f"docker exec -it {container.id} curl http://localhost:8888/{url_path} 
         --connect-timeout {connect_timeout} -m {transfer_timeout}"
@@ -478,7 +477,7 @@ class RunEmulation():
         cmd = f"docker exec -it {container.id} "
         cmd += f"curl http://localhost:8888/{url_path} "
         cmd += f"--connect-timeout {connect_timeout} -m {transfer_timeout}"
-        ret_code, ret_str, ret_err = run_cmd(cmd,capture_output=True)
+        ret_code, ret_str, ret_err = run_cmd(cmd, capture_output=True)
         try:
             if raw:
                 return ret_str
@@ -663,14 +662,37 @@ class RunEmulation():
                 if not (ret.startswith("{") and ret.endswith("}") and len(ret)>2):
                     temp.append(c)
                 else:
-                    self.logger.debug(f"{c.name} sav table ready {ret}")
+                    # self.logger.debug(f"{c.name} sav table ready! {ret}")
+                    self.logger.debug(f"{c.name} sav table ready!")
             containers_to_go = temp
             time.sleep(check_interval)
         for c in self.device_containers:
-            self._container_curl(c, "save_sav_table/",raw = True)
+            self._container_curl(c, "save_sav_table/", raw=True)
             self.logger.debug(f"{c.name} sav table saved")
 
-    def dev_test(self):
+    def _remove_prefix_in_container(self, container_name, prefix_index) -> None:
+        """
+        1. modify the bird config
+        2. restart bird
+        """
+        # modify the bird config
+        container_dir = f"{SAV_RUN_DIR}/{container_name.replace('r', '')}"
+        bird_cfg_path = f"{container_dir}/bird.conf"
+        data = open(bird_cfg_path, "r").readlines()
+        with open(bird_cfg_path, "w") as f:
+            index = 0
+            for line in data:
+                if line.startswith(f"  route"):
+                    if index == prefix_index:
+                        continue
+                    index += 1
+                f.write(line+'\n')
+        if index < prefix_index:
+            raise ValueError(f"prefix_index {prefix_index} is too large")
+        self.logger.debug("reconfiguring")
+        run_cmd(f"docker exec -it {container_name} birdc configure")
+
+    def dev_test(self) -> None:
         """
         dev test
         """
@@ -678,7 +700,12 @@ class RunEmulation():
         self._ready_base(force_restart=True, build_image=True)
         self.send_start_signal()
         self._wait_valid_sav_table()
-        # self._stop_base()
+        t = 1
+        self.logger.info(f"will del prefixes in {t} seconds")
+        time.sleep(t)
+        self._remove_prefix_in_container('r1', 0)
+        time.sleep(600)
+        self._stop_base()
 
     def fib_stable(self, monitor_overlap_sec=10, if_monitor=False):
         """
@@ -717,7 +744,6 @@ class RunEmulation():
         return ret
 
 
-
 class DevicePerformance():
     __cpucommand = "dstat -c --nocolor 1 2 --nocolor| sed -e '1,3d'"
     __memorycommand = "dstat -m --nocolor 1 2 --nocolor| sed -e '1,3d'"
@@ -727,27 +753,33 @@ class DevicePerformance():
     __dockerStatscommand = "docker stats --no-stream --format json"
 
     def get_cpu_performance(self):
-        ret = subprocess_cmd(cmd=self.__cpucommand, timeout=None, capture_output=True)
+        ret = subprocess_cmd(cmd=self.__cpucommand,
+                             timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_memory_performace(self):
-        ret = subprocess_cmd(cmd=self.__memorycommand, timeout=None, capture_output=True)
+        ret = subprocess_cmd(cmd=self.__memorycommand,
+                             timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_disk_performance(self):
-        ret = subprocess_cmd(cmd=self.__diskcommand, timeout=None, capture_output=True)
+        ret = subprocess_cmd(cmd=self.__diskcommand,
+                             timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_network_performance(self):
-        ret = subprocess_cmd(cmd=self.__networkcommand, timeout=None, capture_output=True)
+        ret = subprocess_cmd(cmd=self.__networkcommand,
+                             timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_host_performance(self):
-        ret = subprocess_cmd(cmd=self.__hostCommand, timeout=None, capture_output=True)
+        ret = subprocess_cmd(cmd=self.__hostCommand,
+                             timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
     def get_docker_container_performance(self):
-        ret = subprocess_cmd(cmd=self.__dockerStatscommand, timeout=None, capture_output=True)
+        ret = subprocess_cmd(cmd=self.__dockerStatscommand,
+                             timeout=None, capture_output=True)
         return ret.returncode, ret.stderr, ret.stdout
 
 
@@ -792,7 +824,8 @@ class Monitor:
     @staticmethod
     def protocol_step():
         step = {}
-        folders = [f for f in os.listdir(SAV_RUN_DIR) if os.path.isdir(os.path.join(SAV_RUN_DIR, f))]
+        folders = [f for f in os.listdir(SAV_RUN_DIR) if os.path.isdir(
+            os.path.join(SAV_RUN_DIR, f))]
         for f in folders:
             step.update({f: []})
             f_log_path = os.path.join(f, "log")
@@ -801,7 +834,7 @@ class Monitor:
             for i in stdout.replace("\'", "\"").split("\n"):
                 if len(i) < 10:
                     continue
-                step[f].append(json.loads(i.replace("IPAddress(", "").replace(")", "")))
+                step[f].append(json.loads(i))
         return json.dumps(step)
 
     @staticmethod
@@ -823,7 +856,8 @@ class Monitor:
         for container_name in stdout.split("\n")[:-1]:
             cmd = f"docker exec -i {container_name} curl http://localhost:8888/sav_table/"
             returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
-            table.append({container_name: json.loads(stdout.replace("IPNetwork(", "").replace("IPAddress(","").replace(")", "").replace("\'", "\"").replace("True", "\"True\"").replace("False", "\"False\""))})
+            table.append({container_name: json.loads(stdout.replace("IPNetwork(", "").replace(
+                ")", "").replace("\'", "\"").replace("True", "\"True\"").replace("False", "\"False\""))})
         return json.dumps(table)
 
     @staticmethod
@@ -885,7 +919,7 @@ def run(args):
                 result_["host_performance"] = Monitor.host_performance()
                 result_["container_performance"] = Monitor.container_performance()
                 result = {int(time.time()): result_}
-        return json.dumps(result)
+        return json.dumps(result, indent=4)
 
     if step is not None:
         result = Monitor.protocol_step()
