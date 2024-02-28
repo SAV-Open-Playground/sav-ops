@@ -147,11 +147,12 @@ def gen_bird_conf(node, delay, mode, base,
         "    export all;\n" \
         "    import all;\n" \
         "  };\n"
-    for prefix in node["prefixes"]:
-        bird_conf_str += f"  route {prefix} {mode};\n"
-        roa_item = {"asn": int(dev_as), "prefix": prefix,
-                    "max_length": int(prefix.split("/")[1])}
-        roa_json["add"].append(roa_item)
+    if mode == "blackhole":
+        for prefix in node["prefixes"]:
+            bird_conf_str += f"  route {prefix} {mode};\n"
+            roa_item = {"asn": int(dev_as), "prefix": prefix,
+                        "max_length": int(prefix.split("/")[1])}
+            roa_json["add"].append(roa_item)
     bird_conf_str += "};\n"
     bird_conf_str += "template bgp basic {\n"
     bird_conf_str += f"  local as {node['as']};\n"
@@ -252,19 +253,16 @@ def gen_bird_conf(node, delay, mode, base,
     return delay, bird_conf_str, link_map
 
 
-def gen_sa_config(
-        auto_ip_version,
-        auto_nets,
-        use_ignore_nets,
-        node,
-        link_map,
-        as_scope,
-        app_list,
-        active_app,
-        enable_rpki,
-        fib_threshold=5,
-        ignore_private=True):
+def gen_sa_config(config_json, auto_nets, node, link_map):
+    auto_ip_version = config_json["auto_ip_version"]
+    ignore_private = config_json["ignore_private"]
+    fib_threshold = config_json["fib_threshold"]
+    enable_rpki = config_json["enable_rpki"]
+    active_app = config_json["active_sav_app"]
+    app_list = config_json["sav_apps"]
+    as_scope = config_json["as_scope"]
     as_scope = as_scope[node["as"]]
+    use_ignore_nets = config_json["ignore_irrelevant_nets"]
     sa_config = {
         "apps": app_list,
         "enabled_sav_app": active_app,
@@ -288,7 +286,8 @@ def gen_sa_config(
         "location": "edge_full",
         "as_scope": as_scope,
         "enable_rpki": enable_rpki,
-        "ignore_private": ignore_private
+        "ignore_private": ignore_private,
+        "prefix_method": config_json["prefix_method"],
     }
     if enable_rpki:
         if auto_ip_version in [4, 6]:
@@ -534,7 +533,7 @@ def regenerate_config(
     aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT,
                  "token": "krill", "add": []}
     ignore_nets.append(base["ip_range"])
-    print(f"ignore_nets: {ignore_nets}")
+    # print(f"ignore_nets: {ignore_nets}")
     for node in base["devices"]:
         cur_delay = 0
         nodes = base["devices"][node]
@@ -544,24 +543,17 @@ def regenerate_config(
         os.makedirs(node_dir)
         # generate bird conf
         cur_delay, bird_config_str, link_map = gen_bird_conf(
-            nodes, cur_delay, "blackhole", base, rpdp_enable,
+            nodes, cur_delay, base["prefix_method"], base, rpdp_enable,
             roa_json, aspa_json)
 
         with open(os.path.join(node_dir, "bird.conf"), 'w') as f:
             f.write(bird_config_str)
         run_cmd(f"chmod 666 {node_dir}/bird.conf")
         sa_config = gen_sa_config(
-            base["auto_ip_version"],
+            base,
             ignore_nets,
-            base["ignore_irrelevant_nets"],
             nodes,
-            link_map,
-            base["as_scope"],
-            base["sav_apps"],
-            base["active_sav_app"],
-            base["enable_rpki"],
-            fib_threshold=base["fib_threshold"],
-            ignore_private=base["ignore_private"])
+            link_map)
         with open(os.path.join(node_dir, "sa.json"), 'w') as f:
             json.dump(sa_config, f, indent=4)
         # resign keys
