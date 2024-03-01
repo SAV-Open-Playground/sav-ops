@@ -309,7 +309,7 @@ class MasterController:
         all_sort_table = sorted(
             all_table, key=lambda x: int(list(x.keys())[0][1:]))
         for table in all_sort_table:
-            print(json.dumps(table, indent=2))
+            print(json.dumps(table))
         return result
 
 

@@ -919,7 +919,7 @@ def run(args):
                 result_["host_performance"] = Monitor.host_performance()
                 result_["container_performance"] = Monitor.container_performance()
                 result = {int(time.time()): result_}
-        return json.dumps(result, indent=4)
+        return json.dumps(result)
 
     if step is not None:
         result = Monitor.protocol_step()
