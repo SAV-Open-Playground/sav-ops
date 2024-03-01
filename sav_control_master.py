@@ -132,13 +132,13 @@ class MasterController:
                     print("compress config files fail!")
                 result = conn.put(
                     local=f"{SAV_OP_DIR}/this_config/{node_id}.tar.gz", remote=f"{node['root_dir']}/savop_run/")
-                if not skip_compile:
-                    result = conn.put(
-                        local=f"{SAV_ROUTER_DIR}/bird", remote=f"{node['root_dir']}/savop_run/")
-                    result = conn.put(
-                        local=f"{SAV_ROUTER_DIR}/birdc", remote=f"{node['root_dir']}/savop_run/")
-                    result = conn.put(
-                        local=f"{SAV_ROUTER_DIR}/birdcl", remote=f"{node['root_dir']}/savop_run/")
+                # if not skip_compile:
+                result = conn.put(
+                    local=f"{SAV_ROUTER_DIR}/bird", remote=f"{node['root_dir']}/savop_run/")
+                result = conn.put(
+                    local=f"{SAV_ROUTER_DIR}/birdc", remote=f"{node['root_dir']}/savop_run/")
+                result = conn.put(
+                    local=f"{SAV_ROUTER_DIR}/birdcl", remote=f"{node['root_dir']}/savop_run/")
                 transfer_config = conn.run(
                     command=f"ls -al {node['root_dir']}/savop_run/{node_id}.tar.gz")
                 if transfer_config.return_code == 0:
@@ -415,6 +415,15 @@ class SavExperiment:
         self.controller.config_file_distribute(skip_compile=skip_compile)
         result = self.controller.sav_exp_start()
         print("step: end")
+        exit_code  = 0
+        for key, value in result.items():
+            if value["cmd_result"].return_code != 0:
+                exit_code = -1
+                break
+        if exit_code == 0:
+            print("step: run model successfully")
+        else:
+            print("step: run model fail")
         return result
 
     def dev_test(self, base_cfg_name):

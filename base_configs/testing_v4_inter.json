@@ -59,7 +59,7 @@
         ]
     },
     "enable_rpki": false,
-    "prefix_method": "blackhole",
+    "prefix_method": "independent_interface",
     "auto_ip_version": 4,
     "sav_apps": [
         "rpdp"
