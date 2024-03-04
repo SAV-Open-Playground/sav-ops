@@ -66,6 +66,10 @@ class MasterController:
             ret[host_id] = script_builder(
                 host_node["root_dir"], SAV_OP_DIR, json_content, out_dir=generated_config_dir, logger=self.logger, skip_bird=skip_compile)
             self.host_node[host_id]["cfg_src_dir"] = generated_config_dir
+            active_signal_content =  json_r(f"{generated_config_dir}/active_signal.json")
+            active_signal_content.update({"mode_name": input_json.split(".")[0]})
+            with open(os.path.join(generated_config_dir, "active_signal.json"), 'w') as f:
+                json.dump(active_signal_content, f, indent=4)
         return ret
 
     def config_file_generate(self, input_json, skip_compile=True):
