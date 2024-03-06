@@ -6,6 +6,8 @@
 @Version :   0.1
 @Desc    :   The sav_control_host.py is responsible for the management of current host(slave).
 """
+import json
+
 from sav_control_common import *
 import argparse
 import threading
@@ -829,12 +831,15 @@ class Monitor:
         for f in folders:
             step.update({f: []})
             f_log_path = os.path.join(f, "log")
-            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'"
+            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPA"
             returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
             for i in stdout.replace("\'", "\"").split("\n"):
                 if len(i) < 10:
                     continue
                 step[f].append(json.loads(i))
+            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPD| sed \"s/'/\\\"/g\"  | jq -s 'unique_by(.src_ip, .dst_ip, .msg_cause, .link_name)'"
+            returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
+            step[f].extend(json.loads(stdout))
         return json.dumps(step)
 
     @staticmethod
