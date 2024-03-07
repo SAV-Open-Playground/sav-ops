@@ -831,13 +831,13 @@ class Monitor:
         for f in folders:
             step.update({f: []})
             f_log_path = os.path.join(f, "log")
-            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPA"
+            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPA|grep -E \"'msg_cause': 'receive'|'msg_cause': 'relay'\""
             returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
             for i in stdout.replace("\'", "\"").split("\n"):
                 if len(i) < 10:
                     continue
                 step[f].append(json.loads(i))
-            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPD| sed \"s/'/\\\"/g\"  | jq -s 'unique_by(.src_ip, .dst_ip, .msg_cause, .link_name)'"
+            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPD| sed \"s/'/\\\"/g\"|grep -E '\"msg_cause\": \"receive\"|\"msg_cause\": \"relay\"'| jq -s 'unique_by(.src_ip, .dst_ip, .msg_cause, .link_name)'"
             returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
             step[f].extend(json.loads(stdout))
         return json.dumps(step)
