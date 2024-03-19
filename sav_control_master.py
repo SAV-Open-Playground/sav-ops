@@ -504,7 +504,7 @@ def run(args):
     action = args.action
     performance = args.performance
     experiment = args.experiment
-    skip_compile = args.skip_compile
+    compile = args.compile
     step = args.step
     metric = args.metric
     table = args.table
@@ -520,7 +520,7 @@ def run(args):
             case "dev_test":
                 return sav_exp.dev_test("testing_v4_mix.json")
             case _:
-                return sav_exp.general_exp(experiment+'.json', skip_compile=skip_compile)
+                return sav_exp.general_exp(experiment+'.json', skip_compile=compile)
     # generate config files
     if config is not None and topo_json is not None:
         master_controller = MasterController("sav_control_master_config.json")
@@ -589,8 +589,7 @@ if __name__ == "__main__":
         "-c", "--config", choices=["refresh"], help="generate the configuration files")
     config_group.add_argument(
         "-d", "--distribute", choices=["all"], help="distribute the configuration files")
-    parser.add_argument("-s", "--skip_compile", action="store_true",
-                        help="skip compile bird, default value is false")
+    parser.add_argument("--compile", action="store_false", help="compile bird, default value is True")
     operate_group = parser.add_argument_group(
         "operate", "control the operation of SAVOP.")
     operate_group.add_argument("-a", "--action", choices=["start", "stop", "restart"],
