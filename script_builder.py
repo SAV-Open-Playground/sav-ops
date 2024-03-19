@@ -293,16 +293,16 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
 
 def get_node_config(node, config_json) -> dict:
     d = config_json["sav_app_map"][0]
-    for d in config_json["sav_app_map"]:
-        if node in d["devices"]:
-            return d
+    for x in config_json["sav_app_map"]:
+        if node in x["devices"]:
+            return x
     return d
 
 
 def gen_sa_config(config_json, auto_nets, node):
     auto_ip_version = config_json["auto_ip_version"]
     enable_rpki = config_json["enable_rpki"]
-    node_config = get_node_config(node, config_json)
+    node_config = get_node_config(node["device_id"], config_json)
     as_scope = config_json["as_scope"]
     as_scope = as_scope[node["as"]]
     sa_config = {
@@ -675,7 +675,6 @@ def regenerate_config(
         cur_delay, bird_config_str = gen_bird_conf(
             nodes, cur_delay, base["prefix_method"], base,
             roa_json, aspa_json)
-
         sa_config = gen_sa_config(
             base,
             ignore_nets,
