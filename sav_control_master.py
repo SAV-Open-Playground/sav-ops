@@ -518,7 +518,7 @@ def run(args):
             case "original_bird":
                 return sav_exp.original_bird()
             case "dev_test":
-                return sav_exp.dev_test("testing_v4_mix.json")
+                return sav_exp.dev_test("dev_test.json")
             case _:
                 return sav_exp.general_exp(experiment+'.json', skip_compile=compile)
     # generate config files

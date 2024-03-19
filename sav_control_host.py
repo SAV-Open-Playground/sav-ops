@@ -11,7 +11,6 @@ import json
 from sav_control_common import *
 import argparse
 import threading
-import requests
 import os
 
 
@@ -655,13 +654,14 @@ class RunEmulation():
 
     def _wait_valid_sav_table(self, check_interval=5):
         containers_to_go = self.device_containers
+        time.sleep(10)
         while len(containers_to_go) > 0:
             temp = []
             for c in containers_to_go:
                 if c.status != "running":
                     continue
                 ret = self._container_curl(c, "sav_table/",raw = True)
-                if not (ret.startswith("{") and ret.endswith("}") and len(ret)>2):
+                if not (ret.startswith("{") and ret.endswith("}") and len(ret) > 3):
                     temp.append(c)
                 else:
                     # self.logger.debug(f"{c.name} sav table ready! {ret}")
