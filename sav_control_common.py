@@ -64,7 +64,7 @@ def run_cmd(cmd, expected_return_code=0, capture_output=False, timeout=None):
     """print output if return code is not expected
     return returncode, stdout, stderr"""
     ret = subprocess_cmd(cmd, timeout, capture_output=capture_output)
-    if ret.returncode != expected_return_code:
+    if ret.returncode != expected_return_code and capture_output is False:
         print(ret)
     return ret.returncode, ret.stdout, ret.stderr
 
