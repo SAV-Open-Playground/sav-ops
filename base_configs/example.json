@@ -1,0 +1,72 @@
+{
+    "devices": {
+        "1": {
+            "as": 65501,
+            "prefixes": {
+                "4.0.0.0/9": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        },
+        "2": {
+            "as": 65502,
+            "prefixes": {
+                "5.0.0.0/9": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        }
+    },
+    "links": [
+        [
+            "1",
+            "2",
+            "bgp"
+        ]
+    ],
+    "as_relations": {
+        "provider-customer": [
+            [
+                "65502",
+                "65501"
+            ]
+        ]
+    },
+    "enable_rpki": false,
+    "auto_ip_version": 6,
+    "prefix_method": "independent_interface",
+    "sav_app_map": [
+        {
+            "devices": [],
+            "sav_apps": [],
+            "active_app": null,
+            "ignore_irrelevant_nets": true,
+            "fib_threshold": 5,
+            "original_bird": false,
+            "enable_rpki": false,
+            "ignore_private": true
+        },
+        {
+            "devices": [
+                "1",
+                "2"
+            ],
+            "sav_apps": [
+                "rpdp",
+                "strict_urpf",
+                "loose_urpf",
+                "fp_urpf",
+                "efp_urpf_a",
+                "efp_urpf_b"
+            ],
+            "active_app": "rpdp",
+            "ignore_irrelevant_nets": true,
+            "fib_threshold": 5,
+            "original_bird": false,
+            "enable_rpki": false,
+            "ignore_private": true
+        }
+    ]
+}
