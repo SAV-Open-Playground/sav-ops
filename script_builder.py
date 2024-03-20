@@ -244,7 +244,8 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
                     bird_conf_str += "{\n"
                     for prefix in no_exp_data:
                         bird_conf_str += f"  if net = {prefix} then bgp_community.add((0xFFFF, 0xFF01));\n"
-                    bird_conf_str += "};\n"
+
+                    bird_conf_str += "  accept;\n};\n"
             if no_exp_data is None:
                 bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from basic{v}"
             else:
@@ -290,7 +291,7 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
                 if no_exp_data:
                     bird_conf_str += f"  ipv{v} "
                     bird_conf_str += "{\n"
-                    bird_conf_str += f"   export filter noexport_{peer_id};\n"
+                    bird_conf_str += f"    export filter noexport_{peer_id};\n"
                     bird_conf_str += "    import all;\n"
                     bird_conf_str += "    import table on;\n"
                     bird_conf_str += "  };\n"
