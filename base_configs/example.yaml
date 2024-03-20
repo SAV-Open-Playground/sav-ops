@@ -1,0 +1,75 @@
+{
+    "devices": {  # all devices are defined here,key is the device_id, it should be a string of a int number,values is a dict of its attributes
+        "1": {
+            "as": 65501, # as (mandatory) should be a int
+            "prefixes": { # prefixes (mandatory) should be a dict of prefixes
+                "4.0.0.0/9": { # key is the prefix itself in string format
+                    "miig_tag": 0, # miig_tag(mandatory), for RPDP, default is 0
+                    "miig_type": 1, # miig_type(mandatory), for RPDP, default is 1
+                    "no_export": [ # no_export(optional), if set will add no_export with this prefixes,the value is a list  of peer device_ids
+                        "4"
+                    ]
+                }
+            }
+        },
+        "2": {
+            "as": 65502,
+            "prefixes": {
+                "5.0.0.0/9": {
+                    "miig_tag": 0,
+                    "miig_type": 1
+                }
+            }
+        }
+    },
+    "links": [ #links(mandatory) represent the links to be added, is a list of list
+        [ # a representation of link consists of three element: first is src, second is dst, third is link-type, currently link-type only support("bgp","rpdp-http")
+            "1",
+            "2",
+            "bgp"
+        ]
+    ],
+    "as_relations": { # as_relations(mandatory), a single-key-dict of as relations, if an as relation is not defined here, we assume peer-peer/
+        "provider-customer": [ # provider-customer(mandatory), a list of as relations
+            [ # a representation of as relations, first is provider, second is customer.
+                "65502",
+                "65501"
+            ]
+        ]
+    },
+    "enable_rpki": false, # enable_rpki(mandatory), use false, since not ready
+    "auto_ip_version": 6, # auto_ip_version(mandatory), use int 4 or 6, indicating the auto-generated ip version
+    "prefix_method": "independent_interface", # prefix_method(mandatory), string value must be one of ["independent_interface","blackhole"]
+    "sav_app_map": [ # a list of config for each device, the first element is the default config
+        {
+            "devices": [],
+            "sav_apps": [],
+            "active_app": null,
+            "ignore_irrelevant_nets": true,
+            "fib_threshold": 5,
+            "original_bird": false,
+            "enable_rpki": false,
+            "ignore_private": true
+        },
+        {
+            "devices": [
+                "1",
+                "2"
+            ],
+            "sav_apps": [
+                "rpdp",
+                "strict_urpf",
+                "loose_urpf",
+                "fp_urpf",
+                "efp_urpf_a",
+                "efp_urpf_b"
+            ],
+            "active_app": "rpdp",
+            "ignore_irrelevant_nets": true,
+            "fib_threshold": 5,
+            "original_bird": false,
+            "enable_rpki": false,
+            "ignore_private": true
+        }
+    ]
+}

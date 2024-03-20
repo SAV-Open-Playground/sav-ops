@@ -192,8 +192,16 @@ def gen_bird_conf(node, delay, mode, base, roa_json, aspa_json):
 
     if enable_rpki:
         aspa_json["add"].append(aspa_item)
-
-    return delay, bird_conf_str
+    # calculate the no_export cmd
+    base["no_export_map"] = {}
+    for prefix, p_data in node["prefixes"].items():
+        if not "no_export" in p_data:
+            continue
+        base["no_export_map"][dev_id] = {}
+        for dst_dev_id in p_data["no_export"]:
+            base["no_export_map"][dev_id][dst_dev_id] = []
+        base["no_export_map"][dev_id][dst_dev_id].append(prefix)
+    return delay, bird_conf_str, base
 
 
 def find_links(all_links, dev_id) -> list:
@@ -228,7 +236,19 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
             add_a_bird_proto = True
         elif link_type in ["bgp"]:
             v = my_ip.version
-            bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from basic{v}\n"
+            no_exp_data = None
+            if dev_id in base["no_export_map"]:
+                if peer_id in base["no_export_map"][dev_id]:
+                    no_exp_data = base["no_export_map"][dev_id][peer_id]
+                    bird_conf_str += f"filter noexport_{peer_id} "
+                    bird_conf_str += "{\n"
+                    for prefix in no_exp_data:
+                        bird_conf_str += f"  if net = {prefix} then bgp_community.add((0xFFFF, 0xFF01));\n"
+                    bird_conf_str += "};\n"
+            if no_exp_data is None:
+                bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from basic{v}"
+            else:
+                bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from basic"
             add_a_bird_proto = True
         elif link_type in ["rpdp-http"]:
             if base["rpdp_full_link"]:
@@ -259,16 +279,25 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
                 remote_role = "peer"
                 local_role = "peer"
         if add_a_bird_proto:
-            bird_conf_str += "{\n"
+            bird_conf_str += " {\n"
             bird_conf_str += f"  description \"BGP between {dev_id} and {peer_id}\";\n"
             if local_role is not None:
                 bird_conf_str += f"  local role {local_role};\n"
             # get ip
             bird_conf_str += f"  source address {my_ip};\n"
             bird_conf_str += f"  neighbor {peer_ip} as {peer_as};\n"
-            # bird_conf_str += f"  interface \"eth_{dst_id}\";\n"
-            # interface "eth_3356";
+            if link_type in ["bgp"]:
+                if no_exp_data:
+                    bird_conf_str += f"  ipv{v} "
+                    bird_conf_str += "{\n"
+                    bird_conf_str += f"   export filter noexport_{peer_id};\n"
+                    bird_conf_str += "    import all;\n"
+                    bird_conf_str += "    import table on;\n"
+                    bird_conf_str += "  };\n"
+            else:
+                bird_conf_str += ";\n"
             bird_conf_str += f"  connect delay time {int(delay)};\n"
+
             delay += 0.1
             bird_conf_str += "  direct;\n};\n"
         link_map_name = "_".join([link_type, dev_id, peer_id])
@@ -672,7 +701,7 @@ def regenerate_config(
         node_dir = os.path.join(out_dir, node_id)
         os.makedirs(node_dir)
         # generate bird conf
-        cur_delay, bird_config_str = gen_bird_conf(
+        cur_delay, bird_config_str, base = gen_bird_conf(
             nodes, cur_delay, base["prefix_method"], base,
             roa_json, aspa_json)
         sa_config = gen_sa_config(
