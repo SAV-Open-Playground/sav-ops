@@ -15,6 +15,7 @@ import netaddr
 import copy
 import platform
 from sav_control_common import *
+RPDP_OVER_HTTP = "rpdp-http"
 
 
 def tell_prefix_version(prefix):
@@ -97,7 +98,8 @@ def rebuild_img(
 
 
 def add_bird_basic_protos(router_id):
-    bird_conf_str = f"router id {str(netaddr.IPAddress(router_id))};"
+    router_id_ip = netaddr.IPAddress(router_id)
+    bird_conf_str = f"router id {str(router_id_ip)};"
     bird_conf_str += "\nipv4 table master4 {sorted 1;};\n" \
                      "ipv6 table master6 {sorted 1;};\n" \
                      "protocol device {\n" \
@@ -201,7 +203,7 @@ def gen_bird_conf(node, delay, mode, base, roa_json, aspa_json):
         for dst_dev_id in p_data["no_export"]:
             base["no_export_map"][dev_id][dst_dev_id] = []
         base["no_export_map"][dev_id][dst_dev_id].append(prefix)
-    return delay, bird_conf_str, base
+    return delay, bird_conf_str, node
 
 
 def find_links(all_links, dev_id) -> list:
@@ -225,8 +227,9 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
     all_nodes = base["devices"]
     links = find_links(base["links"], dev_id)
     link_map = {}
+
     sa_config["device_id"] = dev_id
-    for peer_id, peer_ip, my_ip, dev_id, link_type in links:
+    for peer_id, peer_ip, dev_ip, dev_id, link_type in links:
         peer_node = all_nodes[peer_id]
         peer_as = peer_node["as"]
         add_a_bird_proto = False
@@ -235,7 +238,7 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
             bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from sav_inter\n"
             add_a_bird_proto = True
         elif link_type in ["bgp"]:
-            v = my_ip.version
+            v = dev_ip.version
             no_exp_data = None
             if dev_id in base["no_export_map"]:
                 if peer_id in base["no_export_map"][dev_id]:
@@ -251,7 +254,7 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
             else:
                 bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from basic"
             add_a_bird_proto = True
-        elif link_type in ["rpdp-http"]:
+        elif link_type in [RPDP_OVER_HTTP]:
             if base["rpdp_full_link"]:
                 continue
         else:
@@ -285,7 +288,7 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
             if local_role is not None:
                 bird_conf_str += f"  local role {local_role};\n"
             # get ip
-            bird_conf_str += f"  source address {my_ip};\n"
+            bird_conf_str += f"  source address {dev_ip};\n"
             bird_conf_str += f"  neighbor {peer_ip} as {peer_as};\n"
             if link_type in ["bgp"]:
                 if no_exp_data:
@@ -307,10 +310,11 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
                               "remote_ip": str(peer_ip),
                               "remote_id": str(peer_id),
                               "remote_as": peer_as,
-                              "local_ip": str(my_ip),
+                              "local_ip": str(dev_ip),
                           }
                           }
-        if link_type in ["bgp", "dsav", "rpdp-http"]:
+
+        if link_type in ["bgp", "dsav", RPDP_OVER_HTTP]:
             link_map_value["link_data"]["local_role"] = local_role
             link_map_value["link_data"]["remote_role"] = remote_role
 
@@ -424,6 +428,7 @@ def add_ips(links):
                         ip_map[src_dev_id][0], ip_map[dst_dev_id][0])
     return links
 
+
 def assign_ip(base):
     """
     assign ip to each link (device)
@@ -443,6 +448,10 @@ def assign_ip(base):
             src_ip, dst_ip = a.get_new_ip_pair()
             link.append(src_ip)
             link.append(dst_ip)
+        elif link[2] == "rpdp-http":
+            if len(link) == 3:
+                link.append(None)
+                link.append(None)
         else:
             link.append(None)
             link.append(None)
@@ -702,7 +711,7 @@ def regenerate_config(
         node_dir = os.path.join(out_dir, node_id)
         os.makedirs(node_dir)
         # generate bird conf
-        cur_delay, bird_config_str, base = gen_bird_conf(
+        cur_delay, bird_config_str, base["devices"][node_id] = gen_bird_conf(
             nodes, cur_delay, base["prefix_method"], base,
             roa_json, aspa_json)
         sa_config = gen_sa_config(
@@ -711,11 +720,8 @@ def regenerate_config(
             nodes)
         bird_config_str, sa_config = add_links(base, node_id, bird_config_str,
                                                aspa_json, cur_delay, nodes["as"], roa_json, sa_config, base["enable_rpki"])
-        with open(os.path.join(node_dir, "bird.conf"), 'w') as f:
-            f.write(bird_config_str)
-        run_cmd(f"chmod 666 {node_dir}/bird.conf")
-        with open(os.path.join(node_dir, "sa.json"), 'w') as f:
-            json.dump(sa_config, f, indent=4)
+        base["devices"][node_id]["bird_cfg_str"] = bird_config_str
+        base["devices"][node_id]["sa_cfg"] = sa_config
         # resign keys
         if base["enable_rpki"]:
             resign_keys(out_dir, node_id, key_f,
@@ -731,13 +737,22 @@ def regenerate_config(
         "command_scope": list(base["devices"].keys()),
         "stable_threshold": base["fib_threshold"]
     }
+    for node_id in base["devices"]:
+        sa_config = base["devices"][node_id]["sa_cfg"]
+        node_dir = os.path.join(out_dir, node_id)
+        with open(os.path.join(node_dir, "bird.conf"), 'w') as f:
+            f.write(base["devices"][node_id]["bird_cfg_str"])
+        run_cmd(f"chmod 666 {node_dir}/bird.conf")
+        with open(os.path.join(node_dir, "sa.json"), 'w') as f:
+            json.dump(base["devices"][node_id]["sa_cfg"], f, indent=4)
+        run_cmd(f"chmod 666 {node_dir}/sa.json")
     with open(os.path.join(out_dir, "active_signal.json"), 'w') as f:
         json.dump(active_signal, f, indent=4)
     ret = run_cmd(f"chmod 666 {out_dir}/active_signal.json")
 
     topo_f = open(os.path.join(out_dir, "topo.sh"), 'a')
     for src, dst, link_type, src_ip, dst_ip in base["links"]:
-        if link_type in ["rpdp-http"]:
+        if link_type in [RPDP_OVER_HTTP]:
             continue
         topo_f.write(f'\necho "adding edge r{src}-r{dst}"')
         if not src_ip.version == dst_ip.version:
