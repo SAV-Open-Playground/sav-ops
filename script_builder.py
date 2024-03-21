@@ -766,7 +766,7 @@ def regenerate_config(
 
     topo_f = open(os.path.join(out_dir, "topo.sh"), 'a')
     for src, dst, link_type, src_ip, dst_ip in base["links"]:
-        if link_type in [RPDP_OVER_HTTP]:
+        if link_type in [RPDP_OVER_HTTP, RPDP_OVER_BGP]:
             continue
         topo_f.write(f'\necho "adding edge r{src}-r{dst}"')
         if not src_ip.version == dst_ip.version:
