@@ -264,6 +264,7 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
         if dev_as != peer_as:
             found = False
             for provider, customer in base["as_relations"]["provider-customer"]:
+
                 if dev_as not in [provider, customer]:
                     continue
                 if peer_as not in [provider, customer]:
@@ -271,7 +272,6 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
                 if dev_as == provider:
                     local_role = "provider"
                     remote_role = "customer"
-                    found = True
                 elif dev_as == customer:
                     local_role = "customer"
                     remote_role = "provider"
@@ -279,6 +279,7 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
                         aspa_json["add"]["providers"].append(
                             f"AS{peer_as}(v4)")
                 found = True
+            # input(f"{provider} {customer} {dev_as} {peer_as} {found}")
             if not found:
                 remote_role = "peer"
                 local_role = "peer"
@@ -424,8 +425,9 @@ def add_ips(links):
     for i in range(len(links)):
         src_dev_id, dst_dev_id, link_type, src_ip, dst_ip = links[i]
         if dst_ip is None:
+            # if link ip is not given, use first ip(router_ip)
             links[i] = (src_dev_id, dst_dev_id, link_type,
-                        ip_map[src_dev_id][0], ip_map[dst_dev_id][0])
+                        ip_map[src_dev_id][-1], ip_map[dst_dev_id][-1])
     return links
 
 
@@ -448,7 +450,7 @@ def assign_ip(base):
             src_ip, dst_ip = a.get_new_ip_pair()
             link.append(src_ip)
             link.append(dst_ip)
-        elif link[2] == "rpdp-http":
+        elif link[2] == RPDP_OVER_HTTP:
             if len(link) == 3:
                 link.append(None)
                 link.append(None)
