@@ -831,13 +831,13 @@ class Monitor:
         for f in folders:
             step.update({f: []})
             f_log_path = os.path.join(f, "log")
-            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPA|grep -E \"'msg_cause': 'receive'|'msg_cause': 'relay'\""
+            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/sav-agent.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPA|grep -E \"'msg_cause': 'receive'|'msg_cause': 'relay'\""
             returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
             for i in stdout.replace("\'", "\"").split("\n"):
                 if len(i) < 10:
                     continue
                 step[f].append(json.loads(i))
-            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/server.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPD| sed \"s/'/\\\"/g\"|grep -E '\"msg_cause\": \"receive\"|\"msg_cause\": \"relay\"'| jq -s 'unique_by(.src_ip, .dst_ip, .msg_cause, .link_name)'"
+            cmd = f"grep LOG_FOR_FRONT {SAV_RUN_DIR}/{f_log_path}/sav-agent.log |awk -F\"LOG_FOR_FRONT\" '{{print $2}}'|grep SPD| sed \"s/'/\\\"/g\"|grep -E '\"msg_cause\": \"origin\"|\"msg_cause\": \"relay\"'| jq -s 'unique_by(.src_ip, .dst_ip, .msg_cause, .link_name)'"
             returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
             step[f].extend(json.loads(stdout))
         return json.dumps(step)
@@ -862,15 +862,18 @@ class Monitor:
             cmd = f"docker exec -i {container_name} curl http://localhost:8888/sav_table/"
             returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
             table.append({container_name: json.loads(stdout.replace("IPNetwork(", "").replace(
-                ")", "").replace("\'", "\"").replace("True", "\"True\"").replace("False", "\"False\""))})
+                ")", "").replace("\'", "\"").replace("True", "\"True\"").replace("False", "\"False\"").replace("IPAddress(", ""))})
         return json.dumps(table)
 
     @staticmethod
-    def enable_sav_table(protocol_name):
+    def enable_sav_table(protocol_name, router):
         result = []
         cmd = "docker ps |grep -v NAMES|awk '{ print $NF }'"
         returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
+        router_scope = router.split(",")
         for container_name in stdout.split("\n")[:-1]:
+            if container_name not in router_scope:
+                continue
             cmd = f"docker exec -i {container_name} curl http://localhost:8888/refresh_proto/{protocol_name}/"
             returncode, stdout, stderr = run_cmd(cmd=cmd, capture_output=True)
             result.append({container_name:json.loads(stdout)})
@@ -884,6 +887,7 @@ def run(args):
     metric = args.metric
     table = args.table
     enable = args.enable
+    router = args.router
     node_num = get_container_node_num(SAV_RUN_DIR)
     result = ""
     if action is not None:
@@ -936,7 +940,9 @@ def run(args):
         result = Monitor.protocol_table()
 
     if enable is not None:
-        result = Monitor.enable_sav_table(protocol_name=enable)
+        if router is None:
+            return {"error": "the router name cannot be empty"}
+        result = Monitor.enable_sav_table(protocol_name=enable, router=router)
     return result
 
 
@@ -957,5 +963,6 @@ if __name__ == "__main__":
     data_plane_control_group.add_argument("--enable",
                                           choices=["strict_urpf", "rpdp", "loose_urpf", "efp_urpf_a", "efp_urpf_b","fp_urpf"],
                                           help="enable sav_table rule")
+    data_plane_control_group.add_argument("--router", help="the enable scope")
     args = parser.parse_args()
     print(run(args=args))

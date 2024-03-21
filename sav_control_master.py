@@ -316,14 +316,13 @@ class MasterController:
             print(json.dumps(table))
         return result
 
-
-    def enable_sav_table(self, app_name):
+    def enable_sav_table(self, app_name, router):
         result = {}
         for node_id, node_num in self.config["host_node"].items():
             node = self.host_node[node_id]
             path2hostpy = os.path.join(
                 node["root_dir"], "savop", "sav_control_host.py")
-            cmd = f"python3 {path2hostpy} --enable {app_name}"
+            cmd = f"python3 {path2hostpy} --enable {app_name} --router {router}"
             self.logger.debug(cmd)
             node_result = self._remote_run(node_id, node, cmd, capture_output=True)
             result[node_id] = node_result
@@ -509,6 +508,7 @@ def run(args):
     metric = args.metric
     table = args.table
     enable = args.enable
+    router = args.router
 
     if experiment is not None:
         sav_exp = SavExperiment()
@@ -571,8 +571,10 @@ def run(args):
 
     # enable sav_table rule
     if enable:
+        if router is None:
+            return {"err": "please write route scope"}
         master_controller = MasterController("sav_control_master_config.json")
-        enable_content = master_controller.enable_sav_table(app_name=enable)
+        enable_content = master_controller.enable_sav_table(app_name=enable, router=router)
         return enable_content
 
 
@@ -615,6 +617,7 @@ if __name__ == "__main__":
                                                          "Enable data plane control for the sav_table rule")
     data_plane_control_group.add_argument("--enable",  choices=["strict_urpf", "rpdp", "loose_urpf", "efp_urpf_a", "efp_urpf_b", "fp_urpf"],
                                           help="enable sav_table rule")
+    data_plane_control_group.add_argument("--router",  help="the enable scope")
     args = parser.parse_args()
     result = run(args=args)
     print(f"run over, show: \n{result}")
