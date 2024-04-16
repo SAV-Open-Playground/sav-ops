@@ -16,11 +16,7 @@ import netaddr
 import copy
 import platform
 from sav_control_common import *
-RPDP_OVER_HTTP = "rpdp-http"
-DEFAULT_FIB_THRESHOLD = 300
-DEFAULT_ORIGINAL_BIRD = False
-BGP = "bgp"
-RPDP_OVER_BGP = "dsav"
+from script_consts import *
 
 
 def tell_prefix_version(prefix):
@@ -69,7 +65,7 @@ class IPGenerator():
         return ip_network
 
 
-def recompile_bird(path=r'{host_dir}/sav-reference-router', logger=None):
+def recompile_bird(path=r'{host_dir}/sav_router', logger=None):
     # return
     print("step: recompile bird")
     os.chdir(path)
@@ -102,37 +98,11 @@ def rebuild_img(
     run_cmd(cmd)
 
 
-def add_bird_basic_protos(router_id):
+def add_bird_basic(router_id, ip_version, my_as):
     router_id_ip = netaddr.IPAddress(router_id)
     bird_conf_str = f"router id {str(router_id_ip)};"
-    bird_conf_str += "\nipv4 table master4 {sorted 1;};\n" \
-                     "ipv6 table master6 {sorted 1;};\n" \
-                     "protocol device {\n" \
-                     "  scan time 60;\n" \
-                     "  interface \"eth_*\";\n" \
-                     "};\n" \
-                     "protocol kernel {\n" \
-                     "  scan time 60;\n" \
-                     "  ipv4 {\n" \
-                     "    export all;\n" \
-                     "    import all;\n" \
-                     "  };\n" \
-                     "  learn;\n" \
-                     "};\n" \
-                     "protocol kernel {\n" \
-                     "  scan time 60;\n" \
-                     "  ipv6 {\n" \
-                     "    export all;\n" \
-                     "    import all;\n" \
-                     "  };\n" \
-                     "  learn;\n" \
-                     "};\n" \
-                     "protocol direct {\n" \
-                     "  ipv4;\n" \
-                     "  ipv6;\n" \
-                     "  interface \"eth_*\";\n" \
-                     "};\n"
-
+    bird_conf_str += BIRD_BASIC.replace(REP_KEY_IP_VERSION,
+                                        str(ip_version)).replace(REP_KEY_MY_AS, str(my_as))
     return bird_conf_str
 
 
@@ -141,74 +111,42 @@ def gen_bird_conf(node, delay, mode, base, roa_json, aspa_json):
     add everything but actual bgp links
     """
     # raise ValueError(base)
-
-    all_nodes = base["devices"]
     dev_id = node["device_id"]
     dev_as = node["as"]
     router_id = base["as_scope"][dev_as][dev_id]["router_id"]
     enable_rpki = base["enable_rpki"]
-    bird_conf_str = add_bird_basic_protos(router_id)
     try:
         v = tell_prefix_version(list(node["prefixes"].keys())[0])
     except IndexError:
         v = 4
         print(f"forcing version to {v}")
-
-    bird_conf_str += "protocol static {\n"
-    bird_conf_str += f"  ipv{v} {{\n" \
-        "    export all;\n" \
-        "    import all;\n" \
-        "  };\n"
+    bird_conf_str = add_bird_basic(router_id, v, dev_as)
     if mode == "blackhole":
         for prefix in node["prefixes"]:
             bird_conf_str += f"  route {prefix} {mode};\n"
             roa_item = {"asn": int(dev_as), "prefix": prefix,
                         "max_length": int(prefix.split("/")[1])}
             roa_json["add"].append(roa_item)
-    bird_conf_str += "};\n"
-    bird_conf_str += "template bgp basic {\n"
-    bird_conf_str += f"  local as {node['as']};\n"
-    bird_conf_str += "  long lived graceful restart on;\n"
-    bird_conf_str += "  debug all;\n"
-    bird_conf_str += "  enable extended messages;\n" \
-                     "};\n" \
-                     "template bgp basic4 from basic {\n" \
-                     "  ipv4 {\n" \
-                     "    export all;\n" \
-                     "    import all;\n" \
-                     "    import table on;\n" \
-                     "  };\n" \
-                     "};\n" \
-                     "template bgp basic6 from basic {\n" \
-                     "  ipv6 {\n" \
-                     "    export all;\n" \
-                     "    import all;\n" \
-                     "    import table on;\n" \
-                     "  };\n" \
-                     "};\n"
-    bird_conf_str += f"template bgp sav from basic{v} "
-    bird_conf_str += "{\n"
-    bird_conf_str += f"  rpdp{v} "
-    bird_conf_str += "{\n" \
-        "  import none;\n" \
-        "  export none;\n" \
-        "  };\n"
-    bird_conf_str += "};\n"
     aspa_item = {"customer": int(dev_as), "providers": []}
-    # add bgp links
-
     if enable_rpki:
         aspa_json["add"].append(aspa_item)
-    # calculate the no_export cmd
-    base["no_export_map"] = {}
+    # calculate the no_export map
+    if not "no_export_map" in base:
+        no_export_map = {}
+    else:
+        no_export_map = base["no_export_map"]
     for prefix, p_data in node["prefixes"].items():
         if not "no_export" in p_data:
             continue
-        base["no_export_map"][dev_id] = {}
+
         for dst_dev_id in p_data["no_export"]:
-            base["no_export_map"][dev_id][dst_dev_id] = []
-        base["no_export_map"][dev_id][dst_dev_id].append(prefix)
-    return delay, bird_conf_str, node
+            if not dev_id in no_export_map:
+                no_export_map[dev_id] = {}
+            if not dst_dev_id in no_export_map[dev_id]:
+                no_export_map[dev_id][dst_dev_id] = []
+            no_export_map[dev_id][dst_dev_id].append(prefix)
+    base["no_export_map"] = no_export_map
+    return delay, bird_conf_str, node, no_export_map
 
 
 def find_links(all_links, dev_id) -> list:
@@ -228,120 +166,140 @@ def find_links(all_links, dev_id) -> list:
     return result
 
 
-def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, sa_config, enable_rpki):
+def add_bird_link(bird_conf_str, peer_id, peer_ip, peer_as, dev_ip, dev_id, link_type, no_exp_map, phy_links, is_inter):
+    no_exp_data = None
+    if link_type in [LINK_NATIVE_BGP, LINK_BGP_WITH_RPDP]:
+        if dev_id in no_exp_map:
+            if peer_id in no_exp_map[dev_id]:
+                no_exp_data = no_exp_map[dev_id][peer_id]
+                bird_conf_str += f"filter noexport_{peer_id} "
+                bird_conf_str += "{\n"
+                for prefix in no_exp_data:
+                    bird_conf_str += f"  if net = {prefix} then bgp_community.add((0xFFFF, 0xFF01));\n"
+                bird_conf_str += "  accept;\n};\n"
+    bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from"
+    if no_exp_data:
+        bird_conf_str += " basic {\n"
+    else:
+        if link_type == LINK_NATIVE_BGP:
+            bird_conf_str += f" {REP_KEY_BGPONLY}"
+            bird_conf_str += " {\n"
+        elif link_type == LINK_BGP_WITH_RPDP:
+            bird_conf_str += f" {REP_KEY_BGPRPDP}"
+            bird_conf_str += " {\n"
+        elif link_type == LINK_RPDP_BGP:
+            bird_conf_str += f" {REP_KEY_SAV}"
+            bird_conf_str += " sav46 {\n"
+    if link_type == LINK_NATIVE_BGP:
+        bird_conf_str += f"  description \"LINK_NATIVE_BGP between {dev_id} and {peer_id}\";\n"
+    elif link_type == LINK_BGP_WITH_RPDP:
+        bird_conf_str += f"  description \"LINK_BGP_WITH_RPDP between {dev_id} and {peer_id}\";\n"
+    elif link_type == LINK_RPDP_BGP:
+        bird_conf_str += f"  description \"RPDP OVER BGP (no BGP data) between {dev_id} and {peer_id}\";\n"
+    if not is_inter:
+        bird_conf_str += "  rr client;\n"
+    if no_exp_data:
+        bird_conf_str += NO_EXPORT_STR.replace(REP_KEY_PEER_ID, peer_id)
+    ip1, ip2 = find_link([dev_id, peer_id], phy_links)
+    bird_conf_str += f"  source address {dev_ip};\n"
+    bird_conf_str += f"  neighbor {peer_ip} as {peer_as};\n"
+    if ip1:
+        bird_conf_str += "  direct;\n"
+    else:
+        bird_conf_str += "  multihop;\n"
+    return bird_conf_str
+
+
+def find_as_relation(my_as, peer_as, relations, aspa_json, enable_rpki):
+    remote_role = "peer"
+    local_role = "peer"
+    for rel in relations:
+        if my_as in rel and peer_as in rel:
+            if my_as == rel[0]:
+                local_role = "provider"
+                remote_role = "customer"
+            elif my_as == rel[1]:
+                local_role = "customer"
+                remote_role = "provider"
+            if enable_rpki:
+                aspa_json["add"]["providers"].append(
+                    f"AS{peer_as}(v4)")
+            return local_role, remote_role, aspa_json
+
+
+def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, sa_config, no_exp_map, phy_links):
     all_nodes = base["devices"]
     links = find_links(base["links"], dev_id)
     link_map = {}
     has_inter_rpdp = False
-    has_intra_rpdp = False
     has_inter_bgp = False
-    has_intra_bgp = False
     sa_config["device_id"] = dev_id
+    enable_rpki = base["enable_rpki"]
     for peer_id, peer_ip, dev_ip, dev_id, link_type in links:
+        # print(peer_id, peer_ip, dev_ip, dev_id, link_type)
+        if link_type == LINK_PHYSICAL:
+            continue
+        v = dev_ip.version
         peer_node = all_nodes[peer_id]
         peer_as = peer_node["as"]
-        add_a_bird_proto = False
-        if link_type == RPDP_OVER_BGP:
-            # using BGP to send SPA,SPD
-            bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from sav\n"
-            add_a_bird_proto = True
-            if peer_as != dev_as:
-                has_inter_rpdp = True
-            else:
-                has_intra_rpdp = True
-        elif link_type in [BGP]:
-            v = dev_ip.version
-            no_exp_data = None
-            if dev_id in base["no_export_map"]:
-                if peer_id in base["no_export_map"][dev_id]:
-                    no_exp_data = base["no_export_map"][dev_id][peer_id]
-                    bird_conf_str += f"filter noexport_{peer_id} "
-                    bird_conf_str += "{\n"
-                    for prefix in no_exp_data:
-                        bird_conf_str += f"  if net = {prefix} then bgp_community.add((0xFFFF, 0xFF01));\n"
-
-                    bird_conf_str += "  accept;\n};\n"
-            if no_exp_data is None:
-                bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from basic{v}"
-            else:
-                bird_conf_str += f"protocol bgp {link_type}_{dev_id}_{peer_id} from basic"
-            add_a_bird_proto = True
-            if peer_as != dev_as:
+        is_inter = dev_as != peer_as
+        add_a_bird_proto = link_type in [
+            LINK_NATIVE_BGP, LINK_BGP_WITH_RPDP, LINK_RPDP_BGP]
+        link_map_value = {
+                "link_type": link_type,
+                "remote_ip": str(peer_ip),
+                "remote_id": str(peer_id),
+                "remote_as": peer_as,
+                "local_ip": str(dev_ip),
+                "local_role": None,
+                "remote_role": None
+            }
+        if is_inter:
+            link_map_value["local_role"] = None
+            link_map_value["remote_role"] = None
+            # some cases, we don't have a direct relation
+            try:
+                local_role, remote_role, aspa_json = find_as_relation(
+                        dev_as, peer_as, base["as_relations"]["provider-customer"], aspa_json, enable_rpki)
+                link_map_value["local_role"] = local_role
+                link_map_value["remote_role"] = remote_role
+            except:
+                pass
+        link_map_name = "_".join([link_type, dev_id, peer_id])
+        link_map[link_map_name] = link_map_value
+        if add_a_bird_proto:
+            bird_conf_str = add_bird_link(
+                bird_conf_str, peer_id, peer_ip, peer_as, dev_ip, dev_id, link_type, no_exp_map, phy_links,is_inter)
+            if is_inter and link_type in [LINK_NATIVE_BGP, LINK_BGP_WITH_RPDP]:
                 has_inter_bgp = True
-            else:
-                has_intra_bgp = True
-        elif link_type in [RPDP_OVER_HTTP]:
-            if peer_as != dev_as:
+            if is_inter and link_type in [LINK_RPDP_HTTP, LINK_BGP_WITH_RPDP, LINK_RPDP_BGP]:
                 has_inter_rpdp = True
-            else:
-                has_intra_rpdp = True
-            if base["rpdp_full_link"]:
-                continue
+            
+            if is_inter:
+                local_role, remote_role, aspa_json = find_as_relation(
+                    dev_as, peer_as, base["as_relations"]["provider-customer"], aspa_json, enable_rpki)
+                bird_conf_str += f"  local role {local_role};\n"
+                
+                
+
+            # if base["rpdp_full_link"]:
+            # continue
+            bird_conf_str += f"  connect delay time {int(delay)};\n"
+            delay += 0.1
+            bird_conf_str += "};\n"
+        elif link_type == LINK_RPDP_HTTP:
+            pass
         else:
             raise NotImplementedError(f"{link_type} not implemented")
-        local_role = None
-        remote_role = None
-        if dev_as != peer_as:
-            found = False
-            for provider, customer in base["as_relations"]["provider-customer"]:
-
-                if dev_as not in [provider, customer]:
-                    continue
-                if peer_as not in [provider, customer]:
-                    continue
-                if dev_as == provider:
-                    local_role = "provider"
-                    remote_role = "customer"
-                elif dev_as == customer:
-                    local_role = "customer"
-                    remote_role = "provider"
-                    if enable_rpki:
-                        aspa_json["add"]["providers"].append(
-                            f"AS{peer_as}(v4)")
-                found = True
-            # input(f"{provider} {customer} {dev_as} {peer_as} {found}")
-            if not found:
-                remote_role = "peer"
-                local_role = "peer"
-        if add_a_bird_proto:
-            bird_conf_str += " {\n"
-            bird_conf_str += f"  description \"BGP between {dev_id} and {peer_id}\";\n"
-            if local_role is not None:
-                bird_conf_str += f"  local role {local_role};\n"
-            # get ip
-            bird_conf_str += f"  source address {dev_ip};\n"
-            bird_conf_str += f"  neighbor {peer_ip} as {peer_as};\n"
-            if link_type in [BGP]:
-                if no_exp_data:
-                    bird_conf_str += f"  ipv{v} "
-                    bird_conf_str += "{\n"
-                    bird_conf_str += f"    export filter noexport_{peer_id};\n"
-                    bird_conf_str += "    import all;\n"
-                    bird_conf_str += "    import table on;\n"
-                    bird_conf_str += "  };\n"
-            else:
-                bird_conf_str += ";\n"
-            bird_conf_str += f"  connect delay time {int(delay)};\n"
-
-            delay += 0.1
-            bird_conf_str += "  direct;\n};\n"
-        link_map_name = "_".join([link_type, dev_id, peer_id])
-        link_map_value = {
-            "link_type": link_type,
-            "remote_ip": str(peer_ip),
-            "remote_id": str(peer_id),
-            "remote_as": peer_as,
-            "local_ip": str(dev_ip),
-        }
-
-        if link_type in [BGP, RPDP_OVER_BGP, RPDP_OVER_HTTP]:
-            link_map_value["local_role"] = local_role
-            link_map_value["remote_role"] = remote_role
-
-        link_map[link_map_name] = link_map_value
     if base["rpdp_full_link"]:
         raise NotImplementedError
     sa_config["link_map"] = link_map
+    if has_inter_bgp:
+        if has_inter_rpdp:
+            sa_config["location"] = RT_EDGE_REP
+        sa_config["location"] = RT_EDGE
+    else:
+        sa_config["location"] = RT_CORE
     return bird_conf_str, sa_config
 
 
@@ -353,7 +311,7 @@ def get_node_config(node, config_json) -> dict:
     return d
 
 
-def gen_sa_config(config_json, auto_nets, node):
+def gen_sa_config(config_json, node):
     auto_ip_version = config_json["auto_ip_version"]
     enable_rpki = config_json["enable_rpki"]
     node_config = get_node_config(node["device_id"], config_json)
@@ -370,7 +328,7 @@ def gen_sa_config(config_json, auto_nets, node):
             "server_enabled": True
         },
         "auto_ip_version": auto_ip_version,
-        "ignore_nets": auto_nets,
+        "ignore_nets": config_json['ignore_nets'],
         "use_ignore_nets": node_config["ignore_irrelevant_nets"],
         "quic_config": {
             "server_enabled": True
@@ -378,7 +336,6 @@ def gen_sa_config(config_json, auto_nets, node):
         "local_as": node["as"],
         "prefixes": node["prefixes"],
         "router_id": as_scope[node["device_id"]]["router_id"],
-        "location": "edge_full",
         "as_scope": as_scope,
         "enable_rpki": enable_rpki,
         "ignore_private": node_config["ignore_private"],
@@ -400,11 +357,6 @@ def refresh_folder(src, dst):
 
 
 def add_default_values(base):
-
-    if "fib_threshold" not in base:
-        print(
-            f"fib_threshold not found, using default value {DEFAULT_FIB_THRESHOLD}")
-        base["fib_threshold"] = DEFAULT_FIB_THRESHOLD
     if "original_bird" not in base:
         print(
             f"original_bird not found, using default value {DEFAULT_ORIGINAL_BIRD}")
@@ -418,30 +370,35 @@ def add_default_values(base):
     return base
 
 
-def add_ips(links):
-    ip_map = {}
-    for src_dev_id, dst_dev_id, link_type, src_ip, dst_ip in links:
-        if dst_ip is None:
-            continue
-        if not src_dev_id in ip_map:
-            ip_map[src_dev_id] = []
-        if not dst_dev_id in ip_map:
-            ip_map[dst_dev_id] = []
-        ip_map[src_dev_id].append(src_ip)
-        ip_map[dst_dev_id].append(dst_ip)
-    for i in range(len(links)):
-        src_dev_id, dst_dev_id, link_type, src_ip, dst_ip = links[i]
-        if dst_ip is None:
-            # if link ip is not given, use first ip(router_ip)
-            links[i] = (src_dev_id, dst_dev_id, link_type,
-                        ip_map[src_dev_id][-1], ip_map[dst_dev_id][-1])
-    return links
+def find_link(target_link, physical_links):
+    # find ip from physical_links
+    for link in physical_links:
+        if link[0] == target_link[0] and link[1] == target_link[1]:
+            return link[3], link[4]
+        if link[0] == target_link[1] and link[1] == target_link[0]:
+            return link[4], link[3]
+    return None, None
 
-
+def order_links(links):
+    """
+    order links by device id
+    """
+    temp = []
+    for link in links:
+        id_0 = int(link[0])
+        id_1 = int(link[1])
+        if id_0 > id_1:
+            temp.append([link[1], link[0], link[2]])
+        else:
+            temp.append([link[0], link[1], link[2]])
+    temp = sorted(temp, key=lambda x: x[0])
+    return temp
+        
 def assign_ip(base):
     """
     assign ip to each link (device)
     """
+    
     as_scope = {}
     a = None
     # assign new ips for bgp links
@@ -452,22 +409,61 @@ def assign_ip(base):
         a = IPGenerator("FEC::1:1")
     else:
         raise NotImplementedError
+    # extend physical links
     temp = []
+    base["links"] = order_links(base["links"])
     for link in base["links"]:
-        if link[2] in [BGP]:
-            src_ip, dst_ip = a.get_new_ip_pair()
-            link.append(src_ip)
-            link.append(dst_ip)
-        elif link[2] == RPDP_OVER_HTTP:
-            if len(link) == 3:
-                link.append(None)
-                link.append(None)
-        else:
-            link.append(None)
-            link.append(None)
-        temp.append(link)
+        if link[2] == LINK_NATIVE_BGP:
+            new_link = copy.deepcopy(link)
+            new_link[2] = LINK_PHYSICAL
+            temp.append(new_link)
+    base["links"] += temp
+    phy_links = [x for x in base["links"] if x[2] == LINK_PHYSICAL]
+    ip_map = {}
+    for link in phy_links:
+        src_ip, dst_ip = a.get_new_ip_pair()
+        link.append(src_ip)
+        link.append(dst_ip)
+        for idx in [0, 1]:
+            if link[idx] not in ip_map:
+                ip_map[link[idx]] = []
+            ip_map[link[idx]].append(link[idx+3])
+    for link in base["links"]:
+        if link[2] != LINK_PHYSICAL:
+            src_ip, dst_ip = find_link(link, phy_links)
+            if src_ip:
+                link.append(src_ip)
+                link.append(dst_ip)
+            else:
+                link.append(ip_map[link[0]][-1])
+                link.append(ip_map[link[1]][-1])
         as_scope = build_as_scope(as_scope, link, base["devices"])
-    base["links"] = add_ips(temp)
+    bgps = []
+    dsavs = []
+    bgp_rpdp_links = []
+    links_to_del = []
+    for link in base["links"]:
+        if link[2] == LINK_NATIVE_BGP:
+            bgps.append(link)
+        elif link[2] == LINK_RPDP_BGP:
+            dsavs.append(link)
+    for bgp_link in bgps:
+        for dsav_link in dsavs:
+            if bgp_link[0] == dsav_link[0] and bgp_link[1] == dsav_link[1]:
+                new_link = copy.deepcopy(bgp_link)
+                new_link[2] = LINK_BGP_WITH_RPDP
+                links_to_del.append(bgp_link)
+                links_to_del.append(dsav_link)
+                bgp_rpdp_links.append(new_link)
+            elif bgp_link[0] == dsav_link[1] and bgp_link[1] == dsav_link[0]:
+                new_link = copy.deepcopy(bgp_link)
+                new_link[2] = LINK_BGP_WITH_RPDP
+                links_to_del.append(bgp_link)
+                links_to_del.append(dsav_link)
+                bgp_rpdp_links.append(new_link)
+    for link in links_to_del:
+        base["links"].remove(link)
+    base["links"].extend(bgp_rpdp_links)
     for asn, asn_data in as_scope.items():
         new_asn_data = {}
         # ips must be sorted
@@ -496,7 +492,7 @@ def build_as_scope(as_scope, link, base_device):
     second level key: dev_id
     second level value: list of ip
     """
-    if link[2] == BGP:
+    if link[2] in [LINK_NATIVE_BGP,LINK_BGP_WITH_RPDP]:
         src_dev_id, dst_dev_id, link_type, src_ip, dst_ip = link
         for dev_id in [src_dev_id, dst_dev_id]:
             dev_ip = src_ip if dev_id == src_dev_id else dst_ip
@@ -508,7 +504,6 @@ def build_as_scope(as_scope, link, base_device):
                     as_scope[dev_as][dev_id] = [dev_ip]
                 else:
                     as_scope[dev_as][dev_id].append(dev_ip)
-
     return as_scope
 
 
@@ -642,7 +637,7 @@ def write_compose_str(node, base, host_dir, run_dir, tag, compose_f, cpu_id, ca_
         f"        source: {host_dir}/{run_dir}/{node}/sa.json\n" \
         f"        target: /root/savop/SavAgent_config.json\n" \
         f"      - {host_dir}/{run_dir}/{node}/log/:/root/savop/logs/\n" \
-        f"      - {host_dir}/sav-agent/:/root/savop/sav-agent/\n"\
+        f"      - {host_dir}/sav_agent/:/root/savop/sav-agent/\n"\
         f"      - {host_dir}/savop/reference_and_agent/router_kill_and_start.sh:"\
         "/root/savop/router_kill_and_start.sh\n"\
         f"      - {host_dir}/{run_dir}/bird:/usr/local/sbin/bird\n"\
@@ -680,20 +675,40 @@ def ready_out_dir(out_dir) -> None:
     os.makedirs(out_dir)
 
 
+def prepare_base(input_json):
+    ret = add_default_values(input_json)
+    ret = assign_ip(ret)
+    # add ignore_nets
+    i_n = []
+    ca_ip = None
+    if ret["enable_rpki"]:
+        if ret["auto_ip_version"] in [4, 6]:
+            ca_ip = netaddr.IPAddress(CA_IP4)
+            i_n.append("10.10.0.0/16")
+        # TODO: use proper ipv6 address
+            # raise NotImplementedError("ca_ip6 not ready")
+            # ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
+            # ignore_nets.append("10.10.0.0/16")
+    i_n.append(ret["ip_range"])
+    ret['ignore_nets'] = i_n
+    # assign router_location
+
+    # input(ret.keys())
+    # input(ret['links'])
+    return ret, ca_ip
 def regenerate_config(
         savop_dir,
         host_dir,
         input_json,
         out_dir):
     ready_out_dir(out_dir)
-    print("step: genetate sav-agent, bird, docker_compose, sign_key files")
-    base = add_default_values(input_json)
-    base = assign_ip(base)
+    print("step: generate sav-agent, bird, docker_compose, sign_key files")
+    base, ca_ip = prepare_base(input_json)
     ca_dir = os.path.join(out_dir, "ca")
     run_dir = "savop_run"
     cp_cmd = f"cp {os.path.join(savop_dir,'topo.sh')} {os.path.join(out_dir,'topo.sh')}"
     run_cmd(cp_cmd)
-
+    
     # build docker compose
     compose_f = open(os.path.join(out_dir, DEVICE_COMPOSE_FILE), 'a')
     compose_f.write("version: \"2\"\n")
@@ -701,22 +716,12 @@ def regenerate_config(
     if base["enable_rpki"]:
         key_f = add_rpki_1(compose_f, savop_dir, out_dir, ca_dir, run_dir)
     compose_f.write("\nservices:\n")
-    ignore_nets = []
-    ca_ip = None
-    if base["enable_rpki"]:
-        if base["auto_ip_version"] in [4, 6]:
-            ca_ip = netaddr.IPAddress(CA_IP4)
-            ignore_nets.append("10.10.0.0/16")
-        # TODO: use proper ipv6 address
-            # raise NotImplementedError("ca_ip6 not ready")
-            # ca_ip = netaddr.IPAddress("::ffff:10.10.0.3")
-            # ignore_nets.append("10.10.0.0/16")
     cpu_id = 0
     roa_json = {"ip": "localhost", "port": CA_HTTP_PORT,
                 "token": "krill", "add": []}
     aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT,
                  "token": "krill", "add": []}
-    ignore_nets.append(base["ip_range"])
+
     # print(f"ignore_nets: {ignore_nets}")
     for node_id in base["devices"]:
         cur_delay = 0
@@ -725,15 +730,16 @@ def regenerate_config(
         node_dir = os.path.join(out_dir, node_id)
         os.makedirs(node_dir)
         # generate bird conf
-        cur_delay, bird_config_str, base["devices"][node_id] = gen_bird_conf(
+        cur_delay, bird_config_str, base["devices"][node_id], no_exp_map = gen_bird_conf(
             nodes, cur_delay, base["prefix_method"], base,
             roa_json, aspa_json)
         sa_config = gen_sa_config(
             base,
-            ignore_nets,
             nodes)
+        phy_links = [x for x in base["links"] if x[2] == LINK_PHYSICAL]
         bird_config_str, sa_config = add_links(base, node_id, bird_config_str,
-                                               aspa_json, cur_delay, nodes["as"], roa_json, sa_config, base["enable_rpki"])
+                                               aspa_json, cur_delay, nodes["as"],
+                                               roa_json, sa_config, no_exp_map, phy_links)
         base["devices"][node_id]["bird_cfg_str"] = bird_config_str
         base["devices"][node_id]["sa_cfg"] = sa_config
         # resign keys
@@ -748,9 +754,14 @@ def regenerate_config(
     compose_f.close()
     active_signal = {
         "command": "stop",
-        "command_scope": list(base["devices"].keys()),
-        "stable_threshold": base["fib_threshold"]
+        "command_scope": list(base["devices"].keys())
     }
+    for node_id in base["devices"]:
+        link_map = base["devices"][node_id]["sa_cfg"]["link_map"]
+        for link_id, link_data in link_map.items():
+            if link_data["link_type"] in RPDP_LINK_TYPES:
+                remote_id = link_data["remote_id"]
+                base["devices"][node_id]["sa_cfg"]["link_map"][link_id]["remote_location"] = base["devices"][remote_id]["sa_cfg"]["location"]
     for node_id in base["devices"]:
         sa_config = base["devices"][node_id]["sa_cfg"]
         node_dir = os.path.join(out_dir, node_id)
@@ -766,7 +777,7 @@ def regenerate_config(
 
     topo_f = open(os.path.join(out_dir, "topo.sh"), 'a')
     for src, dst, link_type, src_ip, dst_ip in base["links"]:
-        if link_type in [RPDP_OVER_HTTP, RPDP_OVER_BGP]:
+        if not link_type == LINK_PHYSICAL:
             continue
         topo_f.write(f'\necho "adding edge r{src}-r{dst}"')
         if not src_ip.version == dst_ip.version:
@@ -791,7 +802,6 @@ def regenerate_config(
         key_f.close()
         run_cmd("bash ./sign_key.sh")
         os.chdir(cur_dir)
-
     return len(base["devices"])
 
 
@@ -820,10 +830,10 @@ def script_builder(host_dir, savop_dir, json_content, out_dir, logger, skip_bird
             skip_rebuild = True
         if not skip_bird:
             recompile_bird(os.path.join(
-                SAV_ROOT_DIR, "sav-reference-router"), logger)
-        # if not skip_rebuild:
-        #    rebuild_img(
-        #        f"{host_dir}/", file=f"{SAV_OP_DIR}/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
+                SAV_ROOT_DIR, "sav_router"), logger)
+        if not skip_rebuild:
+           rebuild_img(
+               f"{host_dir}/", file=f"{SAV_OP_DIR}/dockerfiles/reference_router", tag="savop_bird_base", logger=logger)
         container_num = regenerate_config(
             savop_dir,
             host_dir,

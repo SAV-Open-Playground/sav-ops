@@ -7,9 +7,9 @@
 @Desc    :   The sav_control_master.py is responsible for the management of all hosts(hosts). 
              excepted file structure:
              sav-root-dir
-                -sav-agent
+                -sav_agent
                     - sav_control_container.py
-                -sav-reference-router
+                -sav_router
                 -savop
                     - base_configs
                         - base_config.json
@@ -26,6 +26,7 @@ import argparse
 from threading import Thread
 import shutil
 import os
+import docker
 
 # change the dirs here
 
@@ -91,7 +92,7 @@ class MasterController:
         ret = {}
         if node_id == "localhost":
             ret["cmd_start_dt"] = time.time()
-            returncode, stdout, stderr = run_cmd(cmd)
+            returncode, stdout, stderr = run_cmd(cmd, capture_output=capture_output)
             ret["cmd_result"] = {"returncode": returncode,
                                  "stdout": stdout, "stderr": stderr, "cmd": cmd}
             ret["cmd_end_dt"] = time.time()
@@ -518,7 +519,8 @@ def run(args):
             case "original_bird":
                 return sav_exp.original_bird()
             case "dev_test":
-                return sav_exp.dev_test("dev_test.json")
+                return sav_exp.dev_test("weixing_inter.json")
+                # return sav_exp.dev_test("weixing_intra.json")
             case _:
                 return sav_exp.general_exp(experiment+'.json', skip_compile=compile)
     # generate config files

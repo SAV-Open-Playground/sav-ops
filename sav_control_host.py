@@ -12,6 +12,7 @@ from sav_control_common import *
 import argparse
 import threading
 import os
+import docker
 
 
 SAV_OP_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -103,6 +104,8 @@ class RunEmulation():
                  "net.ipv4.tcp_max_orphans=1000000"
                  "net.ipv4.tcp_syncookies=1"
                  ]
+        cmds += ["net.ipv4.conf.default.accept_local=1",
+                 "net.ipv4.conf.all.accept_local=1"]
         for c in cmds:
             try:
                 run_cmd(cmd+c, 0)
@@ -259,7 +262,7 @@ class RunEmulation():
         #         sys.exit(1)
         self._start_base()
         t1 = time.time()
-        run_cmd(f"bash {self.base_topo}")
+        run_cmd(f"bash {self.base_topo}",capture_output=True)
         t2 = time.time()
         log_str = f"link started in {t2-t1:.4f} seconds"
         self.logger.info(log_str)
@@ -276,14 +279,14 @@ class RunEmulation():
         """
         update the bird and sav-agent configs
         """
-        valid_protos = ["grpc", "quic", "dsav", "non-rpdp"]
+        valid_protos = ["grpc", "quic", LINK_RPDP_BGP, "non-rpdp"]
         if not proto in valid_protos:
             raise ValueError(f"proto should be {valid_protos} ,not {proto}")
         for n in nodes:
             # update bird config
             with open(f"{self.src_cfg_path}/{n}.conf", "r") as f:
                 bird_cfg = f.readlines()
-            if proto != "dsav":
+            if proto != LINK_RPDP_BGP:
                 bird_cfg = list(map(lambda x: x.replace(
                     "from sav_inter{", "from basic{"), bird_cfg))
             # bird config
@@ -353,15 +356,15 @@ class RunEmulation():
         signal["command_scope"] = list(
             map(int, signal["command_scope"].split(",")))
         signal["command_scope"].sort()
-        # signal["stable_threshold"] = int((len(signal['command_scope'])/3)**2)*1.5
-        if mode == "dsav":
-            signal["stable_threshold"] = len(signal['command_scope'])*3
-        elif mode == "grpc":
-            signal["stable_threshold"] = len(signal['command_scope'])
-        elif mode in ["Passport"]:
-            signal["stable_threshold"] = 10
-        self.logger.info(
-            f"active nodes: {signal['command_scope']}\n stable_threshold: {signal['stable_threshold']}")
+        # # signal["stable_threshold"] = int((len(signal['command_scope'])/3)**2)*1.5
+        # if mode == "dsav":
+        #     signal["stable_threshold"] = len(signal['command_scope'])*3
+        # elif mode == "grpc":
+        #     signal["stable_threshold"] = len(signal['command_scope'])
+        # elif mode in ["Passport"]:
+        #     signal["stable_threshold"] = 10
+        # self.logger.info(
+        #     f"active nodes: {signal['command_scope']}\n stable_threshold: {signal['stable_threshold']}")
         return signal
 
     def _ready_env(self, result_path, percentage, mode):
@@ -652,7 +655,7 @@ class RunEmulation():
             self.logger.debug(f"{container} started in {t2-t1:.4f} seconds")
             self.logger.debug(f"{container} restarted")
 
-    def _wait_valid_sav_table(self, check_interval=5):
+    def _wait_valid_sav_table(self, check_interval=5,skip_list = []):
         containers_to_go = self.device_containers
         time.sleep(10)
         while len(containers_to_go) > 0:
@@ -662,7 +665,8 @@ class RunEmulation():
                     continue
                 ret = self._container_curl(c, "sav_table/",raw = True)
                 if not (ret.startswith("{") and ret.endswith("}") and len(ret) > 3):
-                    temp.append(c)
+                    if not c.name in skip_list:
+                        temp.append(c)
                 else:
                     # self.logger.debug(f"{c.name} sav table ready! {ret}")
                     self.logger.debug(f"{c.name} sav table ready!")
@@ -701,7 +705,7 @@ class RunEmulation():
         self.logger.debug("dev test")
         self._ready_base(force_restart=True, build_image=True)
         self.send_start_signal()
-        self._wait_valid_sav_table()
+        self._wait_valid_sav_table(skip_list=["r6"])
         t = 1
         self.logger.info(f"will del prefixes in {t} seconds")
         time.sleep(t)
@@ -941,7 +945,7 @@ def run(args):
 
     if enable is not None:
         if router is None:
-            return {"error": "the router name cannot be empty"}
+            return {"aaaa": "aaa"}
         result = Monitor.enable_sav_table(protocol_name=enable, router=router)
     return result
 
