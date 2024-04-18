@@ -138,7 +138,6 @@ def gen_bird_conf(node, delay, mode, base, roa_json, aspa_json):
     for prefix, p_data in node["prefixes"].items():
         if not "no_export" in p_data:
             continue
-
         for dst_dev_id in p_data["no_export"]:
             if not dev_id in no_export_map:
                 no_export_map[dev_id] = {}
@@ -170,6 +169,8 @@ def add_bird_link(bird_conf_str, peer_id, peer_ip, peer_as, dev_ip, dev_id, link
     no_exp_data = None
     if link_type in [LINK_NATIVE_BGP, LINK_BGP_WITH_RPDP]:
         if dev_id in no_exp_map:
+            # input(dev_id)
+            # input(no_exp_map)
             if peer_id in no_exp_map[dev_id]:
                 no_exp_data = no_exp_map[dev_id][peer_id]
                 bird_conf_str += f"filter noexport_{peer_id} "
@@ -225,7 +226,9 @@ def find_as_relation(my_as, peer_as, relations, aspa_json, enable_rpki):
                 aspa_json["add"]["providers"].append(
                     f"AS{peer_as}(v4)")
             return local_role, remote_role, aspa_json
-
+    if enable_rpki:
+        raise NotImplementedError
+    return local_role, remote_role, aspa_json 
 
 def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, sa_config, no_exp_map, phy_links):
     all_nodes = base["devices"]
@@ -274,7 +277,6 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
                 has_inter_bgp = True
             if is_inter and link_type in [LINK_RPDP_HTTP, LINK_BGP_WITH_RPDP, LINK_RPDP_BGP]:
                 has_inter_rpdp = True
-            
             if is_inter:
                 local_role, remote_role, aspa_json = find_as_relation(
                     dev_as, peer_as, base["as_relations"]["provider-customer"], aspa_json, enable_rpki)
