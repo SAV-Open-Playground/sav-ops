@@ -124,18 +124,17 @@ def gen_bird_conf(node, delay, mode, base, roa_json, aspa_json):
     if mode == "blackhole":
         for prefix in node["prefixes"]:
             bird_conf_str += f"  route {prefix} {mode};\n"
-            roa_item = {"asn": int(dev_as), "prefix": prefix,
-                        "max_length": int(prefix.split("/")[1])}
-            roa_json["add"].append(roa_item)
-    aspa_item = {"customer": int(dev_as), "providers": []}
-    if enable_rpki:
-        aspa_json["add"].append(aspa_item)
+            
     # calculate the no_export map
     if not "no_export_map" in base:
         no_export_map = {}
     else:
         no_export_map = base["no_export_map"]
     for prefix, p_data in node["prefixes"].items():
+        if not dev_as in roa_json["cache"]:
+            roa_json["cache"][dev_as] = set()
+        roa_json["cache"][dev_as].add(prefix)
+        
         if not "no_export" in p_data:
             continue
         for dst_dev_id in p_data["no_export"]:
@@ -219,15 +218,18 @@ def find_as_relation(my_as, peer_as, relations, aspa_json, enable_rpki):
             if my_as == rel[0]:
                 local_role = "provider"
                 remote_role = "customer"
+                if enable_rpki:
+                    if not peer_as in aspa_json["cache"]:
+                        aspa_json["cache"][peer_as] = set()
+                    aspa_json["cache"][peer_as].add(my_as)
             elif my_as == rel[1]:
                 local_role = "customer"
                 remote_role = "provider"
-            if enable_rpki:
-                aspa_json["add"]["providers"].append(
-                    f"AS{peer_as}(v4)")
+                if enable_rpki:
+                    if not my_as in aspa_json["cache"]:
+                        aspa_json["cache"][my_as] = set()
+                    aspa_json["cache"][my_as].add(peer_as)
             return local_role, remote_role, aspa_json
-    if enable_rpki:
-        raise NotImplementedError
     return local_role, remote_role, aspa_json 
 
 def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, sa_config, no_exp_map, phy_links):
@@ -281,8 +283,6 @@ def add_links(base, dev_id, bird_conf_str, aspa_json, delay, dev_as, roa_json, s
                 local_role, remote_role, aspa_json = find_as_relation(
                     dev_as, peer_as, base["as_relations"]["provider-customer"], aspa_json, enable_rpki)
                 bird_conf_str += f"  local role {local_role};\n"
-                
-                
 
             # if base["rpdp_full_link"]:
             # continue
@@ -720,9 +720,9 @@ def regenerate_config(
     compose_f.write("\nservices:\n")
     cpu_id = 0
     roa_json = {"ip": "localhost", "port": CA_HTTP_PORT,
-                "token": "krill", "add": []}
+                "token": "krill", "add": [], "cache": {}}
     aspa_json = {"ip": "localhost", "port": CA_HTTP_PORT,
-                 "token": "krill", "add": []}
+                 "token": "krill", "add": [],"cache":{}}
 
     # print(f"ignore_nets: {ignore_nets}")
     for node_id in base["devices"]:
@@ -796,7 +796,17 @@ def regenerate_config(
     if platform.system() == "Windows":
         run_cmd("python3 change_eol.py")
     if base["enable_rpki"]:
+        roa = roa_json["cache"]
+        for asn,prefixes in roa.items():
+            for p in prefixes:
+                roa_json["add"].append(
+                    {"asn": asn, "prefix": p, "max_length": int(p.split("/")[1])})
+        del roa_json["cache"]
         json_w(os.path.join(ca_dir, "roas.json"), roa_json)
+        aspa = aspa_json["cache"]
+        for cust_asn,providers in aspa.items():
+            aspa_json["add"].append({"customer": cust_asn, "providers": list(map(lambda x: f"AS{x}(v4)", providers))})
+        del aspa_json["cache"]
         json_w(os.path.join(ca_dir, "aspas.json"), aspa_json)
         build_rpki(base, out_dir)
         cur_dir = os.getcwd()
